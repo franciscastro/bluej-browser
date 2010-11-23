@@ -1,0 +1,7 @@
+assets/
+themes/
+protected/runtime/
+protected/yiic*
+protected/data/imports/
+protected/data/*.db
+protected/data/*.csv
