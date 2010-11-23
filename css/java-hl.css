@@ -1,0 +1,39 @@
+ol.java-hl-main {
+	font-family: 'Monospace';
+}
+
+.java-hl-main pre {
+	margin: 0;
+}
+
+.java-hl-main .error {
+	background: tomato;
+}
+
+.java-hl-main .error pre {
+	font-weight: bold;
+}
+
+.java-hl-main .diff {
+	background: palegoldenrod;
+}
+
+.java-hl-comment {
+	color: green;
+}
+
+.java-hl-inlinedoc {
+	color: cornflowerblue;
+}
+
+.java-hl-reserved {
+	color: blue;
+}
+
+.java-hl-identifier {
+	color: firebrick;
+}
+
+.java-hl-number {
+	color: orange;
+}
