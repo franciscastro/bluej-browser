@@ -27,7 +27,16 @@ $this->menu=array(
       'value' => Term::displayTerms($model->terms),
     ),
 		'source',
-		'path',
+		array(
+      'label' => 'Path',
+      'name' => 'path',
+      'visible' => ($model->source != 'live'),
+		),
+		array(
+      'label' => 'Filter',
+      'name' => 'path',
+      'visible' => ($model->source == 'live'),
+		),
 		'start:datetime',
 		'end:datetime',
 		'remarks',

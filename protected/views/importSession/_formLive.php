@@ -20,6 +20,12 @@
 		<?php echo $form->textArea($model,'remarks',array('rows'=>6, 'cols'=>50)); ?>
 		<?php echo $form->error($model,'remarks'); ?>
 	</div>
+	
+	<div class="row">
+		<?php echo CHtml::label('Filter', 'path'); ?>
+		<?php echo $form->textField($model,'path'); ?>
+		<?php echo $form->error($model,'path'); ?>
+	</div>
 
 	<div class="row buttons">
 		<?php echo CHtml::submitButton($model->isNewRecord ? 'Start Session' : 'Stop Session'); ?>
