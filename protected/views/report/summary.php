@@ -5,7 +5,7 @@ $this->breadcrumbs=array(
 );
 
 $ajax = CHtml::ajax(array(
-  'update'=>'general-summary',
+  'update'=>'#general-summary',
 ));
 
 $script = <<<EOS
