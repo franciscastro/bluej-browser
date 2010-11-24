@@ -30,7 +30,7 @@ return array(
 		),
 		'zip'=>array(
 			'class'=>'application.extensions.zip.EZip',
-    ),
+		),
 		// uncomment the following to enable URLs in path-format
 		/*
 		'urlManager'=>array(
@@ -82,6 +82,7 @@ return array(
 		// this is used in contact page
 		'adminEmail'=>'webmaster@example.com',
 		'importRoot'=>dirname(__FILE__).DIRECTORY_SEPARATOR.'../data/imports/',
+		'exportRoot'=>dirname(__FILE__).DIRECTORY_SEPARATOR.'../../exports/',
 	),
  
 	'modules'=>array(

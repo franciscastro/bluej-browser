@@ -1,5 +1,6 @@
 assets/
 themes/
+exports/
 protected/runtime/
 protected/yiic*
 protected/data/imports/

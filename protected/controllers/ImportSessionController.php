@@ -270,26 +270,26 @@ class ImportSessionController extends Controller
 		$model = $this->loadModel();
 		$importModels = $model->imports;
 		
-		$exportZip = Yii::app()->basePath . '/export' . $model->id . '.zip';
-		$exportDir = Yii::app()->params['importRoot'] . 'export';
-		if(is_dir($exportDir)) {
-			exec('rm -r ' . escapeshellarg($exportDir));
+		$exportZip = Yii::app()->file->set(Yii::app()->params['exportRoot'] . '/' . $model->id . '.zip');
+		$exportDir = Yii::app()->file->set(Yii::app()->params['exportRoot'] . '/' . $model->id . '/');
+		
+		if($exportDir->getIsDir()) {
+			$exportDir->delete(true);
 		}
-		if(file_exists($exportZip)) {
-			exec('rm -r ' . escapeshellarg($exportZip));
+		if($exportZip->getIsFile()) {
+			$exportZip->delete();
 		}
-		mkdir($exportDir);
-		chdir($exportDir);
+		$exportDir->createDir();
+		chdir($exportDir->getRealPath());
 		
 		foreach($importModels as $importModel) {
 			$fp = fopen($importModel->session->id . '.csv', 'w');
 			$sessionModel = CActiveRecord::model($importModel->session->type)->findByPk($importModel->sessionId);
 			$sessionModel->doExport($fp);			
 		}
-		
-		chdir('..');
-		exec('zip -r ' . escapeshellarg($exportZip) . ' export');
-		Yii::app()->getRequest()->sendFile(basename($exportZip), @file_get_contents($exportZip));
+		$exportZip->create();
+		Yii::app()->zip->makeZip($exportDir->getRealPath(), $exportZip->getRealPath());
+		Yii::app()->getRequest()->sendFile(basename($exportZip->getBaseName()), file_get_contents($exportZip->getRealPath()));
 	}
 
 	/**

@@ -1,4 +1,4 @@
-<?
+<?php
 class EZip extends CApplicationComponent {
 	public function infosZip ($src, $data=true){
         if (($zip = zip_open(realpath($src))))
@@ -45,7 +45,7 @@ class EZip extends CApplicationComponent {
         {
             foreach ($src as $item)
                 if (file_exists($item))
-                    $this->addZipItem($zip, realpath(dirname($item)).'/', realpath($item).'/');
+                    $this->addZipItem($zip, realpath(dirname($item)).DIRECTORY_SEPARATOR, realpath($item));
             $zip->close();
             return true;
         }
@@ -61,7 +61,7 @@ class EZip extends CApplicationComponent {
                 array_shift($lst);
                 array_shift($lst);
             foreach ($lst as $item)
-                $this->addZipItem($zip, $racine, $dir.$item.(is_dir($dir.$item)?'/':''));
+                $this->addZipItem($zip, $racine, $dir.DIRECTORY_SEPARATOR.$item);
         }
         elseif (is_file($dir))
             $zip->addFile($dir, str_replace($racine, '', $dir));
