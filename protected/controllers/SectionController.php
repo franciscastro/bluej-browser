@@ -54,7 +54,7 @@ class SectionController extends Controller
 	public function actionCreate()
 	{
 		$model=new Section;
-
+    $terms = array();
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
 
@@ -71,8 +71,9 @@ class SectionController extends Controller
         $model->sectionId = $sectionModel->id;
         $model->name = $yearModel->name . '/' . $courseModel->name . '/' . $sectionModel->name;
       }
-      $newTeachers = array();
+      $terms = $_POST['term'];
       
+      $newTeachers = array();
       if(isset($_POST['teacher']))
       foreach($_POST['teacher'] as $teacherId) {
         $teacher = User::model()->findByPk($teacherId);
@@ -87,6 +88,7 @@ class SectionController extends Controller
 
 		$this->render('create',array(
 			'model'=>$model,
+      'terms'=>$terms,
 		));
 	}
 
@@ -98,6 +100,10 @@ class SectionController extends Controller
 	public function actionUpdate($id)
 	{
 		$model=$this->loadModel($id);
+    $terms = array();
+    $terms[Term::TERM_YEAR] = $model->yearId;
+    $terms[Term::TERM_COURSE] = $model->courseId;
+    $terms[Term::TERM_SECTION] = $model->sectionId;    
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
@@ -115,8 +121,9 @@ class SectionController extends Controller
         $model->sectionId = $sectionModel->id;
         $model->name = $yearModel->name . '/' . $courseModel->name . '/' . $sectionModel->name;
       }
-      $newTeachers = array();
+      $terms = $_POST['term'];
       
+      $newTeachers = array();
       if(isset($_POST['teacher']))
       foreach($_POST['teacher'] as $teacherId) {
         $teacher = User::model()->findByPk($teacherId);
@@ -131,6 +138,7 @@ class SectionController extends Controller
 
 		$this->render('update',array(
 			'model'=>$model,
+      'terms'=>$terms,
 		));
 	}
 

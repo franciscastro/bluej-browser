@@ -10,12 +10,11 @@
 	<?php echo $form->errorSummary($model); ?>
   
 <?php
-function createComboBox($label, $termType) {
-  global $terms;
+function createComboBox($label, $termType, $terms) {
   $termModels = Term::model()->getTerms($termType);
   if(count($termModels) > 0):
       if(!isset($terms[$termType])) {
-        $terms[$termType] = $termModels[count($termModels)-1];
+        $terms[$termType] = $termModels[count($termModels)-1]->id;
       }
   ?>
   <div class="row">
@@ -27,11 +26,11 @@ function createComboBox($label, $termType) {
 }
 ?>
 
-  <?php createComboBox('Year', Term::TERM_YEAR); ?>
+  <?php createComboBox('Year', Term::TERM_YEAR, $terms); ?>
   
-  <?php createComboBox('Course', Term::TERM_COURSE); ?>
+  <?php createComboBox('Course', Term::TERM_COURSE, $terms); ?>
   
-  <?php createComboBox('Section', Term::TERM_SECTION); ?>
+  <?php createComboBox('Section', Term::TERM_SECTION, $terms); ?>
   
   <div class="row">
     <?php echo CHtml::label('Teachers', 'teacher'); ?>
