@@ -144,11 +144,6 @@ class Import extends CActiveRecord
       
     $session = new Session;
     
-    $row = $command->queryRow();
-    $session->userId = $userModel->id;
-    $session->date = $row['TIMESTAMP'];
-    $session->newTerms = $this->importSession->terms;
-    
     $basename = basename($this->path, '.sqlite');
     if(stripos($basename, 'compiledata')) {
 			$session->type = 'CompileSession';
@@ -157,8 +152,13 @@ class Import extends CActiveRecord
 			$session->type= 'InvocationSession';
 		}
 		else {
-			
+			return;
 		}
+    
+    $row = $command->queryRow();
+    $session->userId = $userModel->id;
+    $session->date = $row['TIMESTAMP'];
+    $session->newTerms = $this->importSession->terms;
     
     if($session->save()) {    
 			$reader = $command->query();
