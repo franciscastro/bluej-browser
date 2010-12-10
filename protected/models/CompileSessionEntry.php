@@ -58,6 +58,13 @@ class CompileSessionEntry extends CActiveRecord
 			array('id, compileSessionId, timestamp, deltaSequenceNumber, deltaStartTime, deltaEndTime, filePath, fileName, fileContents, fileEncoding, compileSuccessful, messageType, messageText, messageLineNumber, compilesPerFile, totalCompiles', 'safe', 'on'=>'search'),
 		);
 	}
+  
+  public function behaviors()
+  {
+    return array(
+      'class'=>'application.components.AssignErrorClass',
+    );
+  }
 
 	/**
 	 * @return array relational rules.

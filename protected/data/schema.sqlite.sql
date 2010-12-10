@@ -215,6 +215,15 @@ CREATE TABLE EqCalculation
     REFERENCES CompileSession (id)
 );
 
+CREATE TABLE ErrorClass
+(
+  id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  compileSessionEntryId INTEGER,
+  error TEXT,
+  CONSTRAINT FK_errorClass_compileSessionEntry FOREIGN KEY (compileSessionEntryId)
+    REFERENCES CompileSessionEntry (id)  
+);
+
 INSERT INTO Term VALUES (1, 0, "Root");
 INSERT INTO Term VALUES (2, 1, "Year");
 INSERT INTO Term VALUES (3, 1, "Course");
