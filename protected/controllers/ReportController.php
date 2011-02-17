@@ -65,6 +65,15 @@ class ReportController extends Controller {
       $command = Yii::app()->db->getCommandBuilder()->createFindCommand('Session', $criteria);
       $topEqData = $command->queryAll();
       
+      // confused people
+      $criteria = new CDbCriteria;
+      $criteria->select = 'name';
+      $criteria->join = 'JOIN User on userId = User.id JOIN Confusion ON t.id = compileSessionId'; // JOIN Import ON sessionId = compileSessionId';
+      $criteria->condition = 'isConfused=1 AND compileSessionId IN (SELECT sessionId FROM Import WHERE importSessionId IN ('.Term::createSubSelect('ImportSession', $termNames).'))';
+      $criteria->limit = 10;
+      //$command = Yii::app()->db->createCommand("SELECT name, eq FROM Session JOIN User ON userId = User.id JOIN SessionTerm ON Session.id=sessionId JOIN EqCalculation ON Session.id = compileSessionId WHERE $inCondition GROUP BY Session.id HAVING COUNT(Session.id) = $numTerms ORDER BY eq DESC LIMIT 10");
+      $command = Yii::app()->db->getCommandBuilder()->createFindCommand('Session', $criteria);
+      $topConfusedData = $command->queryAll();
       
       // time delta
       $criteria = new CDbCriteria;
@@ -85,20 +94,17 @@ class ReportController extends Controller {
           $timeDeltaData[$n]['to'] = ($datum['delta'] * 20 + 20);
         }
       }
-      
+      $displayParameters = array(
+        'topEqData'=>$topEqData,
+        'topConfusedData'=>$topConfusedData,
+        'topErrorsData'=>$topErrorsData,
+        'timeDeltaData'=>$timeDeltaData,
+      );
       if(Yii::app()->request->isAjaxRequest) {
-        $this->renderPartial('_summary', array(
-          'topEqData'=>$topEqData,
-          'topErrorsData'=>$topErrorsData,
-          'timeDeltaData'=>$timeDeltaData,
-        ));
+        $this->renderPartial('_summary', $displayParameters);
       }
       else {
-        $this->render('summary', array(
-          'topEqData'=>$topEqData,
-          'topErrorsData'=>$topErrorsData,
-          'timeDeltaData'=>$timeDeltaData,
-        ));
+        $this->render('summary', $displayParameters);
       }
     }
   }
