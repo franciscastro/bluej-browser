@@ -48,19 +48,17 @@ class ReportController extends Controller {
       $criteria = new CDbCriteria;
       $criteria->select = 'messageText, COUNT(messageText) AS count';
       $criteria->group = 'messageText';
-      $criteria->join = 'JOIN Import ON sessionId = compileSessionId';
-      $criteria->condition = 'importSessionId IN ('.Term::createSubSelect('ImportSession', $termNames).')';
+      $criteria->condition = 'compileSessionId IN (SELECT sessionId FROM Import WHERE importSessionId IN ('.Term::createSubSelect('ImportSession', $termNames).'))';
       $criteria->limit = 10;
       $criteria->order = 'count DESC';
       $command = Yii::app()->db->getCommandBuilder()->createFindCommand('CompileSessionEntry', $criteria);
       $topErrorsData = $command->queryAll();
       
-      
       // highest EQ
       $criteria = new CDbCriteria;
       $criteria->select = 'name, eq';
-      $criteria->join = 'JOIN User on userId = User.id JOIN EqCalculation ON t.id = compileSessionId JOIN Import ON sessionId = compileSessionId';
-      $criteria->condition = 'importSessionId IN ('.Term::createSubSelect('ImportSession', $termNames).')';
+      $criteria->join = 'JOIN User on userId = User.id JOIN EqCalculation ON t.id = compileSessionId'; // JOIN Import ON sessionId = compileSessionId';
+      $criteria->condition = 'compileSessionId IN (SELECT sessionId FROM Import WHERE importSessionId IN ('.Term::createSubSelect('ImportSession', $termNames).'))';
       $criteria->limit = 10;
       $criteria->order = 'eq DESC';
       //$command = Yii::app()->db->createCommand("SELECT name, eq FROM Session JOIN User ON userId = User.id JOIN SessionTerm ON Session.id=sessionId JOIN EqCalculation ON Session.id = compileSessionId WHERE $inCondition GROUP BY Session.id HAVING COUNT(Session.id) = $numTerms ORDER BY eq DESC LIMIT 10");
@@ -71,8 +69,8 @@ class ReportController extends Controller {
       // time delta
       $criteria = new CDbCriteria;
       $criteria->select = 'COUNT(a.id) AS count, (a.timestamp - b.timestamp)/20 AS delta';
-      $criteria->join = 'JOIN CompileSessionEntry b ON a.id = b.id+1 AND a.compileSessionId = b.compileSessionId JOIN Import ON a.compileSessionId = sessionId';
-      $criteria->condition = 'importSessionId IN ('.Term::createSubSelect('ImportSession', $termNames).')';
+      $criteria->join = 'JOIN CompileSessionEntry b ON a.id = b.id+1 AND a.compileSessionId = b.compileSessionId'; // JOIN Import ON a.compileSessionId = sessionId';
+      $criteria->condition = 'a.compileSessionId IN (SELECT sessionId FROM Import WHERE importSessionId IN ('.Term::createSubSelect('ImportSession', $termNames).'))';
       $criteria->group = 'delta';
       //$command = Yii::app()->db->createCommand("SELECT COUNT(a.id) AS count, (a.timestamp - b.timestamp)/20 AS delta FROM CompileSessionEntry a, (SELECT id, compileSessionId, timestamp FROM CompileSessionEntry JOIN SessionTerm ON compileSessionId=sessionId WHERE termId = 7 GROUP BY id HAVING COUNT(id) = 1) b WHERE a.id = b.id+1 AND a.compileSessionId = b.compileSessionId GROUP BY delta");
       $command = Yii::app()->db->getCommandBuilder()->createFindCommand('CompileSessionEntry', $criteria, 'a');
@@ -112,8 +110,8 @@ class ReportController extends Controller {
             
       $criteria = new CDbCriteria;
       $criteria->select = 'name, eq';
-      $criteria->join = 'JOIN User ON userId = User.id JOIN EqCalculation ON t.id = compileSessionId JOIN Import ON sessionId = compileSessionId';
-      $criteria->condition = 'importSessionId IN ('.Term::createSubSelect('ImportSession', $termNames).')';
+      $criteria->join = 'JOIN User ON userId = User.id JOIN EqCalculation ON t.id = compileSessionId'; // JOIN Import ON sessionId = compileSessionId';
+      $criteria->condition = 'compileSessionId IN (SELECT sessionId FROM Import WHERE importSessionId IN ('.Term::createSubSelect('ImportSession', $termNames).'))';
       /*
       $criteria->group = 't.id';
       $criteria->having = 'COUNT(t.id) = ' . $numTerms;
@@ -186,8 +184,8 @@ class ReportController extends Controller {
       $criteria = new CDbCriteria;
       $criteria->select = 'messageText, COUNT(messageText) AS count';
       $criteria->group = 'messageText';
-      $criteria->join = 'JOIN Import ON sessionId = compileSessionId';
-      $criteria->condition = 'importSessionId IN ('.Term::createSubSelect('ImportSession', $termNames).')';
+      //$criteria->join = 'JOIN Import ON sessionId = compileSessionId';
+      $criteria->condition = 'compileSessionId IN (SELECT sessionId FROM Import WHERE importSessionId IN ('.Term::createSubSelect('ImportSession', $termNames).'))';
       
       /*
       $criteria->select = 'messageText, COUNT(messageText) AS count';
