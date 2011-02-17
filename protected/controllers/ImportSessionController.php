@@ -97,7 +97,7 @@ class ImportSessionController extends Controller
 					$tempDir->delete(true);
 				}
 				$tempDir->createDir();
-				
+				set_time_limit(0);
 				if(Yii::app()->zip->extractZip($sourceFile, $sourcePath)) {
 					$files = CFileHelper::findFiles($sourcePath, array('fileTypes'=>array('sqlite'), 'exclude'=>array('.htaccess')));
           $transaction = Import::model()->dbConnection->beginTransaction();
@@ -113,7 +113,7 @@ class ImportSessionController extends Controller
               $directory = str_ireplace($sourcePath, '', $directory);
               $model->path = $directory;
               $termNames = str_ireplace(',', ';', $directory);
-              $termNames = str_ireplace('/', ',', $termNames);
+              $termNames = str_ireplace(DIRECTORY_SEPARATOR, ',', $termNames);
               
               $_POST['term'][Term::TERM_OTHER] = $termNames;
               $model->newTerms = $this->getTermModel()->getNewTerms();

@@ -110,7 +110,6 @@ class Import extends CActiveRecord
    */
 	public function doImport() {
     if($this->sessionId != 0) return;
-    set_time_limit(0);
     $connection = new CDbConnection('sqlite:'.$this->path);
     $connection->active = true;
     
