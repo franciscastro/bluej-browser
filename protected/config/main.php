@@ -18,6 +18,7 @@ return array(
 		'application.components.*',
 		'application.vendors.*',
 	),
+  'timeZone'=>'Asia/Manila',
 
 	// application components
 	'components'=>array(
