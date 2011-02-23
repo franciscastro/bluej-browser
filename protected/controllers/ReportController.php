@@ -245,7 +245,7 @@ class ReportController extends Controller {
         $criteria = new CDbCriteria;
         $criteria->select = 'sessionId';
         $criteria->group = 'sessionId';
-        $criteria->join = 'JOIN Term ON termId = Term.id JOIN ImportSessionTerm ON ImportSessionTerm.importSessionId=t.importSessionId';
+        $criteria->join = 'JOIN ImportSessionTerm ON ImportSessionTerm.importSessionId=t.importSessionId JOIN Term ON termId = Term.id';
         $criteria->addInCondition('name', $termNames);
         $criteria->having = 'COUNT(t.importSessionId) = '.count($termNames);
         $command = Yii::app()->db->getCommandBuilder()->createFindCommand('Import', $criteria);
