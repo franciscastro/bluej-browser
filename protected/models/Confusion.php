@@ -90,6 +90,26 @@ class Confusion extends CActiveRecord
 	}
 	
 	public function calculate() {
-	
+    $criteria = new CDbCriteria;
+    $criteria->select = 'fileName';
+    $criteria->group = 'fileName';
+    $criteria->condition = 'compileSessionId=:id';
+    $command = Yii::app()->db->getCommandBuilder()->createFindCommand('CompileSessionEntry', $criteria);
+    $fileNames = $command->queryColumn(array('id'=>$this->compileSessionId));
+    
+    $lastId = 0;
+    foreach($fileNames as $fileName) {
+      $entries = CompileSessionEntry::model()->findAll('compileSessionId=:id AND id>:lastId ORDER BY deltaSequenceNumber LIMIT 8', array('id'=>$this->compileSessionId, 'lastId'=>$lastId));
+      $count = count($entries);
+      if($count < 8) {
+        // bad clip
+      }
+      else {
+        
+      }
+      $lastId = $entries[$count-1]->id;
+    }
+    $this->confusion = 0; // put confusion % heeeere
+    $this->save();
 	}
 }

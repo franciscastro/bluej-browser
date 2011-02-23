@@ -220,7 +220,7 @@ CREATE TABLE Confusion
 (
   id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
   compileSessionId INTEGER,
-  isConfused INTEGER,
+  confusion REAL,
   CONSTRAINT FK_confusion_compileSession FOREIGN KEY (compileSessionId)
     REFERENCES CompileSession (id)
 );
