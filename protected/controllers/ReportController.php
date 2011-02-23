@@ -65,7 +65,12 @@ class ReportController extends Controller {
     
     // time delta
     $criteria = new CDbCriteria;
-    $criteria->select = 'COUNT(a.id) AS count, FLOOR((a.timestamp - b.timestamp)/20) AS delta';
+    if(Yii::app()->db->driverName == 'mysql') {
+      $criteria->select = 'COUNT(a.id) AS count, (a.timestamp - b.timestamp) DIV 20 AS delta';
+    }
+    else {
+      $criteria->select = 'COUNT(a.id) AS count, (a.timestamp - b.timestamp)/20 AS delta';
+    }
     $criteria->join = 'JOIN CompileSessionEntry b ON a.id = b.id+1 AND a.compileSessionId = b.compileSessionId'; // JOIN Import ON a.compileSessionId = sessionId';
     $criteria->condition = 'a.compileSessionId IN ('.implode(',', $compileSessionIds).')';
     $criteria->group = 'delta';
