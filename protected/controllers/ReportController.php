@@ -67,9 +67,10 @@ class ReportController extends Controller {
       
       // confused people
       $criteria = new CDbCriteria;
-      $criteria->select = 'name';
+      $criteria->select = 'name, confusion';
       $criteria->join = 'JOIN User on userId = User.id JOIN Confusion ON t.id = compileSessionId'; // JOIN Import ON sessionId = compileSessionId';
-      $criteria->condition = 'isConfused=1 AND compileSessionId IN (SELECT sessionId FROM Import WHERE importSessionId IN ('.Term::createSubSelect('ImportSession', $termNames).'))';
+      $criteria->condition = 'compileSessionId IN (SELECT sessionId FROM Import WHERE importSessionId IN ('.Term::createSubSelect('ImportSession', $termNames).'))';
+      $criteria->order = 'confusion DESC';
       $criteria->limit = 10;
       //$command = Yii::app()->db->createCommand("SELECT name, eq FROM Session JOIN User ON userId = User.id JOIN SessionTerm ON Session.id=sessionId JOIN EqCalculation ON Session.id = compileSessionId WHERE $inCondition GROUP BY Session.id HAVING COUNT(Session.id) = $numTerms ORDER BY eq DESC LIMIT 10");
       $command = Yii::app()->db->getCommandBuilder()->createFindCommand('Session', $criteria);
@@ -176,6 +177,79 @@ class ReportController extends Controller {
       $viewData['average'] = $viewData['average'] / $count;
       
       $this->render('eq', array(
+        'viewData'=>$viewData,
+        'dataProvider'=>$dataProvider,
+      ));
+    }
+  }
+  
+  public function actionConfusion() {
+    if(isset($_GET['tags'])) {
+      $termNames = preg_split('/\s*,\s*/', $_GET['tags'], null, PREG_SPLIT_NO_EMPTY);
+      $_GET['tags'] = implode(',', $termNames);
+            
+      $criteria = new CDbCriteria;
+      $criteria->select = 'name, confusion';
+      $criteria->join = 'JOIN User ON userId = User.id JOIN Confusion ON t.id = compileSessionId'; // JOIN Import ON sessionId = compileSessionId';
+      $criteria->condition = 'compileSessionId IN (SELECT sessionId FROM Import WHERE importSessionId IN ('.Term::createSubSelect('ImportSession', $termNames).'))';
+      /*
+      $criteria->group = 't.id';
+      $criteria->having = 'COUNT(t.id) = ' . $numTerms;
+      $criteria->addInCondition('termId', $termIds);
+      
+      $sort = new CSort('Session');
+      $sort->attributes = array(
+        'name' => array(
+          'asc' => 'name',
+          'desc' => 'name DESC',
+          'Label' => 'Student',
+        ),
+        'eq' => array(
+          'asc' => 'eq',
+          'desc' => 'eq DESC',
+          'Label' => 'EQ',
+        ),
+      );
+      $sort->defaultOrder = 'eq DESC';
+      $sort->applyOrder($criteria);
+      */
+      
+      $command = Yii::app()->db->getCommandBuilder()->createFindCommand('Session', $criteria);
+      $dataProvider = new CSqlDataProvider($command->text, array(
+        'keyField'=>'name',
+        'sort'=>array(
+          'attributes'=>array(
+            'name' => array(
+              'asc' => 'name',
+              'desc' => 'name DESC',
+              'Label' => 'Student',
+            ),
+            'confusion' => array(
+              'asc' => 'confusion',
+              'desc' => 'confusion DESC',
+              'Label' => 'Confusion Rate',
+            ),
+          ),
+          'defaultOrder' => 'confusion DESC',
+        ),
+        'pagination'=>false,
+      ));
+      
+      $confusionData = $dataProvider->getData();
+      
+      $viewData = array();
+      $viewData['average'] = 0;
+      $count = 0;
+      
+      foreach($confusionData as $datum) {
+        if($datum['confusion'] >= 0) {
+          $viewData['average'] += $datum['confusion'];
+          $count++;
+        }
+      }
+      $viewData['average'] = $viewData['average'] / $count;
+      
+      $this->render('confusion', array(
         'viewData'=>$viewData,
         'dataProvider'=>$dataProvider,
       ));
