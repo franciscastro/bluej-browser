@@ -6,7 +6,7 @@
  * The followings are the available columns in table 'Confusion':
  * @property integer $id
  * @property integer $compileSessionId
- * @property integer $isConfused
+ * @property integer $confusion
  *
  * The followings are the available model relations:
  * @property CompileSession $compileSession
@@ -38,10 +38,10 @@ class Confusion extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('compileSessionId, isConfused', 'numerical', 'integerOnly'=>true),
+			array('compileSessionId, confusion', 'numerical' ),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, compileSessionId, isConfused', 'safe', 'on'=>'search'),
+			array('id, compileSessionId, confusion', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -65,7 +65,7 @@ class Confusion extends CActiveRecord
 		return array(
 			'id' => 'ID',
 			'compileSessionId' => 'Compile Session',
-			'isConfused' => 'Is Confused',
+			'confusion' => 'Is Confused',
 		);
 	}
 
@@ -82,7 +82,7 @@ class Confusion extends CActiveRecord
 
 		$criteria->compare('id',$this->id);
 		$criteria->compare('compileSessionId',$this->compileSessionId);
-		$criteria->compare('isConfused',$this->isConfused);
+		$criteria->compare('confusion',$this->confusion);
 
 		return new CActiveDataProvider(get_class($this), array(
 			'criteria'=>$criteria,
@@ -98,18 +98,145 @@ class Confusion extends CActiveRecord
     $fileNames = $command->queryColumn(array('id'=>$this->compileSessionId));
     
     $lastId = 0;
+    $totalClips = 0.0;
+    $labeledConfused = 0.0;
+    
     foreach($fileNames as $fileName) {
-      $entries = CompileSessionEntry::model()->findAll('compileSessionId=:id AND id>:lastId ORDER BY deltaSequenceNumber LIMIT 8', array('id'=>$this->compileSessionId, 'lastId'=>$lastId));
-      $count = count($entries);
-      if($count < 8) {
-        // bad clip
+      $hasMore = true;
+      while($hasMore)
+      {
+		$entries = CompileSessionEntry::model()->findAll('compileSessionId=:id AND id>:lastId ORDER BY deltaSequenceNumber LIMIT 8', array('id'=>$this->compileSessionId, 'lastId'=>$lastId));
+		$count = count($entries);
+		if($count < 8) {
+		// bad clip
+			$hasMore = false;
+		}
+		else {
+			$totalClips++;
+			$compTime = array();
+			$compTimeError = array();
+			$compileTime = 0; // first compile time
+			$compileError = 0; // first error Compile time
+			$errorCount = 0;
+			
+			foreach($entries as $compilation)
+			{
+				$currentCompTime = $compilation->timestamp;
+				
+				if( $compileTime != 0 )
+				{
+					$compTime[] = $currentCompTime - $compileTime;
+				}
+				
+				if($compilation->messageType == "ERROR")
+				{
+					if($compileError != 0)
+					{
+						$compTimeError[] = $currentCompTime - $compileError;
+					}
+					$compError = $currentCompTime;
+					$errorCount++;
+				}
+				else
+				{
+					$compError = 0;
+				}
+				
+				$compileTime = $currentCompTime;
+			}
+			
+			$features['maxComp'] = $this->getMaxValue($compTime);
+			$features['maxErr'] = $this->getMaxValue($compTimeError);
+			$features['aveComp'] = $this->getAverage($compTime);
+			$features['aveErr'] = $this->getAverage($compTimeError);
+			$features['errorCount'] = $errorCount;
+			
+			if( $this->studentconfusion( $features ) ){
+				$labeledConfused++;
+			}
+		}
+		
+		$lastId = $entries[$count-1]->id;
       }
-      else {
-        
-      }
-      $lastId = $entries[$count-1]->id;
     }
-    $this->confusion = 0; // put confusion % heeeere
+    $conf = $labeledConfused/$totalClips;
+    $this->confusion = $conf; // put confusion % heeeere
     $this->save();
 	}
+	
+	public function studentconfusion( $features ){
+		$maxComp = $features['maxComp']; // max time bet. compilations
+		$aveComp = $features['aveComp']; // average time bet. compilations
+		$maxCompErr = $features['maxErr']; // max time bet. compilations with errors
+		$aveCompErr = $features['aveErr']; // average time bet. compilations with errors
+		$numCompErr = $features['errorCount']; // number of compilations with errors 
+		
+		$confused = true;
+		
+		if( $numCompErr <= 3.500 )
+		{
+			if( $maxCompErr <= 23.500 )
+			{
+				$confused = false;
+			}
+			else
+			{
+				if( $aveCompErr > 16.667 )
+				{
+					if( $maxCompErr > 88.500 )
+					{
+						$confused = false; 
+					}
+					else
+					{
+						if( $aveCompErr <= 21.917 )
+						{
+							$confused = false; 
+						}
+						else
+						{
+							if( $aveComp > 203.714 ) 
+							{
+								$confused = false;
+							}
+							else
+							{
+								if( $maxComp <= 329.500 )
+								{
+									$confused = false;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		return $confused;
+	}
+	
+	
+	public function getAverage( $array )
+	{
+		$sum = 0;
+		foreach( $array as $val ) 
+		{
+			$sum = $sum + $val;
+		}
+		$total = count($array);
+		if($total == 0)
+		{
+			$total = 1; 
+		}
+		$average = $sum/$total;
+		return $average;
+	}
+	
+	public function getMaxValue( $array )
+	{
+		sort($array);
+		$last = count($array) - 1;
+		return $array[$last];
+	}
+
 }
