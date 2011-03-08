@@ -39,7 +39,7 @@ class InvocationSessionTest extends CDbTestCase {
 	
 	public function testDoImport() {
 		$connection = new CDbConnection('sqlite:assets/test-invocation.db');
-    $connection->active = true;
+		$connection->active = true;
 		$command = $connection->createCommand('SELECT * FROM `F227_11_InvocationData`');
 		$row = $command->queryRow();
 		$reader = $command->query();

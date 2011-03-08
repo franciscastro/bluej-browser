@@ -16,11 +16,11 @@ $this->menu=array(
 	'dataProvider'=>$model->search(),
 	'filter'=>$model,
 	'columns'=>array(
-    array(
-      'filter' => Term::model()->getParentList(),
-      'name' => 'parentId',
-      'value' => '$data->parent->name',
-    ),
+		array(
+			'filter' => Term::model()->getParentList(),
+			'name' => 'parentId',
+			'value' => '$data->parent->name',
+		),
 		'name',
 		array(
 			'class'=>'CButtonColumn',

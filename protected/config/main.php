@@ -18,13 +18,13 @@ return array(
 		'application.components.*',
 		'application.vendors.*',
 	),
-  'timeZone'=>'Asia/Manila',
+	'timeZone'=>'Asia/Manila',
 
 	// application components
 	'components'=>array(
 		'user'=>array(
 			'class'=>'WebUser',
-      'allowAutoLogin'=>true,
+			'allowAutoLogin'=>true,
 		),
 		'file'=>array(
 			'class'=>'application.extensions.file.CFile',
@@ -60,8 +60,8 @@ return array(
 		
 		'errorHandler'=>array(
 			// use 'site/error' action to display errors
-            'errorAction'=>'site/error',
-        ),
+						'errorAction'=>'site/error',
+				),
 		'log'=>array(
 			'class'=>'CLogRouter',
 			'routes'=>array(
@@ -87,7 +87,7 @@ return array(
 		'importRoot'=>dirname(__FILE__).DIRECTORY_SEPARATOR.'../data/imports/',
 		'exportRoot'=>dirname(__FILE__).DIRECTORY_SEPARATOR.'../../exports/',
 	),
- 
+
 	'modules'=>array(
 			'gii'=>array(
 					'class'=>'system.gii.GiiModule',

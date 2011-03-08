@@ -54,15 +54,15 @@ class UserController extends Controller
 	public function actionCreate()
 	{
 		$model=new User;
-    
+		
 		// Uncomment the following line if AJAX validation is needed
 		$this->performAjaxValidation($model);
 
 		if(isset($_POST['User']))
 		{
-      if($_POST['User']['roleId'] == '0') {
-        $model->addError('roleId', 'Please specify a role');
-      }
+			if($_POST['User']['roleId'] == '0') {
+				$model->addError('roleId', 'Please specify a role');
+			}
 			$model->attributes=$_POST['User'];
 			if($model->save())
 				$this->redirect(array('index'));
@@ -80,17 +80,17 @@ class UserController extends Controller
 	public function actionUpdate()
 	{
 		$model=$this->loadModel();
-    $model->password = '';
-    
+		$model->password = '';
+		
 		// Uncomment the following line if AJAX validation is needed
 		$this->performAjaxValidation($model);
 
 		if(isset($_POST['User']))
 		{
 			$model->attributes=$_POST['User'];
-      if($model->password == '') {
-        unset($model->password);
-      }
+			if($model->password == '') {
+				unset($model->password);
+			}
 			if($model->save())
 				$this->redirect(array('index'));
 		}
@@ -133,13 +133,13 @@ class UserController extends Controller
 			'model'=>$model,
 		));
 	}
-  
-  public function actionChangePassword()
-  {
-    $model=User::model()->findByPk(Yii::app()->user->id);
-    $model->scenario = 'changePassword';
-    $model->password = '';
-    
+	
+	public function actionChangePassword()
+	{
+		$model=User::model()->findByPk(Yii::app()->user->id);
+		$model->scenario = 'changePassword';
+		$model->password = '';
+		
 		// Uncomment the following line if AJAX validation is needed
 		$this->performAjaxValidation($model);
 
@@ -153,7 +153,7 @@ class UserController extends Controller
 		$this->render('changePassword',array(
 			'model'=>$model,
 		));
-  }
+	}
 
 	/**
 	 * Returns the data model based on the primary key given in the GET variable.

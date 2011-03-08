@@ -26,22 +26,22 @@ CREATE TABLE Term
 
 CREATE TABLE Section
 (
-  id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
-  name TEXT NOT NULL,
-  yearId INTEGER NOT NULL,
-  courseId INTEGER NOT NULL,
-  sectionId INTEGER NOT NULL,
-  CONSTRAINT FK_section_term1 FOREIGN KEY (yearId)
-    REFERENCES Term(id),
-  CONSTRAINT FK_section_term2 FOREIGN KEY (courseId)
-    REFERENCES Term(id),
-  CONSTRAINT FK_section_term3 FOREIGN KEY (sectionId)
-    REFERENCES Term(id)
+	id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
+	name TEXT NOT NULL,
+	yearId INTEGER NOT NULL,
+	courseId INTEGER NOT NULL,
+	sectionId INTEGER NOT NULL,
+	CONSTRAINT FK_section_term1 FOREIGN KEY (yearId)
+		REFERENCES Term(id),
+	CONSTRAINT FK_section_term2 FOREIGN KEY (courseId)
+		REFERENCES Term(id),
+	CONSTRAINT FK_section_term3 FOREIGN KEY (sectionId)
+		REFERENCES Term(id)
 );
 
 CREATE TABLE UserSection
 (
-  userId INTEGER NOT NULL,
+	userId INTEGER NOT NULL,
 	sectionId INTEGER NOT NULL,
 	CONSTRAINT FK_us_section FOREIGN KEY (sectionId)
 		REFERENCES Class (id),
@@ -187,7 +187,7 @@ CREATE TABLE InvocationSessionEntry
 CREATE TABLE ImportSession
 (
 	id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
-  sectionId INTEGER,
+	sectionId INTEGER,
 	source TEXT,
 	path TEXT,
 	start DATE,
@@ -209,20 +209,20 @@ CREATE TABLE Import
 
 CREATE TABLE EqCalculation
 (
-  id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
-  compileSessionId INTEGER,
-  eq REAL,
-  CONSTRAINT FK_eqCalculation_compileSession FOREIGN KEY (compileSessionId)
-    REFERENCES CompileSession (id)
+	id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
+	compileSessionId INTEGER,
+	eq REAL,
+	CONSTRAINT FK_eqCalculation_compileSession FOREIGN KEY (compileSessionId)
+		REFERENCES CompileSession (id)
 );
 
 CREATE TABLE Confusion
 (
-  id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
-  compileSessionId INTEGER,
-  confusion REAL,
-  CONSTRAINT FK_confusion_compileSession FOREIGN KEY (compileSessionId)
-    REFERENCES CompileSession (id)
+	id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
+	compileSessionId INTEGER,
+	confusion REAL,
+	CONSTRAINT FK_confusion_compileSession FOREIGN KEY (compileSessionId)
+		REFERENCES CompileSession (id)
 );
 
 INSERT INTO Term VALUES (1, 0, "Root");

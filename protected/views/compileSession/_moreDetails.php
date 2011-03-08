@@ -1,11 +1,11 @@
 <?php $this->widget('zii.widgets.CDetailView', array(
-  'data'=>$model,
-  'attributes'=>array(
-    'deltaStartTime',
-    'deltaEndTime',
-    'filePath',
-    'fileEncoding',
-    'compilesPerFile',
-    'totalCompiles',
-  ),
+	'data'=>$model,
+	'attributes'=>array(
+		'deltaStartTime',
+		'deltaEndTime',
+		'filePath',
+		'fileEncoding',
+		'compilesPerFile',
+		'totalCompiles',
+	),
 )); ?>

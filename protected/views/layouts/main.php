@@ -30,11 +30,11 @@
 			'items'=>array(
 				array('label'=>'Help', 'url'=>array('/site/help'), 'visible'=>!Yii::app()->user->isGuest),
 				array('label'=>'Logs', 'url'=>array('/importSession/index'), 'visible'=>Yii::app()->user->hasRole(array('Teacher', 'Researcher', 'Administrator'))),
-        array('label'=>'Reports', 'url'=>array('/report/index'), 'visible'=>Yii::app()->user->hasRole(array('Teacher', 'Researcher', 'Administrator'))),
-        array('label'=>'Tags', 'url'=>array('/term/index'), 'visible'=>Yii::app()->user->hasRole(array('Researcher', 'Administrator'))),
-        array('label'=>'Sections', 'url'=>array('/section/index'), 'visible'=>Yii::app()->user->hasRole(array('Researcher', 'Administrator'))),
-        array('label'=>'Users', 'url'=>array('/user/index'), 'visible'=>Yii::app()->user->hasRole(array('Administrator'))),
-        array('label'=>'Change Password', 'url'=>array('/user/changePassword'), 'visible'=>!Yii::app()->user->isGuest),
+				array('label'=>'Reports', 'url'=>array('/report/index'), 'visible'=>Yii::app()->user->hasRole(array('Teacher', 'Researcher', 'Administrator'))),
+				array('label'=>'Tags', 'url'=>array('/term/index'), 'visible'=>Yii::app()->user->hasRole(array('Researcher', 'Administrator'))),
+				array('label'=>'Sections', 'url'=>array('/section/index'), 'visible'=>Yii::app()->user->hasRole(array('Researcher', 'Administrator'))),
+				array('label'=>'Users', 'url'=>array('/user/index'), 'visible'=>Yii::app()->user->hasRole(array('Administrator'))),
+				array('label'=>'Change Password', 'url'=>array('/user/changePassword'), 'visible'=>!Yii::app()->user->isGuest),
 				array('label'=>'Login', 'url'=>array('/site/login'), 'visible'=>Yii::app()->user->isGuest),
 				array('label'=>'Logout ('.Yii::app()->user->name.')', 'url'=>array('/site/logout'), 'visible'=>!Yii::app()->user->isGuest)
 			),

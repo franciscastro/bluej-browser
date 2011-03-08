@@ -50,10 +50,10 @@ You may search by tags as well. The search finds all records which have all tags
 	'columns'=>array(
 		'id',
 		array(
-      'name' => 'Tags',
-      'type' => 'raw',
-      'value' => 'Term::displayTerms($data->terms)',
-    ),
+			'name' => 'Tags',
+			'type' => 'raw',
+			'value' => 'Term::displayTerms($data->terms)',
+		),
 		'start:datetime',
 		'end:datetime',
 		'remarks',

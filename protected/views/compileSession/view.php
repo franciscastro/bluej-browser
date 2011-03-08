@@ -2,7 +2,7 @@
 $importSessionId = $model->session->import->importSessionId;
 $this->breadcrumbs=array(
 			'Imports'=>array('importSession/index'),
-      'Import #'.$importSessionId=>array('importSession/view', 'id'=>$importSessionId),
+			'Import #'.$importSessionId=>array('importSession/view', 'id'=>$importSessionId),
 			'Session #'.$_GET['id'],
 		);
 ?>
@@ -14,27 +14,27 @@ $this->breadcrumbs=array(
 	'attributes'=>array(
 		'session.user.name',
 		'session.date:date',
-    array(
-      'label'=>'EQ',
-      'type'=>'raw',
-      'value'=>($eqModel = EqCalculation::model()->findByAttributes(array(
-        'compileSessionId'=>$model->id,
-      ))) != null ? ($eqModel->eq >= 0) ? $eqModel->eq : 'n/a' : 'n/a',
-    ),
+		array(
+			'label'=>'EQ',
+			'type'=>'raw',
+			'value'=>($eqModel = EqCalculation::model()->findByAttributes(array(
+				'compileSessionId'=>$model->id,
+			))) != null ? ($eqModel->eq >= 0) ? $eqModel->eq : 'n/a' : 'n/a',
+		),
 	),
 )); 
 ?>
 <?php
 $this->widget('zii.widgets.jui.CJuiAccordion', array(
-    'panels'=>array(
-        'More Details'=>$this->renderPartial('_moreInformation', array('model'=>$model), true),
-    ),
-    // additional javascript options for the accordion plugin
-    'options'=>array(
-        'animated'=>'bounceslide',
-        'collapsible'=>'true',
-        'active'=>'false',
-    ),
+		'panels'=>array(
+				'More Details'=>$this->renderPartial('_moreInformation', array('model'=>$model), true),
+		),
+		// additional javascript options for the accordion plugin
+		'options'=>array(
+				'animated'=>'bounceslide',
+				'collapsible'=>'true',
+				'active'=>'false',
+		),
 ));
 ?>
 <?php $this->widget('zii.widgets.grid.CGridView', array(
@@ -57,11 +57,11 @@ $this->widget('zii.widgets.jui.CJuiAccordion', array(
 					'url'=>'Yii::app()->controller->createUrl("compare",array("page"=>$row+1))',
 					'visible'=>'$row < ' . ($dataProvider->totalItemCount-1),
 				),
-        'delete'=>array(
-          'label'=>'Delete',
+				'delete'=>array(
+					'label'=>'Delete',
 					'url'=>'Yii::app()->controller->createUrl("deleteEntry",array("id"=>$data->id))',
-          'visible'=>'Yii::app()->user->hasRole(array("Administrator", "Researcher"))',
-        ),
+					'visible'=>'Yii::app()->user->hasRole(array("Administrator", "Researcher"))',
+				),
 			),
 			'template'=>'{view} {update} {delete}'
 		),

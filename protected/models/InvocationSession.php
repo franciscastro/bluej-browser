@@ -145,10 +145,10 @@ class InvocationSession extends CActiveRecord
 		));
 	}
 	
-  /**
-   * A conversion table between parameter names and table columns in sqlite files.
-   * @return array the conversion table
-   */
+	/**
+	 * A conversion table between parameter names and table columns in sqlite files.
+	 * @return array the conversion table
+	 */
 	private function externalLabels()
 	{
 		return array(
@@ -182,23 +182,23 @@ class InvocationSession extends CActiveRecord
 			'invocationStatus' => 'INVOCATION_STATUS',
 		);
 	}
-  
-  /**
-   * Run before deleting a record. Cascades deletions.
-   */
-  protected function beforeDelete() {
-    foreach($this->entries as $entry) {
-      $entry->delete();
-    }
-    return parent::beforeDelete();
-  }
 	
-  /**
-   * Creates a new session
-   * @param integer id of the session
-   * @param array session information from a row
-   * @return InvocationSession the new session
-   */
+	/**
+	 * Run before deleting a record. Cascades deletions.
+	 */
+	protected function beforeDelete() {
+		foreach($this->entries as $entry) {
+			$entry->delete();
+		}
+		return parent::beforeDelete();
+	}
+	
+	/**
+	 * Creates a new session
+	 * @param integer id of the session
+	 * @param array session information from a row
+	 * @return InvocationSession the new session
+	 */
 	private function createSession($sessionId, $row) {
 		$session = new InvocationSession;
 		$session->id = $sessionId;
@@ -222,10 +222,10 @@ class InvocationSession extends CActiveRecord
 		return $session;
 	}
 	
-  /**
-   * Inserts a row into the session
-   * @param array the row to be inserted
-   */
+	/**
+	 * Inserts a row into the session
+	 * @param array the row to be inserted
+	 */
 	private function insertSessionEntry($row) {
 		$newData = new InvocationSessionEntry;
 		$newData->invocationSessionId = $this->id;
@@ -244,25 +244,25 @@ class InvocationSession extends CActiveRecord
 		$newData->save(); 
 	}
 	
-  /**
-   * Creates a new session and imports data into it
-   * @param integer id of the session
-   * @param array row containing session information
-   * @param CDbReader data source for the row data 
-   */
+	/**
+	 * Creates a new session and imports data into it
+	 * @param integer id of the session
+	 * @param array row containing session information
+	 * @param CDbReader data source for the row data 
+	 */
 	public function doImport($sessionId, $row, $reader) {
 		$session = $this->createSession($sessionId, $row);
-    foreach($reader as $row) {
+		foreach($reader as $row) {
 			$session->insertSessionEntry($row);
-    }
+		}
 	}
 	
-  /**
-   * Creates a new session if it does not already exist, and adds a
-   * row to it. Used for live importing.
-   * @param integer id of the session
-   * @param array the row to be added
-   */
+	/**
+	 * Creates a new session if it does not already exist, and adds a
+	 * row to it. Used for live importing.
+	 * @param integer id of the session
+	 * @param array the row to be added
+	 */
 	public function liveImport($sessionId, $row) {
 		$session = $this->findByPk($sessionId);
 		if($session == null) {
@@ -271,10 +271,10 @@ class InvocationSession extends CActiveRecord
 		$session->insertSessionEntry($row);
 	}
 	
-  /**
-   * Generates a CSV file containing the data for this session.
-   * @param file the file pointer to write to
-   */
+	/**
+	 * Generates a CSV file containing the data for this session.
+	 * @param file the file pointer to write to
+	 */
 	public function doExport($fp) {
 		$extToInt = array_flip($this->externalLabels());
 		$extHeaders = array(

@@ -21,8 +21,8 @@
  */
 class Section extends CActiveRecord
 {
-  public $newTeachers = array();
-  
+	public $newTeachers = array();
+	
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return Section the static model class
@@ -49,7 +49,7 @@ class Section extends CActiveRecord
 		// will receive user inputs.
 		return array(
 			array('name, yearId, courseId, sectionId', 'required'),
-      array('name', 'unique'),
+			array('name', 'unique'),
 			array('yearId, courseId, sectionId', 'numerical', 'integerOnly'=>true),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
@@ -68,7 +68,7 @@ class Section extends CActiveRecord
 			'section' => array(self::BELONGS_TO, 'Term', 'sectionId'),
 			'course' => array(self::BELONGS_TO, 'Term', 'courseId'),
 			'year' => array(self::BELONGS_TO, 'Term', 'yearId'),
-      'teachers' => array(self::MANY_MANY, 'User', 'UserSection(sectionId, userId)'),
+			'teachers' => array(self::MANY_MANY, 'User', 'UserSection(sectionId, userId)'),
 		);
 	}
 
@@ -105,83 +105,83 @@ class Section extends CActiveRecord
 			'criteria'=>$criteria,
 		));
 	}
-  
-  /**
-   * Run after saving a record. Updates the teachers of the section.
-   */
-  protected function afterSave() {
-    parent::afterSave();
-    $oldTeachers = $this->teachers;
-    $this->addTeachers(array_udiff($this->newTeachers, $oldTeachers, array('User', 'compare')));
-    $this->removeTeachers(array_udiff($oldTeachers, $this->newTeachers, array('User', 'compare')));
-  }
-  
-  /**
-   * Adds teachers to the section.
-   * @param array the list of Users (teachers) to be added.
-   */
-  public function addTeachers($teachers) {
-    foreach($teachers as $teacher) {
-      $relation = new UserSection;
-      $relation->sectionId = $this->id;
-      $relation->userId = $teacher->id;
-      $relation->save();
-    }
-  }
-  
-  /**
-   * Removes teachers from the section.
-   * @param array the list of Users (teachers) to be removed.
-   */
-  public function removeTeachers($teachers) {
-    foreach($teachers as $teacher) {
-      UserSection::model()->deleteAllByAttributes(array(
-        'sectionId'=>$this->id,
-        'userId'=>$teacher->id,
-      ));
-    }
-  }
-  
-  /**
-   * Replaces Term's getViewData
-   * @param array the list of previously selected terms
-   * @return view data to be used for Section's input form
-   */
-  public function getViewData($terms) {
-    $viewData = Term::model()->getViewData($terms);
-    if(!array_key_exists(Term::TERM_YEAR, $viewData) ||
-       !array_key_exists(Term::TERM_COURSE, $viewData) ||
-       !array_key_exists(Term::TERM_SECTION, $viewData)) {
-      $viewData['section'] = '';
-    }
-    else {
-      $section = $this->findByAttributes(array(
-        'yearId'=>$viewData[Term::TERM_YEAR],
-        'courseId'=>$viewData[Term::TERM_COURSE],
-        'sectionId'=>$viewData[Term::TERM_SECTION],
-      ));
-      if($section == null) {
-        $viewData['section'] = '';
-      }
-      else {
-        $viewData['section'] = $section->id;
-      }
-    }
-    return $viewData;
-  }
-  
-  /**
-   * Replaces Term's getNewTerms
-   * @return the list of terms from the input form
-   */
-  public function getNewTerms() {
-    $newTerms = Term::model()->getNewTerms();
-    $section = $this->findByPk($_POST['term']['section']);
-    if($section != null) {
-      $newTerms[] = $section->year;
-      $newTerms[] = $section->course;
-      $newTerms[] = $section->section;
-    }
-    return $newTerms;
-  }
+	
+	/**
+	 * Run after saving a record. Updates the teachers of the section.
+	 */
+	protected function afterSave() {
+		parent::afterSave();
+		$oldTeachers = $this->teachers;
+		$this->addTeachers(array_udiff($this->newTeachers, $oldTeachers, array('User', 'compare')));
+		$this->removeTeachers(array_udiff($oldTeachers, $this->newTeachers, array('User', 'compare')));
+	}
+	
+	/**
+	 * Adds teachers to the section.
+	 * @param array the list of Users (teachers) to be added.
+	 */
+	public function addTeachers($teachers) {
+		foreach($teachers as $teacher) {
+			$relation = new UserSection;
+			$relation->sectionId = $this->id;
+			$relation->userId = $teacher->id;
+			$relation->save();
+		}
+	}
+	
+	/**
+	 * Removes teachers from the section.
+	 * @param array the list of Users (teachers) to be removed.
+	 */
+	public function removeTeachers($teachers) {
+		foreach($teachers as $teacher) {
+			UserSection::model()->deleteAllByAttributes(array(
+				'sectionId'=>$this->id,
+				'userId'=>$teacher->id,
+			));
+		}
+	}
+	
+	/**
+	 * Replaces Term's getViewData
+	 * @param array the list of previously selected terms
+	 * @return view data to be used for Section's input form
+	 */
+	public function getViewData($terms) {
+		$viewData = Term::model()->getViewData($terms);
+		if(!array_key_exists(Term::TERM_YEAR, $viewData) ||
+			 !array_key_exists(Term::TERM_COURSE, $viewData) ||
+			 !array_key_exists(Term::TERM_SECTION, $viewData)) {
+			$viewData['section'] = '';
+		}
+		else {
+			$section = $this->findByAttributes(array(
+				'yearId'=>$viewData[Term::TERM_YEAR],
+				'courseId'=>$viewData[Term::TERM_COURSE],
+				'sectionId'=>$viewData[Term::TERM_SECTION],
+			));
+			if($section == null) {
+				$viewData['section'] = '';
+			}
+			else {
+				$viewData['section'] = $section->id;
+			}
+		}
+		return $viewData;
+	}
+	
+	/**
+	 * Replaces Term's getNewTerms
+	 * @return the list of terms from the input form
+	 */
+	public function getNewTerms() {
+		$newTerms = Term::model()->getNewTerms();
+		$section = $this->findByPk($_POST['term']['section']);
+		if($section != null) {
+			$newTerms[] = $section->year;
+			$newTerms[] = $section->course;
+			$newTerms[] = $section->section;
+		}
+		return $newTerms;
+	}
 }

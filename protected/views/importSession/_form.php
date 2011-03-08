@@ -9,12 +9,12 @@
 )); ?>
 
 	<?php echo $form->errorSummary($model); ?>
-  
-  <?php if(Yii::app()->user->hasRole(array('Teacher'))): ?>
-  <?php echo $this->renderPartial('../section/_termInput', array('terms'=>$terms)); ?>
-  <?php else: ?>
-  <?php echo $this->renderPartial('../term/_termInput', array('terms'=>$terms)); ?>
-  <?php endif; ?>
+	
+	<?php if(Yii::app()->user->hasRole(array('Teacher'))): ?>
+	<?php echo $this->renderPartial('../section/_termInput', array('terms'=>$terms)); ?>
+	<?php else: ?>
+	<?php echo $this->renderPartial('../term/_termInput', array('terms'=>$terms)); ?>
+	<?php endif; ?>
 
 	<div class="row">
 		<?php echo $form->labelEx($model,'source'); ?>

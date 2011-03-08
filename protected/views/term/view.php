@@ -16,8 +16,8 @@ $this->menu=array(
 
 
 <?php $this->widget('zii.widgets.grid.CGridView', array(
-  'dataProvider'=>$dataProvider,
-  'columns'=>array(
+	'dataProvider'=>$dataProvider,
+	'columns'=>array(
 		'id',
 		array(
 			'name'=>'source',
@@ -30,11 +30,11 @@ $this->menu=array(
 		array(
 			'class'=>'CButtonColumn',
 			'template'=>'{view}',
-      'buttons'=>array(
-        'view'=>array(
-          'url'=>'Yii::app()->controller->createUrl("importSession/view",array("id"=>$data->primaryKey))',
-        ),
-      ),
+			'buttons'=>array(
+				'view'=>array(
+					'url'=>'Yii::app()->controller->createUrl("importSession/view",array("id"=>$data->primaryKey))',
+				),
+			),
 		),
 	),
 ));

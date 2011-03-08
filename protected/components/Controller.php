@@ -20,18 +20,18 @@ class Controller extends CController
 	 * for more details on how to specify this property.
 	 */
 	public $breadcrumbs=array();
-  
-  /**
-   * Converts an array of models to an array of strings taken from the model's attribute.
-   * @param array list of models
-   * @param string the attribute to extract
-   * @return array list of strings
-   */
-  public function modelArrayToAttributeArray($models, $attribute) {
-    $attributeArray = array();
-    foreach($models as $model) {
-      $attributeArray[] = $model->$attribute;
-    }
-    return $attributeArray;
-  }
+	
+	/**
+	 * Converts an array of models to an array of strings taken from the model's attribute.
+	 * @param array list of models
+	 * @param string the attribute to extract
+	 * @return array list of strings
+	 */
+	public function modelArrayToAttributeArray($models, $attribute) {
+		$attributeArray = array();
+		foreach($models as $model) {
+			$attributeArray[] = $model->$attribute;
+		}
+		return $attributeArray;
+	}
 }

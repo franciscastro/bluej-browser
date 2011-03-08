@@ -14,15 +14,15 @@
  */
 class User extends CActiveRecord
 {  
-  const ROLE_ADMIN = 1;
-  const ROLE_RESEARCHER = 2;
-  const ROLE_TEACHER = 3;
-  const ROLE_STUDENT = 4;
-  
-  private $_oldPassword = '';
-  private $_currentPassword = '';
-  private $_passwordAgain = '';
-  
+	const ROLE_ADMIN = 1;
+	const ROLE_RESEARCHER = 2;
+	const ROLE_TEACHER = 3;
+	const ROLE_STUDENT = 4;
+	
+	private $_oldPassword = '';
+	private $_currentPassword = '';
+	private $_passwordAgain = '';
+	
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return User the static model class
@@ -31,7 +31,7 @@ class User extends CActiveRecord
 	{
 		return parent::model($className);
 	}
-  
+	
 
 	/**
 	 * @return string the associated database table name
@@ -50,15 +50,15 @@ class User extends CActiveRecord
 		// will receive user inputs.
 		return array(
 			array('username, roleId', 'required'),
-      array('password', 'required', 'on'=>array('insert')),
+			array('password', 'required', 'on'=>array('insert')),
 			array('username', 'unique', 'on'=>array('insert', 'update')),
-      array('roleId', 'numerical', 'integerOnly'=>true, 'min'=>1, 'tooSmall'=>'Please select a role', 'on'=>array('insert', 'update')),
+			array('roleId', 'numerical', 'integerOnly'=>true, 'min'=>1, 'tooSmall'=>'Please select a role', 'on'=>array('insert', 'update')),
 			array('username, password', 'length', 'max'=>128),
-      
-      array('password, currentPassword, passwordAgain', 'safe', 'on'=>array('changePassword')),
-      array('password, currentPassword, passwordAgain', 'required', 'on'=>array('changePassword')),
-      array('currentPassword', 'authenticate', 'on'=>array('changePassword')),
-      array('password', 'compare', 'compareAttribute'=>'passwordAgain', 'on'=>array('changePassword')),
+			
+			array('password, currentPassword, passwordAgain', 'safe', 'on'=>array('changePassword')),
+			array('password, currentPassword, passwordAgain', 'required', 'on'=>array('changePassword')),
+			array('currentPassword', 'authenticate', 'on'=>array('changePassword')),
+			array('password', 'compare', 'compareAttribute'=>'passwordAgain', 'on'=>array('changePassword')),
 			array('name', 'safe'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
@@ -118,100 +118,100 @@ class User extends CActiveRecord
 			'criteria'=>$criteria,
 		));
 	}
-  
-  /**
-   * @return string the role of the user
-   */
-  public function getRole() {
-    $roles = $this->roles();
-    return $roles[$this->roleId+0];
-  }
-  
-  /**
-   * @return array of possible roles a user may have
-   */
-  public function roles() {
-    return array(
-      1=>'Administrator',
-      'Researcher',
-      'Teacher',
-      'Student',      
-    );
-  }
-  
-  /**
-   * Run before actually saving a record. Hashes the password if it was changed.
-   * @return boolean whether the record should be saved
-   */
-  public function beforeSave() {
-    if(isset($this->password)) {
-      $this->password = $this->hashPassword($this->password);
-    }
-    return parent::beforeSave();
-  }
-  
-  /**
-   * Run after every find/load operation. Stores the old password in case of changes.
-   */
-  public function afterFind() {
-    $this->_oldPassword = $this->password;
-    return parent::afterFind();
-  }
-  
-  /**
-   * Checks if the password is correct.
-   * @param string the password
-   * @return boolean whether or not the password was correct
-   */
-  public function validatePassword($password) {
-    return $this->hashPassword($password) === $this->_oldPassword;
-  }
-  
-  /**
-   * @param string the unhashed password
-   * @return string the hashed password
-   */
-  public function hashPassword($password) {
-    return sha1($password);
-  }
-  
-  /**
-   * Authenticate used by CWebUser.
-   */
-  public function authenticate($attribute,$params)
+	
+	/**
+	 * @return string the role of the user
+	 */
+	public function getRole() {
+		$roles = $this->roles();
+		return $roles[$this->roleId+0];
+	}
+	
+	/**
+	 * @return array of possible roles a user may have
+	 */
+	public function roles() {
+		return array(
+			1=>'Administrator',
+			'Researcher',
+			'Teacher',
+			'Student',      
+		);
+	}
+	
+	/**
+	 * Run before actually saving a record. Hashes the password if it was changed.
+	 * @return boolean whether the record should be saved
+	 */
+	public function beforeSave() {
+		if(isset($this->password)) {
+			$this->password = $this->hashPassword($this->password);
+		}
+		return parent::beforeSave();
+	}
+	
+	/**
+	 * Run after every find/load operation. Stores the old password in case of changes.
+	 */
+	public function afterFind() {
+		$this->_oldPassword = $this->password;
+		return parent::afterFind();
+	}
+	
+	/**
+	 * Checks if the password is correct.
+	 * @param string the password
+	 * @return boolean whether or not the password was correct
+	 */
+	public function validatePassword($password) {
+		return $this->hashPassword($password) === $this->_oldPassword;
+	}
+	
+	/**
+	 * @param string the unhashed password
+	 * @return string the hashed password
+	 */
+	public function hashPassword($password) {
+		return sha1($password);
+	}
+	
+	/**
+	 * Authenticate used by CWebUser.
+	 */
+	public function authenticate($attribute,$params)
 	{
 		if(!$this->validatePassword($this->currentPassword)) {
-      $this->addError('currentPassword', 'The password is wrong');
-    }
+			$this->addError('currentPassword', 'The password is wrong');
+		}
 	}
-  
-  /**
-   * Gets all users with a certain role
-   * @param integer the role id
-   * @return array of User objects
-   */
-  public function getUsers($userType) {
-    return User::model()->findAllByAttributes(array('roleId' => $userType));
-  }
-  
-  public static function compare($userA, $userB) {
-    return $userA->id - $userB->id;
-  }
-  
-  // Getters and setters
-  public function getCurrentPassword() {
-    return $this->_currentPassword;
-  }
-  
-  public function setCurrentPassword($password) {
-    $this->_currentPassword = $password;
-  }
-  
-  public function getPasswordAgain() {
-    return $this->_passwordAgain;
-  }
-  
-  public function setPasswordAgain($password) {
-    $this->_passwordAgain = $password;
-  }
+	
+	/**
+	 * Gets all users with a certain role
+	 * @param integer the role id
+	 * @return array of User objects
+	 */
+	public function getUsers($userType) {
+		return User::model()->findAllByAttributes(array('roleId' => $userType));
+	}
+	
+	public static function compare($userA, $userB) {
+		return $userA->id - $userB->id;
+	}
+	
+	// Getters and setters
+	public function getCurrentPassword() {
+		return $this->_currentPassword;
+	}
+	
+	public function setCurrentPassword($password) {
+		$this->_currentPassword = $password;
+	}
+	
+	public function getPasswordAgain() {
+		return $this->_passwordAgain;
+	}
+	
+	public function setPasswordAgain($password) {
+		$this->_passwordAgain = $password;
+	}
 }

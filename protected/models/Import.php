@@ -96,38 +96,38 @@ class Import extends CActiveRecord
 			'criteria'=>$criteria,
 		));
 	}
-  
-  /**
-   * Run before deleting. Cascades deletions.
-   */
-  protected function beforeDelete() {
-    $this->session->delete();
-    return parent::beforeDelete();
-  }
 	
-  /**
-   * Runs an import.
-   */
+	/**
+	 * Run before deleting. Cascades deletions.
+	 */
+	protected function beforeDelete() {
+		$this->session->delete();
+		return parent::beforeDelete();
+	}
+	
+	/**
+	 * Runs an import.
+	 */
 	public function doImport() {
-    if($this->sessionId != 0) return;
-    $connection = new CDbConnection('sqlite:'.$this->path);
-    $connection->active = true;
-    
-    $command = $connection->createCommand('SELECT * FROM sqlite_master WHERE type=\'table\'');
-    $temp = $command->queryRow();
-    
-    $tableName = $temp['name'];
-    
-    $path = str_replace($this->importSession->path, '', $this->path);
-    $path = explode(DIRECTORY_SEPARATOR, $path);
-        
-    $command = $connection->createCommand('SELECT * FROM `' . $tableName . '`');
-    
-    $pc = strripos($tableName, '_');
+		if($this->sessionId != 0) return;
+		$connection = new CDbConnection('sqlite:'.$this->path);
+		$connection->active = true;
+		
+		$command = $connection->createCommand('SELECT * FROM sqlite_master WHERE type=\'table\'');
+		$temp = $command->queryRow();
+		
+		$tableName = $temp['name'];
+		
+		$path = str_replace($this->importSession->path, '', $this->path);
+		$path = explode(DIRECTORY_SEPARATOR, $path);
+				
+		$command = $connection->createCommand('SELECT * FROM `' . $tableName . '`');
+		
+		$pc = strripos($tableName, '_');
 		$userName = substr($tableName, 0, $pc);
 		$sessionType = substr($tableName, $pc+1); 
 
-    $userModel = User::model()->findByAttributes(array('name'=>$userName));
+		$userModel = User::model()->findByAttributes(array('name'=>$userName));
 
 		if($userModel == null) {
 			$userModel = new User('import');
@@ -140,11 +140,11 @@ class Import extends CActiveRecord
 				return null;
 			}
 		}
-      
-    $session = new Session;
-    
-    $basename = basename($this->path, '.sqlite');
-    if(stripos($basename, 'compiledata')) {
+			
+		$session = new Session;
+		
+		$basename = basename($this->path, '.sqlite');
+		if(stripos($basename, 'compiledata')) {
 			$session->type = 'CompileSession';
 		}
 		else if(stripos($basename, 'invocationdata')) {
@@ -153,22 +153,22 @@ class Import extends CActiveRecord
 		else {
 			return;
 		}
-    
-    $row = $command->queryRow();
-    $session->userId = $userModel->id;
-    $session->date = $row['TIMESTAMP'];
-    $session->newTerms = $this->importSession->terms;
-    
-    if($session->save()) {    
+		
+		$row = $command->queryRow();
+		$session->userId = $userModel->id;
+		$session->date = $row['TIMESTAMP'];
+		$session->newTerms = $this->importSession->terms;
+		
+		if($session->save()) {    
 			$reader = $command->query();
 			$model = CActiveRecord::model($session->type);
-      $temp = $model->doImport($session->id, $row, $reader);
-      $this->sessionId = $session->id;
-      $this->save();
-      
-      /*
+			$temp = $model->doImport($session->id, $row, $reader);
+			$this->sessionId = $session->id;
+			$this->save();
+			
+			/*
 			$transaction = $model->dbConnection->beginTransaction();
-      
+			
 			try {
 				$temp = $model->doImport($session->id, $row, $reader);
 				$this->sessionId = $session->id;
@@ -180,5 +180,5 @@ class Import extends CActiveRecord
 				$session->delete();
 			}*/
 		}
-  }
+	}
 }

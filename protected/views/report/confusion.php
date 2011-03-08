@@ -1,8 +1,8 @@
 <?php
 $this->breadcrumbs=array(
 	'Reports' => array('index'),
-  'General Summary' => array('summary', 'tags'=>$_GET['tags']),
-  'Confusion Report',
+	'General Summary' => array('summary', 'tags'=>$_GET['tags']),
+	'Confusion Report',
 );
 
 ?>
@@ -17,9 +17,9 @@ $this->breadcrumbs=array(
 )); ?>
 
 <?php $this->widget('zii.widgets.grid.CGridView', array(
-    'dataProvider'=>$dataProvider,
-    'columns'=>array(
-      'name:raw:Student',
-      'confusion:raw:Confusion Rate',
-    ),
+		'dataProvider'=>$dataProvider,
+		'columns'=>array(
+			'name:raw:Student',
+			'confusion:raw:Confusion Rate',
+		),
 )); ?>

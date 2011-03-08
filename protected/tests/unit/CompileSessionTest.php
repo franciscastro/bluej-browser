@@ -41,7 +41,7 @@ class CompileSessionTest extends CDbTestCase {
 	
 	public function testDoImport() {
 		$connection = new CDbConnection('sqlite:assets/test-compile.db');
-    $connection->active = true;
+		$connection->active = true;
 		$command = $connection->createCommand('SELECT * FROM `F227_1_CompileData`');
 		$row = $command->queryRow();
 		$reader = $command->query();

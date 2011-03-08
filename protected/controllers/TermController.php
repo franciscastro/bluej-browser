@@ -34,10 +34,10 @@ class TermController extends Controller
 	public function accessRules()
 	{
 		return array(
-      array('allow',
-        'actions'=>array('view'),
-        'users'=>array('@'),
-      ),
+			array('allow',
+				'actions'=>array('view'),
+				'users'=>array('@'),
+			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
 				'actions'=>array('view','create','update','search'),
 				'roles'=>array('Researcher'),
@@ -56,21 +56,21 @@ class TermController extends Controller
 	 */
 	public function actionView()
 	{
-    $termModel = $this->loadModel();
-    $dataProvider = new CActiveDataProvider('ImportSession', array(
-      'criteria'=>array(
-        'join'=>'INNER JOIN ImportSessionTerm ON id = importSessionId',
-        'condition'=>'termId = :id',
-        'params'=>array(
-          ':id'=>$termModel->id,
-        ),
-        'order'=>'id',
-      ),
-    ));
-    
+		$termModel = $this->loadModel();
+		$dataProvider = new CActiveDataProvider('ImportSession', array(
+			'criteria'=>array(
+				'join'=>'INNER JOIN ImportSessionTerm ON id = importSessionId',
+				'condition'=>'termId = :id',
+				'params'=>array(
+					':id'=>$termModel->id,
+				),
+				'order'=>'id',
+			),
+		));
+		
 		$this->render('view',array(
 			'model'=>$termModel,
-      'dataProvider'=>$dataProvider,
+			'dataProvider'=>$dataProvider,
 		));
 	}
 
@@ -152,20 +152,20 @@ class TermController extends Controller
 			'model'=>$model,
 		));
 	}
-  
-  public function actionSearch()
-  {
-    if(Yii::app()->getRequest()->getIsAjaxRequest()) {
-      $terms = Term::model()->findAll('name LIKE :name AND parentId > 1', array(
-        ':name' => $_GET['term'].'%',
-      ));
-      $termNames = array();
-      foreach($terms as $term) {
-        $termNames[] = $term->name;
-      }
-      echo CJavaScript::jsonEncode($termNames);
-    }
-  }
+	
+	public function actionSearch()
+	{
+		if(Yii::app()->getRequest()->getIsAjaxRequest()) {
+			$terms = Term::model()->findAll('name LIKE :name AND parentId > 1', array(
+				':name' => $_GET['term'].'%',
+			));
+			$termNames = array();
+			foreach($terms as $term) {
+				$termNames[] = $term->name;
+			}
+			echo CJavaScript::jsonEncode($termNames);
+		}
+	}
 
 	/**
 	 * Returns the data model based on the primary key given in the GET variable.

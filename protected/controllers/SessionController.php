@@ -39,7 +39,7 @@ class SessionController extends Controller
 				'actions'=>array('view','delete'),
 				'roles'=>array('Teacher', 'Researcher'),
 			),
-      array('allow', // allow admin user to perform 'admin' and 'delete' actions
+			array('allow', // allow admin user to perform 'admin' and 'delete' actions
 				'roles'=>array('Administrator'),
 			),
 			array('deny',  // deny all users
@@ -56,7 +56,7 @@ class SessionController extends Controller
 		$model = $this->loadModel();
 		if(isset($model->type)) {
 			$this->redirect(array($model->type . '/view', 'id'=>$_GET['id']));
-      exit;
+			exit;
 		}
 		throw new CHttpException(400,'Invalid request. Please do not repeat this request again.');
 	}

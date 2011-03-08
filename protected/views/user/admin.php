@@ -32,14 +32,14 @@ $('.search-form form').submit(function(){
 		'id',
 		'username',
 		'name',
-    array(
-      'filter'=>$model->roles(),
-      'name'=>'roleId',
-      'value'=>'$data->getRole()',
-    ),
+		array(
+			'filter'=>$model->roles(),
+			'name'=>'roleId',
+			'value'=>'$data->getRole()',
+		),
 		array(
 			'class'=>'CButtonColumn',
-      'template'=>'{update} {delete}',
+			'template'=>'{update} {delete}',
 		),
 	),
 )); ?>

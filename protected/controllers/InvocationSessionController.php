@@ -38,7 +38,7 @@ class InvocationSessionController extends Controller
 				'actions'=>array('index','view'),
 				'roles'=>array('Researcher'),
 			),
-      array('allow', // allow admin user to perform 'admin' and 'delete' actions
+			array('allow', // allow admin user to perform 'admin' and 'delete' actions
 				'roles'=>array('Administrator'),
 			),
 			array('deny',  // deny all users

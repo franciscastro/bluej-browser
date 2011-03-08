@@ -38,11 +38,11 @@ class CompileSessionController extends Controller
 				'actions'=>array('index','view','source','compare'),
 				'roles'=>array('Teacher', 'Researcher'),
 			),
-      array('allow',  // allow all users to perform 'index' and 'view' actions
+			array('allow',  // allow all users to perform 'index' and 'view' actions
 				'actions'=>array('deleteEntry'),
 				'roles'=>array('Researcher'),
 			),
-      array('allow', // allow admin user to perform 'admin' and 'delete' actions
+			array('allow', // allow admin user to perform 'admin' and 'delete' actions
 				'roles'=>array('Administrator'),
 			),
 			array('deny',  // deny all users
@@ -70,16 +70,16 @@ class CompileSessionController extends Controller
 		$sort->applyOrder($criteria);
 		$dataProvider->sort = $sort;
 		
-    $importSessionId = $model->session->import->importSessionId;
+		$importSessionId = $model->session->import->importSessionId;
 		$breadcrumbs=array(
 			'Imports'=>array('importSession/index'),
-      'Import #'.$importSessionId=>array('importSession/view', 'id'=>$importSessionId),
+			'Import #'.$importSessionId=>array('importSession/view', 'id'=>$importSessionId),
 			'Session #'.$_GET['id']=>array('compileSession/view', 'id'=>$_GET['id']),
 		);
 		
 		Yii::app()->user->setState('compileSession_breadcrumbs', $breadcrumbs);
 		Yii::app()->user->setState('compileSession_criteria', $criteria);
-    
+		
 		$this->render('view',array(
 			'model'=>$model,
 			'dataProvider'=>$dataProvider,
@@ -138,8 +138,8 @@ class CompileSessionController extends Controller
 			'pages'=>$pages,
 		));
 	}
-  
-  /**
+	
+	/**
 	 * Deletes a particular model.
 	 * If deletion is successful, the browser will be redirected to the 'index' page.
 	 */
@@ -149,9 +149,9 @@ class CompileSessionController extends Controller
 		{
 			// we only allow deletion via POST request
 			$model = CompileSessionEntry::model()->findByPk($_GET['id']);
-      $model->compileSessionId = -$model->compileSessionId;
-      $model->save();
-      
+			$model->compileSessionId = -$model->compileSessionId;
+			$model->save();
+			
 
 			// if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
 			if(!isset($_GET['ajax']))

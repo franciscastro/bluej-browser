@@ -1,7 +1,7 @@
 <?php $this->widget('zii.widgets.CDetailView', array(
-  'data'=>$model,
-  'attributes'=>array(
-    'deltaVersion',
+	'data'=>$model,
+	'attributes'=>array(
+		'deltaVersion',
 		'extensionVersion',
 		'systemUser',
 		'home',
@@ -16,5 +16,5 @@
 		'projectPath',
 		'packagePath',
 		'deltaName',
-  ),
+	),
 )); ?>

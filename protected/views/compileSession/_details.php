@@ -17,15 +17,15 @@
 
 <?php
 $this->widget('zii.widgets.jui.CJuiAccordion', array(
-    'panels'=>array(
-        'More Details'=>$this->renderPartial('_moreDetails', array('model'=>$model), true),
-    ),
-    // additional javascript options for the accordion plugin
-    'options'=>array(
-        'animated'=>'bounceslide',
-        'collapsible'=>'true',
-        'active'=>'false',
-    ),
+		'panels'=>array(
+				'More Details'=>$this->renderPartial('_moreDetails', array('model'=>$model), true),
+		),
+		// additional javascript options for the accordion plugin
+		'options'=>array(
+				'animated'=>'bounceslide',
+				'collapsible'=>'true',
+				'active'=>'false',
+		),
 ));
 ?>
 

@@ -1,8 +1,8 @@
 <?php
 $this->breadcrumbs=array(
 	'Reports' => array('index'),
-  'General Summary' => array('summary', 'tags'=>$_GET['tags']),
-  'Error Report',
+	'General Summary' => array('summary', 'tags'=>$_GET['tags']),
+	'Error Report',
 );
 
 ?>
@@ -10,9 +10,9 @@ $this->breadcrumbs=array(
 <h1>Error Report</h1>
 
 <?php $this->widget('zii.widgets.grid.CGridView', array(
-    'dataProvider'=>$dataProvider,
-    'columns'=>array(
-      'messageText:raw:Error',
-      'count:raw:Count',
-    ),
+		'dataProvider'=>$dataProvider,
+		'columns'=>array(
+			'messageText:raw:Error',
+			'count:raw:Count',
+		),
 )); ?>

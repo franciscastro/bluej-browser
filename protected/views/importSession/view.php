@@ -5,7 +5,7 @@ $this->breadcrumbs=array(
 );
 
 $this->menu=array(
-  array('label'=>'View Report', 'url'=>array('report/summary', 'tags'=>implode(',', $this->modelArrayToAttributeArray($model->terms, 'name')))),
+	array('label'=>'View Report', 'url'=>array('report/summary', 'tags'=>implode(',', $this->modelArrayToAttributeArray($model->terms, 'name')))),
 	array('label'=>'Stop Session', 'url'=>'#', 'linkOptions'=>array('submit'=>array('stopLive','id'=>$model->id),'confirm'=>'Are you sure you want to stop the logging?'), 'visible'=>($model->source == 'live' && $model->end == null)),
 	array('label'=>'Export Logs', 'url'=>array('export', 'id'=>$model->id)),
 	array('label'=>'Update Information', 'url'=>array('update', 'id'=>$model->id)),
@@ -21,21 +21,21 @@ $this->menu=array(
 	'data'=>$model,
 	'attributes'=>array(
 		'id',
-    array(
-      'label' => 'Tags',
-      'type' => 'raw',
-      'value' => Term::displayTerms($model->terms),
-    ),
+		array(
+			'label' => 'Tags',
+			'type' => 'raw',
+			'value' => Term::displayTerms($model->terms),
+		),
 		'source',
 		array(
-      'label' => 'Path',
-      'name' => 'path',
-      'visible' => ($model->source != 'live'),
+			'label' => 'Path',
+			'name' => 'path',
+			'visible' => ($model->source != 'live'),
 		),
 		array(
-      'label' => 'Filter',
-      'name' => 'path',
-      'visible' => ($model->source == 'live'),
+			'label' => 'Filter',
+			'name' => 'path',
+			'visible' => ($model->source == 'live'),
 		),
 		'start:datetime',
 		'end:datetime',
@@ -70,7 +70,7 @@ $this->menu=array(
 					'url'=>'Yii::app()->controller->createUrl("session/view", array("id"=>$data->sessionId))',
 					'visible'=>'$data->sessionId != 0',
 				),
-        'delete'=>array(
+				'delete'=>array(
 					'url'=>'Yii::app()->controller->createUrl("import/delete", array("id"=>$data->id))',
 					'visible'=>'$data->sessionId != 0',
 				),

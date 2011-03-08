@@ -105,10 +105,10 @@ class CompileSession extends CActiveRecord
 		);
 	}
 	
-  /**
-   * A conversion table between parameter names and table columns in sqlite files.
-   * @return array the conversion table
-   */
+	/**
+	 * A conversion table between parameter names and table columns in sqlite files.
+	 * @return array the conversion table
+	 */
 	private function externalLabels()
 	{
 		return array(
@@ -195,36 +195,36 @@ class CompileSession extends CActiveRecord
 			),
 		));
 	}
-  
-  /**
-   * An event raised after importing
-   */
-  public function onAfterImport($event) {
-    $this->raiseEvent('onAfterImport', $event);
-  }
-  
-  protected function afterImport() {
-    if($this->hasEventHandler('onAfterImport')) {
-      $this->onAfterImport(new CEvent($this));
-    }
-  }
-  
-  /**
-   * Run before deleting. Cascades deletions.
-   */
-  protected function beforeDelete() {
-    foreach($this->entries as $entry) {
-      $entry->delete();
-    }
-    return parent::beforeDelete();
-  }
 	
-  /**
-   * Creates a new session
-   * @param integer id of the session
-   * @param array session information from a row
-   * @return InvocationSession the new session
-   */
+	/**
+	 * An event raised after importing
+	 */
+	public function onAfterImport($event) {
+		$this->raiseEvent('onAfterImport', $event);
+	}
+	
+	protected function afterImport() {
+		if($this->hasEventHandler('onAfterImport')) {
+			$this->onAfterImport(new CEvent($this));
+		}
+	}
+	
+	/**
+	 * Run before deleting. Cascades deletions.
+	 */
+	protected function beforeDelete() {
+		foreach($this->entries as $entry) {
+			$entry->delete();
+		}
+		return parent::beforeDelete();
+	}
+	
+	/**
+	 * Creates a new session
+	 * @param integer id of the session
+	 * @param array session information from a row
+	 * @return InvocationSession the new session
+	 */
 	private function createSession($sessionId, $row) {
 		$session = new CompileSession;
 		$session->id = $sessionId;
@@ -248,10 +248,10 @@ class CompileSession extends CActiveRecord
 		return $session;
 	}
 	
-  /**
-   * Inserts a row into the session
-   * @param array the row to be inserted
-   */
+	/**
+	 * Inserts a row into the session
+	 * @param array the row to be inserted
+	 */
 	private function insertSessionEntry($row) {
 		$newData = new CompileSessionEntry;
 		$newData->compileSessionId = $this->id;
@@ -272,39 +272,39 @@ class CompileSession extends CActiveRecord
 		$newData->save();
 	}
 	
-  /**
-   * Creates a new session and imports data into it
-   * @param integer id of the session
-   * @param array row containing session information
-   * @param CDbReader data source for the row data 
-   */
+	/**
+	 * Creates a new session and imports data into it
+	 * @param integer id of the session
+	 * @param array row containing session information
+	 * @param CDbReader data source for the row data 
+	 */
 	public function doImport($sessionId, $row, $reader) {
 		$session = $this->createSession($sessionId, $row);
 		foreach($reader as $row) {
-      $session->insertSessionEntry($row);
-    }
-    $session->afterImport();
+			$session->insertSessionEntry($row);
+		}
+		$session->afterImport();
 	}
 	
-  /**
-   * Creates a new session if it does not already exist, and adds a
-   * row to it. Used for live importing.
-   * @param integer id of the session
-   * @param array the row to be added
-   */
+	/**
+	 * Creates a new session if it does not already exist, and adds a
+	 * row to it. Used for live importing.
+	 * @param integer id of the session
+	 * @param array the row to be added
+	 */
 	public function liveImport($sessionId, $row) {
 		$session = $this->findByPk($sessionId);
 		if($session == null) {
 			$session = $this->createSession($sessionId, $row);
 		}
 		$session->insertSessionEntry($row);	
-    $session->afterImport();
+		$session->afterImport();
 	}
 	
-  /**
-   * Generates a CSV file containing the data for this session.
-   * @param file the file pointer to write to
-   */
+	/**
+	 * Generates a CSV file containing the data for this session.
+	 * @param file the file pointer to write to
+	 */
 	public function doExport($fp) {
 		$extToInt = array_flip($this->externalLabels());
 		$extHeaders = array(
@@ -370,23 +370,23 @@ class CompileSession extends CActiveRecord
 			fputcsv($fp, $toWrite);
 		}
 	}
-  
-  /**
-   * Gets the difference between 2 sources
-   * @return array the lines which are different
-   */
-  public static function diff($sourceA, $sourceB) {
-    $arrayA = explode("\n", $sourceA);
-    $numLinesA = count($arrayA);
-    $arrayB = explode("\n", $sourceB);
-    $numLinesB = count($arrayB);
-    $longer = $arrayA;
-    $shorter = $arrayB;
-    if($numLinesB > $numLinesA) {
-      $longer = $arrayB;
-      $shorter = $arrayA;
-    }
-    $diff = array_diff_assoc($longer, $shorter);
-    return $diff;
-  }
+	
+	/**
+	 * Gets the difference between 2 sources
+	 * @return array the lines which are different
+	 */
+	public static function diff($sourceA, $sourceB) {
+		$arrayA = explode("\n", $sourceA);
+		$numLinesA = count($arrayA);
+		$arrayB = explode("\n", $sourceB);
+		$numLinesB = count($arrayB);
+		$longer = $arrayA;
+		$shorter = $arrayB;
+		if($numLinesB > $numLinesA) {
+			$longer = $arrayB;
+			$shorter = $arrayA;
+		}
+		$diff = array_diff_assoc($longer, $shorter);
+		return $diff;
+	}
 }

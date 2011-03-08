@@ -54,41 +54,41 @@ class SectionController extends Controller
 	public function actionCreate()
 	{
 		$model=new Section;
-    $terms = array();
+		$terms = array();
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
 
 		if(isset($_POST['term']))
 		{
-      $yearModel = Term::model()->getTermById($_POST['term'][Term::TERM_YEAR], Term::TERM_YEAR);
-      $courseModel = Term::model()->getTermById($_POST['term'][Term::TERM_COURSE], Term::TERM_COURSE);
-      $sectionModel = Term::model()->getTermById($_POST['term'][Term::TERM_SECTION], Term::TERM_SECTION);
-      if($yearModel != null &&
-           $courseModel != null &&
-           $sectionModel != null) {
-        $model->yearId = $yearModel->id;
-        $model->courseId = $courseModel->id;
-        $model->sectionId = $sectionModel->id;
-        $model->name = $yearModel->name . '/' . $courseModel->name . '/' . $sectionModel->name;
-      }
-      $terms = $_POST['term'];
-      
-      $newTeachers = array();
-      if(isset($_POST['teacher']))
-      foreach($_POST['teacher'] as $teacherId) {
-        $teacher = User::model()->findByPk($teacherId);
-        if($teacher != null && $teacher->roleId == User::ROLE_TEACHER) {
-          $newTeachers[] = $teacher;
-        }
-      }
-      $model->newTeachers = $newTeachers;
+			$yearModel = Term::model()->getTermById($_POST['term'][Term::TERM_YEAR], Term::TERM_YEAR);
+			$courseModel = Term::model()->getTermById($_POST['term'][Term::TERM_COURSE], Term::TERM_COURSE);
+			$sectionModel = Term::model()->getTermById($_POST['term'][Term::TERM_SECTION], Term::TERM_SECTION);
+			if($yearModel != null &&
+					 $courseModel != null &&
+					 $sectionModel != null) {
+				$model->yearId = $yearModel->id;
+				$model->courseId = $courseModel->id;
+				$model->sectionId = $sectionModel->id;
+				$model->name = $yearModel->name . '/' . $courseModel->name . '/' . $sectionModel->name;
+			}
+			$terms = $_POST['term'];
+			
+			$newTeachers = array();
+			if(isset($_POST['teacher']))
+			foreach($_POST['teacher'] as $teacherId) {
+				$teacher = User::model()->findByPk($teacherId);
+				if($teacher != null && $teacher->roleId == User::ROLE_TEACHER) {
+					$newTeachers[] = $teacher;
+				}
+			}
+			$model->newTeachers = $newTeachers;
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));
 		}
 
 		$this->render('create',array(
 			'model'=>$model,
-      'terms'=>$terms,
+			'terms'=>$terms,
 		));
 	}
 
@@ -100,10 +100,10 @@ class SectionController extends Controller
 	public function actionUpdate($id)
 	{
 		$model=$this->loadModel($id);
-    $terms = array();
-    $terms[Term::TERM_YEAR] = $model->yearId;
-    $terms[Term::TERM_COURSE] = $model->courseId;
-    $terms[Term::TERM_SECTION] = $model->sectionId;    
+		$terms = array();
+		$terms[Term::TERM_YEAR] = $model->yearId;
+		$terms[Term::TERM_COURSE] = $model->courseId;
+		$terms[Term::TERM_SECTION] = $model->sectionId;    
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
@@ -111,34 +111,34 @@ class SectionController extends Controller
 		if(isset($_POST['term']))
 		{
 			$yearModel = Term::model()->getTermById($_POST['term'][Term::TERM_YEAR], Term::TERM_YEAR);
-      $courseModel = Term::model()->getTermById($_POST['term'][Term::TERM_COURSE], Term::TERM_COURSE);
-      $sectionModel = Term::model()->getTermById($_POST['term'][Term::TERM_SECTION], Term::TERM_SECTION);
-      if($yearModel != null &&
-           $courseModel != null &&
-           $sectionModel != null) {
-        $model->yearId = $yearModel->id;
-        $model->courseId = $courseModel->id;
-        $model->sectionId = $sectionModel->id;
-        $model->name = $yearModel->name . '/' . $courseModel->name . '/' . $sectionModel->name;
-      }
-      $terms = $_POST['term'];
-      
-      $newTeachers = array();
-      if(isset($_POST['teacher']))
-      foreach($_POST['teacher'] as $teacherId) {
-        $teacher = User::model()->findByPk($teacherId);
-        if($teacher != null && $teacher->roleId == User::ROLE_TEACHER) {
-          $newTeachers[] = $teacher;
-        }
-      }
-      $model->newTeachers = $newTeachers;
+			$courseModel = Term::model()->getTermById($_POST['term'][Term::TERM_COURSE], Term::TERM_COURSE);
+			$sectionModel = Term::model()->getTermById($_POST['term'][Term::TERM_SECTION], Term::TERM_SECTION);
+			if($yearModel != null &&
+					 $courseModel != null &&
+					 $sectionModel != null) {
+				$model->yearId = $yearModel->id;
+				$model->courseId = $courseModel->id;
+				$model->sectionId = $sectionModel->id;
+				$model->name = $yearModel->name . '/' . $courseModel->name . '/' . $sectionModel->name;
+			}
+			$terms = $_POST['term'];
+			
+			$newTeachers = array();
+			if(isset($_POST['teacher']))
+			foreach($_POST['teacher'] as $teacherId) {
+				$teacher = User::model()->findByPk($teacherId);
+				if($teacher != null && $teacher->roleId == User::ROLE_TEACHER) {
+					$newTeachers[] = $teacher;
+				}
+			}
+			$model->newTeachers = $newTeachers;
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));
 		}
 
 		$this->render('update',array(
 			'model'=>$model,
-      'terms'=>$terms,
+			'terms'=>$terms,
 		));
 	}
 
@@ -161,8 +161,8 @@ class SectionController extends Controller
 		else
 			throw new CHttpException(400,'Invalid request. Please do not repeat this request again.');
 	}
-  
-  
+	
+	
 	/**
 	 * Displays a particular model.
 	 * @param integer $id the ID of the model to be displayed

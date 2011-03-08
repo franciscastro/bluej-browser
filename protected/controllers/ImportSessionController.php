@@ -34,16 +34,16 @@ class ImportSessionController extends Controller
 	public function accessRules()
 	{
 		return array(
-      array('deny',
-        'actions'=>array('view', 'export', 'update', 'stopLive'),
-        'roles'=>array('Teacher'),
-        'expression'=>'!ImportSession::checkTeacherAccess($user->getModel());',
-      ),
-      array('allow',
-        'actions'=>array('index', 'view', 'export', 'createLive', 'stopLive', 'update'),
-        'roles'=>array('Teacher'),
-      ),
-      array('allow', // allow admin user to perform 'admin' and 'delete' actions
+			array('deny',
+				'actions'=>array('view', 'export', 'update', 'stopLive'),
+				'roles'=>array('Teacher'),
+				'expression'=>'!ImportSession::checkTeacherAccess($user->getModel());',
+			),
+			array('allow',
+				'actions'=>array('index', 'view', 'export', 'createLive', 'stopLive', 'update'),
+				'roles'=>array('Teacher'),
+			),
+			array('allow', // allow admin user to perform 'admin' and 'delete' actions
 				'roles'=>array('Administrator', 'Researcher'),
 			),
 			array('deny',  // deny all users
@@ -100,36 +100,36 @@ class ImportSessionController extends Controller
 				set_time_limit(0);
 				if(Yii::app()->zip->extractZip($sourceFile, $sourcePath)) {
 					$files = CFileHelper::findFiles($sourcePath, array('fileTypes'=>array('sqlite'), 'exclude'=>array('.htaccess')));
-          $transaction = Import::model()->dbConnection->beginTransaction();
-          
-          $prevDir = '';
-          foreach($files as $file) {
-            $directory = dirname($file);
-            if($prevDir != $directory) {
-              $prevDir = $directory;
-              $model = new ImportSession;
-              $model->attributes=$_POST['ImportSession'];
-              $model->source = $sourceFile;
-              $directory = str_ireplace($sourcePath, '', $directory);
-              $model->path = $directory;
-              $termNames = str_ireplace(',', ';', $directory);
-              $termNames = str_ireplace(DIRECTORY_SEPARATOR, ',', $termNames);
-              
-              $_POST['term'][Term::TERM_OTHER] = $termNames;
-              $model->newTerms = $this->getTermModel()->getNewTerms();
-              $model->save();              
-            }
-            
-            
-            $import = new Import;
-            $import->sessionId = 0;
-            $import->importSessionId = $model->id;
-            $import->path = $file;
-            $import->save();
-            $import->doImport();
-          }
-          $transaction->commit();
-          $this->redirect(array('view','id'=>$model->id));
+					$transaction = Import::model()->dbConnection->beginTransaction();
+					
+					$prevDir = '';
+					foreach($files as $file) {
+						$directory = dirname($file);
+						if($prevDir != $directory) {
+							$prevDir = $directory;
+							$model = new ImportSession;
+							$model->attributes=$_POST['ImportSession'];
+							$model->source = $sourceFile;
+							$directory = str_ireplace($sourcePath, '', $directory);
+							$model->path = $directory;
+							$termNames = str_ireplace(',', ';', $directory);
+							$termNames = str_ireplace(DIRECTORY_SEPARATOR, ',', $termNames);
+							
+							$_POST['term'][Term::TERM_OTHER] = $termNames;
+							$model->newTerms = $this->getTermModel()->getNewTerms();
+							$model->save();              
+						}
+						
+						
+						$import = new Import;
+						$import->sessionId = 0;
+						$import->importSessionId = $model->id;
+						$import->path = $file;
+						$import->save();
+						$import->doImport();
+					}
+					$transaction->commit();
+					$this->redirect(array('view','id'=>$model->id));
 					
 				}
 				else {
@@ -140,7 +140,7 @@ class ImportSessionController extends Controller
 
 		$this->render('create',array(
 			'model'=>$model,
-      'terms'=>$this->getTermModel()->getViewData(),
+			'terms'=>$this->getTermModel()->getViewData(),
 		));
 	}
 	
@@ -156,10 +156,10 @@ class ImportSessionController extends Controller
 			$model->attributes=$_POST['ImportSession'];
 			$model->source = 'live';
 			$model->start = time();
-      $model->newTerms = $this->getTermModel()->getNewTerms();
-      if(isset($_POST['term']['section'])) {
-        $model->sectionId = $_POST['term']['section'];
-      }
+			$model->newTerms = $this->getTermModel()->getNewTerms();
+			if(isset($_POST['term']['section'])) {
+				$model->sectionId = $_POST['term']['section'];
+			}
 			if($model->save()) {
 				$this->redirect(array('view','id'=>$model->id));
 			}
@@ -167,7 +167,7 @@ class ImportSessionController extends Controller
 
 		$this->render('createLive',array(
 			'model'=>$model,
-      'terms'=>$this->getTermModel()->getViewData(array()),
+			'terms'=>$this->getTermModel()->getViewData(array()),
 		));
 	}
 	
@@ -177,7 +177,7 @@ class ImportSessionController extends Controller
 		
 		if(Yii::app()->request->isPostRequest)
 		{
-      $model->newTerms = $model->terms;
+			$model->newTerms = $model->terms;
 			$model->end = time();
 			if($model->save()) {
 				if(!isset($_GET['ajax']))
@@ -196,21 +196,21 @@ class ImportSessionController extends Controller
 	public function actionUpdate()
 	{
 		$model=$this->loadModel();
-        
+				
 		if(isset($_POST['ImportSession']))
 		{
 			$model->attributes=$_POST['ImportSession'];
-      $model->newTerms = $this->getTermModel()->getNewTerms();
-      if(isset($_POST['term']['section'])) {
-        $model->sectionId = $_POST['term']['section'];
-      }
+			$model->newTerms = $this->getTermModel()->getNewTerms();
+			if(isset($_POST['term']['section'])) {
+				$model->sectionId = $_POST['term']['section'];
+			}
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));
 		}
 
 		$this->render('update',array(
 			'model'=>$model,
-      'terms'=>$this->getTermModel()->getViewData($model->terms),
+			'terms'=>$this->getTermModel()->getViewData($model->terms),
 		));
 	}
 
@@ -242,9 +242,9 @@ class ImportSessionController extends Controller
 		$model->unsetAttributes();  // clear any default values
 		if(isset($_GET['ImportSession']))
 			$model->attributes=$_GET['ImportSession'];
-    if(Yii::app()->user->hasRole(array('Teacher'))) {
-      $model->sectionId = $this->modelArrayToAttributeArray(Yii::app()->user->getModel()->sections, 'id');
-    }
+		if(Yii::app()->user->hasRole(array('Teacher'))) {
+			$model->sectionId = $this->modelArrayToAttributeArray(Yii::app()->user->getModel()->sections, 'id');
+		}
 		$this->render('admin',array(
 			'model'=>$model,
 		));
@@ -320,11 +320,11 @@ class ImportSessionController extends Controller
 			Yii::app()->end();
 		}
 	}
-  
-  public function getTermModel() {
-    if(Yii::app()->user->hasRole(array('Teacher'))) {
-      return CActiveRecord::model('Section');
-    }
-    return CActiveRecord::model('Term');
-  }
+	
+	public function getTermModel() {
+		if(Yii::app()->user->hasRole(array('Teacher'))) {
+			return CActiveRecord::model('Section');
+		}
+		return CActiveRecord::model('Term');
+	}
 }

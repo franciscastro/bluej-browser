@@ -90,54 +90,54 @@ class EqCalculation extends CActiveRecord
 			'criteria'=>$criteria,
 		));
 	}
-  
-  /**
-   * Calculates EQ of a compilation session.
-   */
-  public function calculate() {
-    $entries = CompileSessionEntry::model()->findAll('compileSessionId=:id ORDER BY fileName, deltaSequenceNumber', array('id'=>$this->compileSessionId));
-    $numRows = count($entries);
-    
-    $prevEntry = $entries[0];
-    $count = 0;
-    $eq = 0;
-    $eqBreakDown[0] = 0;
-    $eqBreakDown[1] = 0;
-    $eqBreakDown[2] = 0;
-    $eqBreakDown[3] = 0;
-    for($i = 1; $i < $numRows; $i++) {
-      $nextEntry = $entries[$i];
-      $nextEntrydiff = CompileSession::diff($nextEntry->fileContents, $prevEntry->fileContents);
-      if($nextEntry->fileName == $prevEntry->fileName) {
-        $count++;
-        if($nextEntry->messageLineNumber != -1 && $prevEntry->messageLineNumber != -1) {
-          $eq += 2;
-          $eqBreakDown[0]++;;
-          if($nextEntry->messageText == $prevEntry->messageText) {
-            $eq += 3;
-            $eqBreakDown[1]++;
-          }
-          if($nextEntry->messageLineNumber == $prevEntry->messageLineNumber) {
-            $eq += 3;
-            $eqBreakDown[2]++;
-          }
-          if(in_array($prevEntry->messageLineNumber - 1, array_keys($nextEntrydiff))) {
-            $eq += 1;
-            $eqBreakDown[3]++;
-          }
-        }
-      }
-      $prevEntry = $nextEntry;
-    }
-    if($count > 0) {
-      $eq /= 9.0;
-      $eq /= (float)$count;
-      $this->eq = $eq;
-    }
-    else {
-      $this->eq = -1;
-    }
-    
-    $this->save();
-  }
+	
+	/**
+	 * Calculates EQ of a compilation session.
+	 */
+	public function calculate() {
+		$entries = CompileSessionEntry::model()->findAll('compileSessionId=:id ORDER BY fileName, deltaSequenceNumber', array('id'=>$this->compileSessionId));
+		$numRows = count($entries);
+		
+		$prevEntry = $entries[0];
+		$count = 0;
+		$eq = 0;
+		$eqBreakDown[0] = 0;
+		$eqBreakDown[1] = 0;
+		$eqBreakDown[2] = 0;
+		$eqBreakDown[3] = 0;
+		for($i = 1; $i < $numRows; $i++) {
+			$nextEntry = $entries[$i];
+			$nextEntrydiff = CompileSession::diff($nextEntry->fileContents, $prevEntry->fileContents);
+			if($nextEntry->fileName == $prevEntry->fileName) {
+				$count++;
+				if($nextEntry->messageLineNumber != -1 && $prevEntry->messageLineNumber != -1) {
+					$eq += 2;
+					$eqBreakDown[0]++;;
+					if($nextEntry->messageText == $prevEntry->messageText) {
+						$eq += 3;
+						$eqBreakDown[1]++;
+					}
+					if($nextEntry->messageLineNumber == $prevEntry->messageLineNumber) {
+						$eq += 3;
+						$eqBreakDown[2]++;
+					}
+					if(in_array($prevEntry->messageLineNumber - 1, array_keys($nextEntrydiff))) {
+						$eq += 1;
+						$eqBreakDown[3]++;
+					}
+				}
+			}
+			$prevEntry = $nextEntry;
+		}
+		if($count > 0) {
+			$eq /= 9.0;
+			$eq /= (float)$count;
+			$this->eq = $eq;
+		}
+		else {
+			$this->eq = -1;
+		}
+		
+		$this->save();
+	}
 }
