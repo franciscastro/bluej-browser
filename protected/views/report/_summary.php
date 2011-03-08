@@ -7,7 +7,9 @@
           <th>Student</th>
           <th>EQ</th>
         </tr>
-        <?php foreach($topEqData as $datum): ?>
+        <?php if(empty($topEqData)) { ?>
+          <tr><td colspan=2>Nothing to list</td></tr>
+        <?php } else foreach($topEqData as $datum): ?>
           <tr>
             <td><?php echo $datum['name'] ?></td>
             <td><?php echo $datum['eq'] ?></td>
@@ -16,13 +18,34 @@
       </table>
     </td>
     <td>
+      <h2>Confused <?php echo CHtml::link('(details)', array('confusion', 'tags'=>$_GET['tags'])); ?></h2>
+      <table id="confusion-summary">        
+        <tr>
+          <th>Student</th>
+          <th>Confusion Rate</th>
+        </tr>
+        <?php if(empty($topConfusedData)) { ?>
+          <tr><td colspan=2>Nothing to list</td></tr>
+        <?php } else foreach($topConfusedData as $datum): ?>
+          <tr>
+            <td><?php echo $datum['name'] ?></td>
+            <td><?php printf("%.2f", $datum['confusion'] * 100) ?></td>
+          </tr>
+        <?php endforeach; ?>
+      </table>
+    </td>
+  </tr>
+  <tr>
+    <td>
       <h2>Errors <?php echo CHtml::link('(details)', array('error', 'tags'=>$_GET['tags'])); ?></h2>
       <table id="error-summary">        
         <tr>
           <th>Error</th>
           <th>Count</th>
         </tr>
-        <?php foreach($topErrorsData as $datum): ?>
+        <?php if(empty($topErrorsData)) { ?>
+          <tr><td colspan=2>Nothing to list</td></tr>
+        <?php } else foreach($topErrorsData as $datum): ?>
           <tr>
             <td><?php echo $datum['messageText'] ?></td>
             <td><?php echo $datum['count'] ?></td>

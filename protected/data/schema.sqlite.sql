@@ -13,6 +13,7 @@ DROP TABLE IF EXISTS InvocationSessionEntry;
 DROP TABLE IF EXISTS ImportSession;
 DROP TABLE IF EXISTS Import;
 DROP TABLE IF EXISTS EqCalculation;
+DROP TABLE IF EXISTS Confusion;
 
 CREATE TABLE Term
 (
@@ -212,6 +213,15 @@ CREATE TABLE EqCalculation
   compileSessionId INTEGER,
   eq REAL,
   CONSTRAINT FK_eqCalculation_compileSession FOREIGN KEY (compileSessionId)
+    REFERENCES CompileSession (id)
+);
+
+CREATE TABLE Confusion
+(
+  id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  compileSessionId INTEGER,
+  confusion REAL,
+  CONSTRAINT FK_confusion_compileSession FOREIGN KEY (compileSessionId)
     REFERENCES CompileSession (id)
 );
 

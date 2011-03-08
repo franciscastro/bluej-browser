@@ -58,13 +58,14 @@ class CompileSession extends CActiveRecord
 			array('id, deltaVersion, extensionVersion, systemUser, home, osName, osVersion, osArch, ipAddress, hostName, locationId, projectId, sessionId, projectPath, packagePath, deltaName', 'safe', 'on'=>'search'),
 		);
 	}
-  
-  public function behaviors()
-  {
-    return array(
-      'class'=>'application.components.CalculateEq',
-    );
-  }
+
+	public function behaviors()
+	{
+		return array(
+			'eq' => array('class'=>'application.components.CalculateEq'),
+			'confusion' => array('class'=>'application.components.CalculateConfusion'),
+		);
+	}
 
 	/**
 	 * @return array relational rules.
