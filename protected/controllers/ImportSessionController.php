@@ -267,15 +267,21 @@ class ImportSessionController extends Controller
 
 	public function actionExport()
 	{
+		$model = $this->loadModel();
 		$exportName = $this->getExportName();
 		$exportZip = Yii::app()->file->set(Yii::app()->params['exportRoot'] . '/' . $exportName . '.zip');
 		if($exportZip->getIsFile()) {
 			if($model->start != null && ($model->end == null || $model->end > $exportZip->timeModified)) {
 				$exportZip->delete(true);
 				$exportZip->create();
-				$exportDir = makeExportDir($exportName, $this->loadModel());
+				$exportDir = $this->makeExportDir($exportName, $model);
 				Yii::app()->zip->makeZip($exportDir->getRealPath(), $exportZip->getRealPath());
 			}
+		}
+		else {
+			$exportZip->create();
+			$exportDir = $this->makeExportDir($exportName, $model);
+			Yii::app()->zip->makeZip($exportDir->getRealPath(), $exportZip->getRealPath());
 		}
 		Yii::app()->getRequest()->sendFile(basename($exportZip->getBaseName()), file_get_contents($exportZip->getRealPath()));
 	}
