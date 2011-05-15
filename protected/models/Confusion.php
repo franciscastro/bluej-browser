@@ -88,7 +88,7 @@ class Confusion extends CActiveRecord
 			'criteria'=>$criteria,
 		));
 	}
-	
+
 	public function calculate() {
 		$criteria = new CDbCriteria;
 		$criteria->select = 'fileName';
@@ -96,83 +96,87 @@ class Confusion extends CActiveRecord
 		$criteria->condition = 'compileSessionId=:id';
 		$command = Yii::app()->db->getCommandBuilder()->createFindCommand('CompileSessionEntry', $criteria);
 		$fileNames = $command->queryColumn(array('id'=>$this->compileSessionId));
-		
+
 		$lastId = 0;
 		$totalClips = 0.0;
 		$labeledConfused = 0.0;
-		
+
 		foreach($fileNames as $fileName) {
 			$hasMore = true;
 			while($hasMore)
 			{
-		$entries = CompileSessionEntry::model()->findAll('compileSessionId=:id AND id>:lastId ORDER BY deltaSequenceNumber LIMIT 8', array('id'=>$this->compileSessionId, 'lastId'=>$lastId));
-		$count = count($entries);
-		if($count < 8) {
-		// bad clip
-			$hasMore = false;
+				$entries = CompileSessionEntry::model()->findAll('compileSessionId=:id AND id>:lastId ORDER BY deltaSequenceNumber LIMIT 8', array('id'=>$this->compileSessionId, 'lastId'=>$lastId));
+				$count = count($entries);
+				if($count < 8) {
+				// bad clip
+					$hasMore = false;
+				}
+				else {
+					$totalClips++;
+					$compTime = array();
+					$compTimeError = array();
+					$compileTime = 0; // first compile time
+					$compileError = 0; // first error Compile time
+					$errorCount = 0;
+
+					foreach($entries as $compilation)
+					{
+						$currentCompTime = $compilation->timestamp;
+
+						if( $compileTime != 0 )
+						{
+							$compTime[] = $currentCompTime - $compileTime;
+						}
+
+						if($compilation->messageType == "ERROR")
+						{
+							if($compileError != 0)
+							{
+								$compTimeError[] = $currentCompTime - $compileError;
+							}
+							$compError = $currentCompTime;
+							$errorCount++;
+						}
+						else
+						{
+							$compError = 0;
+						}
+
+						$compileTime = $currentCompTime;
+					}
+
+					$features['maxComp'] = $this->getMaxValue($compTime);
+					$features['maxErr'] = $this->getMaxValue($compTimeError);
+					$features['aveComp'] = $this->getAverage($compTime);
+					$features['aveErr'] = $this->getAverage($compTimeError);
+					$features['errorCount'] = $errorCount;
+
+					if( $this->studentconfusion( $features ) ){
+						$labeledConfused++;
+					}
+					$lastId = $entries[$count-1]->id;
+				}
+			}
+		}
+		if($totalClips == 0) {
+			$conf = 0;
 		}
 		else {
-			$totalClips++;
-			$compTime = array();
-			$compTimeError = array();
-			$compileTime = 0; // first compile time
-			$compileError = 0; // first error Compile time
-			$errorCount = 0;
-			
-			foreach($entries as $compilation)
-			{
-				$currentCompTime = $compilation->timestamp;
-				
-				if( $compileTime != 0 )
-				{
-					$compTime[] = $currentCompTime - $compileTime;
-				}
-				
-				if($compilation->messageType == "ERROR")
-				{
-					if($compileError != 0)
-					{
-						$compTimeError[] = $currentCompTime - $compileError;
-					}
-					$compError = $currentCompTime;
-					$errorCount++;
-				}
-				else
-				{
-					$compError = 0;
-				}
-				
-				$compileTime = $currentCompTime;
-			}
-			
-			$features['maxComp'] = $this->getMaxValue($compTime);
-			$features['maxErr'] = $this->getMaxValue($compTimeError);
-			$features['aveComp'] = $this->getAverage($compTime);
-			$features['aveErr'] = $this->getAverage($compTimeError);
-			$features['errorCount'] = $errorCount;
-			
-			if( $this->studentconfusion( $features ) ){
-				$labeledConfused++;
-			}
+			$conf = $labeledConfused/$totalClips;
 		}
-		
-		$lastId = $entries[$count-1]->id;
-			}
-		}
-		$conf = $labeledConfused/$totalClips;
 		$this->confusion = $conf; // put confusion % heeeere
 		$this->save();
 	}
-	
+
 	public function studentconfusion( $features ){
 		$maxComp = $features['maxComp']; // max time bet. compilations
 		$aveComp = $features['aveComp']; // average time bet. compilations
 		$maxCompErr = $features['maxErr']; // max time bet. compilations with errors
 		$aveCompErr = $features['aveErr']; // average time bet. compilations with errors
-		$numCompErr = $features['errorCount']; // number of compilations with errors 
-		
+		$numCompErr = $features['errorCount']; // number of compilations with errors
+
 		$confused = true;
-		
+
 		if( $numCompErr <= 3.500 )
 		{
 			if( $maxCompErr <= 23.500 )
@@ -185,17 +189,17 @@ class Confusion extends CActiveRecord
 				{
 					if( $maxCompErr > 88.500 )
 					{
-						$confused = false; 
+						$confused = false;
 					}
 					else
 					{
 						if( $aveCompErr <= 21.917 )
 						{
-							$confused = false; 
+							$confused = false;
 						}
 						else
 						{
-							if( $aveComp > 203.714 ) 
+							if( $aveComp > 203.714 )
 							{
 								$confused = false;
 							}
@@ -211,32 +215,33 @@ class Confusion extends CActiveRecord
 				}
 			}
 		}
-		
+
 		return $confused;
 	}
-	
-	
+
+
 	public function getAverage( $array )
 	{
 		$sum = 0;
-		foreach( $array as $val ) 
+		foreach( $array as $val )
 		{
 			$sum = $sum + $val;
 		}
 		$total = count($array);
 		if($total == 0)
 		{
-			$total = 1; 
+			$total = 1;
 		}
 		$average = $sum/$total;
 		return $average;
 	}
-	
+
 	public function getMaxValue( $array )
 	{
-		sort($array);
-		$last = count($array) - 1;
-		return $array[$last];
+		if(count($array) == 0) {
+			return 0;
+		}
+		return max($array);
 	}
 
 }
