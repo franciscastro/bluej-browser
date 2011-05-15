@@ -14,6 +14,7 @@ DROP TABLE IF EXISTS ImportSession;
 DROP TABLE IF EXISTS Import;
 DROP TABLE IF EXISTS EqCalculation;
 DROP TABLE IF EXISTS Confusion;
+DROP TABLE IF EXISTS ErrorClass;
 
 CREATE TABLE Term
 (
@@ -223,6 +224,15 @@ CREATE TABLE Confusion
 	confusion REAL,
 	CONSTRAINT FK_confusion_compileSession FOREIGN KEY (compileSessionId)
 		REFERENCES CompileSession (id)
+);
+
+CREATE TABLE ErrorClass
+(
+  id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  compileSessionEntryId INTEGER,
+  error TEXT,
+  CONSTRAINT FK_errorClass_compileSessionEntry FOREIGN KEY (compileSessionEntryId)
+    REFERENCES CompileSessionEntry (id)
 );
 
 INSERT INTO Term VALUES (1, 0, "Root");
