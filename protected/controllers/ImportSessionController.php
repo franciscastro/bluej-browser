@@ -267,43 +267,49 @@ class ImportSessionController extends Controller
 
 	public function actionExport()
 	{
-		$model = $this->loadModel();
-		$importModels = $model->imports;
-
-		$exportName = $model->id;
-		if($model->source != 'live') {
-			$exportName = substr($model->path, 1);
-			$exportName = str_replace('\\', '-', $exportName);
-			$exportName = str_replace('/', '-', $exportName);
-		}
-		else {
-			$majorTerms = array();
-			foreach($model->terms as $term) {
-				if($term->parentId == Term::TERM_OTHER) continue;
-				$majorTerms[$term->parentId] = $term->name;
-			}
-			$majorTerms[] = $model->id;
-			$exportName = implode($majorTerms, '-');
-		}
+		$exportName = $this->getExportName();
 		$exportZip = Yii::app()->file->set(Yii::app()->params['exportRoot'] . '/' . $exportName . '.zip');
-		$exportDir = Yii::app()->file->set(Yii::app()->params['exportRoot'] . '/' . $exportName . '/');
-
-		if($exportDir->getIsDir()) {
-			$exportDir->delete(true);
-		}
 		if($exportZip->getIsFile()) {
-			$exportZip->delete();
+			if($model->start != null && ($model->end == null || $model->end > $exportZip->timeModified)) {
+				$exportZip->delete(true);
+				$exportZip->create();
+				$exportDir = makeExportDir($exportName, $this->loadModel());
+				Yii::app()->zip->makeZip($exportDir->getRealPath(), $exportZip->getRealPath());
+			}
 		}
-		$exportDir->createDir();
-		chdir($exportDir->getRealPath());
+		Yii::app()->getRequest()->sendFile(basename($exportZip->getBaseName()), file_get_contents($exportZip->getRealPath()));
+	}
 
-		foreach($importModels as $importModel) {
-			$fp = fopen($importModel->session->user->name . '-' . $importModel->session->type . '-' . $importModel->session->id . '.csv', 'w');
-			$sessionModel = $importModel->session->child;
-			$sessionModel->doExport($fp);
+	public function actionExportAll()
+	{
+		$search=new ImportSession('search');
+		$search->unsetAttributes();  // clear any default values
+		if(isset($_GET['ImportSession']))
+			$search->attributes=$_GET['ImportSession'];
+		if(Yii::app()->user->hasRole(array('Teacher'))) {
+			$search->sectionId = $this->modelArrayToAttributeArray(Yii::app()->user->getModel()->sections, 'id');
+		}
+		$models = $search->search()->getData();
+		$exportDirs = array();
+		foreach($models as $model) {
+			$exportName = $this->getExportName($model);
+			$exportDir = $this->makeExportDir($exportName, $model);
+			$exportDirs[] = $exportDir->getRealPath();
+		}
+
+		$exportName = 'all';
+		if(isset($_GET['tags'])) {
+			$termNames = preg_split('/\s*,\s*/', $_GET['tags'], null, PREG_SPLIT_NO_EMPTY);
+			$exportName = implode('-', $termNames);
+		}
+
+		$exportZip = Yii::app()->file->set(Yii::app()->params['exportRoot'] . '/' . $exportName . '.zip');
+		if($exportZip->getIsFile()) {
+			$exportZip->delete(true);
 		}
 		$exportZip->create();
-		Yii::app()->zip->makeZip($exportDir->getRealPath(), $exportZip->getRealPath());
+		Yii::app()->zip->makeZip($exportDirs, $exportZip->getRealPath());
+
 		Yii::app()->getRequest()->sendFile(basename($exportZip->getBaseName()), file_get_contents($exportZip->getRealPath()));
 	}
 
@@ -341,5 +347,52 @@ class ImportSessionController extends Controller
 			return CActiveRecord::model('Section');
 		}
 		return CActiveRecord::model('Term');
+	}
+
+	private function getExportName($model = null) {
+		if($model == null) {
+			$model = $this->loadModel();
+		}
+
+		$exportName = $model->id;
+		if($model->source != 'live') {
+			$exportName = substr($model->path, 1);
+			$exportName = str_replace('\\', '-', $exportName);
+			$exportName = str_replace('/', '-', $exportName);
+		}
+		else {
+			$majorTerms = array();
+			foreach($model->terms as $term) {
+				if($term->parentId == Term::TERM_OTHER) continue;
+				$majorTerms[$term->parentId] = $term->name;
+			}
+			$majorTerms[] = $model->id;
+			$exportName = implode($majorTerms, '-');
+		}
+		return $exportName;
+	}
+
+	private function makeExportDir($exportName, $model) {
+		$exportDir = Yii::app()->file->set(Yii::app()->params['exportRoot'] . '/' . $exportName . '/');
+
+		if($exportDir->getIsDir()) {
+			if($model->start != null && ($model->end == null || $model->end > $exportDir->timeModified)) {
+				$exportDir->delete(true);
+			}
+			else {
+				return $exportDir;
+			}
+		}
+		$exportDir->createDir();
+		chdir($exportDir->getRealPath());
+
+		$importModels = $model->imports;
+		foreach($importModels as $importModel) {
+			$fp = fopen($importModel->session->user->name . '-' . $importModel->session->type . '-' . $importModel->session->id . '.csv', 'w');
+			$sessionModel = $importModel->session->child;
+			$sessionModel->doExport($fp);
+		}
+
+		return $exportDir;
 	}
 }

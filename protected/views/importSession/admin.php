@@ -6,6 +6,7 @@ $this->breadcrumbs=array(
 $this->menu=array(
 	array('label'=>'Upload Log Files', 'url'=>array('create')),
 	array('label'=>'Start Live Session', 'url'=>array('createLive')),
+	array('label'=>'Export All', 'url'=>isset($_GET['tags']) ? array('exportAll', 'tags'=>$_GET['tags']) : array('exportAll')),
 );
 /*
 Yii::app()->clientScript->registerScript('search', "
