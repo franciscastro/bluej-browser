@@ -89,15 +89,15 @@ class ErrorClass extends CActiveRecord
 			'criteria'=>$criteria,
 		));
 	}
-  
+
   /**
    * Gets the error class of the associated compilation session.
    */
   public function assignClass($message)
   {
-    
+
     if($message == '') return;
-    
+
     $error_class = '';
     $msg_message = $message;
     //stripos expectations
@@ -229,231 +229,231 @@ class ErrorClass extends CActiveRecord
     $pos_semi_colon = stripos($msg_message, "';'");
     $pos_exp = stripos($msg_message, "expected");
     //find which one it is
-    
+
     if ($pos_semi_colon !== false) {
       $error_class = 'semicolon';
-    } 
+    }
     elseif ($pos_class_interface_expected !== false) {
       $error_class = 'class-or-interface-expected';
-    } 
+    }
     elseif ($pos_invalid_method !== false) {
       $error_class = 'return-type-required';
-    } 
+    }
     elseif ($pos_unexpected_type !== false) {
       $error_class = 'unexpected-type';
-    } 
+    }
     elseif ($pos_class_expected !== false) {
       $error_class = '.class-expected';
-    } 
+    }
     elseif ($pos_empty_character_literal !== false) {
       $error_class = 'empty-character-literal';
-    } 
+    }
     elseif ($pos_illegal_start !== false) {
       $error_class = 'illegal-start-of-expression';
-    } 
+    }
     elseif ($pos_illegal_start_type !== false) {
       $error_class = 'illegal-start-of-type';
-    } 
+    }
     elseif ($pos_illegal_esc !== false) {
       $error_class = 'illegal-escape-character';
-    } 
+    }
     elseif ($pos_unclosed_char_lit !== false) {
       $error_class = 'unclosed-character-literal';
-    } 
+    }
     elseif ($pos_not_statement !== false) {
       $error_class = 'not-a-statement';
-    } 
+    }
     elseif ($pos_unreachable !== false) {
       $error_class = 'unreachable-statement';
-    } 
+    }
     elseif ($pos_missing_return !== false) {
       $error_class = 'missing-return';
-    } 
+    }
     elseif ($pos_else_if !== false) {
       $error_class = 'else-without-if';
-    } 
+    }
     elseif ($pos_method_void !== false) {
       $error_class = 'no-return-void-method';
-    } 
+    }
     elseif ($pos_array_dim_missing !== false) {
       $error_class = 'array-dim-missing';
-    } 
+    }
     elseif ($pos_unclosed_com !== false) {
       $error_class = 'unclosed-comment';
-    } 
+    }
     elseif ($pos_missing_body !== false) {
       $error_class = 'missing-body-or-abstract';
-    } 
+    }
     elseif ($pos_inconvertible_types !== false) {
       $error_class = 'inconvertible-types';
-    } 
+    }
     elseif ($pos_loss_precision !== false) {
       $error_class = 'loss-of-precision';
-    } 
+    }
     elseif ($pos_bracket !== false) {
-      $error_class = 'bracket-expected';
-    } 
+      $error_class = 'parenthesis-expected';
+    }
     elseif ($pos_bracket2 !== false) {
-      $error_class = 'bracket-expected';
-    } 
+      $error_class = 'closing-parenthesis-expected';
+    }
     elseif ($pos_bracket3 !== false) {
-      $error_class = 'bracket-expected';
-    } 
+      $error_class = 'brace-expected';
+    }
     elseif ($pos_bracket4 !== false) {
-      $error_class = 'bracket-expected';
-    } 
+      $error_class = 'closing-brace-expected';
+    }
     elseif ($pos_bracket5 !== false) {
       $error_class = 'bracket-expected';
-    } 
+    }
     elseif ($pos_bracket6 !== false) {
-      $error_class = 'bracket-expected';
-    } 
+      $error_class = 'closing-bracket-expected';
+    }
     elseif ($pos_symbol !== false) {
       if ($pos_symbol_var !== false) {
         $error_class = 'unknown-variable';
-      } 
+      }
       elseif ($pos_symbol_method !== false ){
         $error_class = 'unknown-method';
       }
       elseif ($pos_symbol_class !== false) {
         $error_class = 'unknown-class';
-      } 
+      }
       elseif ($pos_symbol_constructor !== false) {
         $error_class = 'unknown-constructor';
-      } 
+      }
       else {
         $error_class = 'unknown-symbol';
       }
-    } 
+    }
     elseif ($pos_package !== false && $pos_package2 !== false) {
       $error_class = 'package-not-exist';
-    } 
+    }
     elseif ($pos_incompatible_types !== false && $pos_incompatible_types2 !== false && $pos_incompatible_types3 !== false) {
       $error_class = 'incompatible-types';
-    } 
+    }
     elseif ($pos_type_mismatch !== false && $pos_type_mismatch2 !== false) {
       $error_class = 'type-mismatch';
-    } 
+    }
     elseif ($pos_illegal_char !== false) {
       $error_class = 'illegal-character';
-    } 
+    }
     elseif ($pos_op_application_error !== false && $pos_op_application_error2 !== false) {
       $error_class = 'op-application-error';
-    } 
+    }
     elseif ($pos_method_application_error !== false && $pos_method_application_error2 !== false) {
       $error_class = 'method-application-error';
-    } 
+    }
     elseif ($pos_dereferencing_error !== false) {
       $error_class = 'dereferencing-error';
-    } 
+    }
     elseif ($pos_uninit_var !== false && $pos_uninit_var2 !== false) {
       $error_class = 'possible-uninit-variable';
-    } 
+    }
     elseif ($pos_prev_def !== false) {
       $error_class = 'previously-defined-variable';
-    } 
+    }
     elseif ($pos_assign_final !== false) {
       $error_class = 'assign-to-final';
-    } 
+    }
     elseif ($pos_access_violation !== false) {
       $error_class = 'access-violation';
-    } 
+    }
     elseif ($pos_method_reference !== false) {
       $error_class = 'method-reference-from-static-contect';
-    } 
+    }
     elseif ($pos_bad_modifier !== false) {
       $error_class = 'bad-modifier-combination';
-    } 
+    }
     elseif ($pos_public_class !== false && $pos_public_class2 !== false && $pos_public_class3 !== false) {
       $error_class = 'class-public-in-file';
-    } 
+    }
     elseif ($pos_file_io !== false) {
       $error_class = 'file-io';
-    } 
+    }
     elseif ($pos_cannot_access !== false) {
       $error_class = 'cannot-access';
-    } 
+    }
     elseif ($pos_void_type !== false) {
       $error_class = 'void-type';
-    } 
+    }
     elseif ($pos_incomparable_types !== false) {
       $error_class = 'incomparable-types';
-    } 
+    }
     elseif ($pos_modifier_static !== false) {
       $error_class = 'modifier-static';
-    } 
+    }
     elseif ($pos_dot !== false) {
       $error_class = 'dot-expected';
-    } 
+    }
     elseif ($pos_super !== false && $pos_super2 !== false) {
       $error_class = 'super-first-statement';
-    } 
+    }
     elseif ($pos_non_static_var !== false) {
       $error_class = 'non-static-in-static-context';
-    } 
+    }
     elseif ($pos_weaker_privs !== false && $pos_weaker_privs2 !== false) {
       $error_class = 'weaker_privs';
-    } 
+    }
     elseif ($pos_no_instantiate !== false) {
       $error_class = 'abstract-no-instantiate';
-    } 
+    }
     elseif ($pos_abs_no_override !==false && $pos_abs_no_override2 !== false) {
       $error_class = 'abstract-no-override';
-    } 
+    }
     elseif ($pos_cannot_override_ret !== false) {
       $error_class = 'cannot-override-ret-type';
-    } 
+    }
     elseif ($pos_var_final !== false && $pos_var_final2 !== false && $pos_var_final3 !== false) {
       $error_class = 'declare-var-final';
-    } 
+    }
     elseif ($pos_catch_try !== false) {
       $error_class = 'catch-without-try';
-    } 
+    }
     elseif ($pos_catch_without !== false) {
       $error_class = 'try-without-catch';
-    } 
+    }
     elseif ($pos_unreported_exception !== false && $pos_unreported_exception2 !== false) {
       $error_class = 'unreported-exception';
-    } 
+    }
     elseif ($pos_unthrown_exception !== false && $pos_unthrown_exception2 !== false) {
       $error_class = 'unthrown-exception';
-    } 
+    }
     elseif ($pos_break_outside !== false) {
       $error_class = 'break-outside';
     }
     elseif ($pos_while_expected !== false) {
       $error_class = 'while-expected';
-    } 
+    }
     elseif ($pos_class_expected !== false) {
       $error_class = 'class-expected';
-    } 
+    }
     elseif ($pos_missing_ret_val !== false) {
       $error_class = 'missing-ret-val';
-    } 
+    }
     elseif ($pos_unclosed_string !== false) {
       $error_class = 'unclosed-string';
-    } 
+    }
     elseif ($pos_not_enc_class !== false) {
       $error_class = 'not-enc-class';
-    } 
+    }
     elseif ($pos_colon_expected !== false) {
       $error_class = 'colon-expected';
-    } 
+    }
     elseif ($pos_orphaned_case !== false) {
       $error_class = 'orphaned-case';
-    } 
+    }
     elseif ($pos_duplicate_lab !== false) {
       $error_class = 'duplicate-default-lab';
-    } 
+    }
     elseif ($pos_ret_outside_method !== false) {
       $error_class = 'ret-outside-method';
-    } 
+    }
     elseif ($pos_repeat_modifier !== false) {
       $error_class = 'repeated-modifier';
-    } 
+    }
     elseif ($pos_ref_before !== false && $pos_ref_before2 !== false && $pos_ref_before3 !== false) {
       $error_class = 'ref-before-supertype';
-    } 
+    }
     elseif ($pos_not_here !== false && $pos_not_here2 !== false) {
       $error_class = 'modifier-not-here';
     }
@@ -465,46 +465,46 @@ class ErrorClass extends CActiveRecord
     }
     elseif ($pos_eq !== false) {
       $error_class = 'eq-expected';
-    } 
+    }
     elseif ($pos_no_int !== false) {
       $error_class = 'no-interface-expected';
-    } 
+    }
     elseif ($pos_int !== false) {
       $error_class = 'interface-expected';
-    } 
+    }
     elseif ($pos_access_outside !== false) {
       $error_class = 'access-outside-pkg';
-    } 
+    }
     elseif ($pos_illegal_fwd !== false) {
       $error_class = 'illeg-fwd-reference';
-    } 
+    }
     elseif ($pos_abs_no_body !== false) {
       $error_class = 'abstract-no-body';
-    } 
+    }
     elseif ($pos_int_no_body !== false) {
       $error_class = 'interface-no-body';
-    } 
+    }
     elseif ($pos_exp_caught !== false && $pos_exp_caught2 !== false) {
       $error_class = 'exception-already-caught';
-    } 
+    }
     elseif (($pos_iden_exp !== false) && ($pos_iden_exp2 !== false)) {
       $error_class = 'identifier-expected';
-    } 
+    }
     elseif ($msg_message == "expected") {
       $error_class = 'unknown';
-    } 
+    }
     elseif ($pos_unreachable_statement !== false) {
       $error_class = 'unreachable-statement';
-    } 
+    }
     elseif ($pos_abs_not_reach !== false && $pos_abs_not_reach2 !== false) {
       $error_class = 'abstract-not-reachable';
-    } 
+    }
     elseif ($pos_illegal_init !== false) {
       $error_class = 'illegal-initiaizer';
-    } 
+    }
     elseif ($pos_int_large !== false) {
       $error_class = 'int-too-large';
-    } 
+    }
     else {
       $error_class = 'unknown';
     }
