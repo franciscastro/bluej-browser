@@ -12,7 +12,10 @@ $this->breadcrumbs=array(
 <?php $this->widget('zii.widgets.CDetailView', array(
 	'data'=>$viewData,
 	'attributes'=>array(
-		'average',
+		'average' => array(
+			'label' => 'Average',
+			'value' => sprintf("%.2f", $viewData["average"] * 100),
+		),
 	),
 )); ?>
 
@@ -20,6 +23,9 @@ $this->breadcrumbs=array(
 		'dataProvider'=>$dataProvider,
 		'columns'=>array(
 			'name:raw:Student',
-			'confusion:raw:Confusion Rate',
+			'confusion' => array(
+				'name' => 'Confusion Rate',
+				'value' => 'sprintf("%.2f", $data["confusion"] * 100)',
+			),
 		),
 )); ?>

@@ -104,6 +104,7 @@ class ReportController extends Controller {
 				'topEqData'=>$topEqData,
 				'topErrorsData'=>$topErrorsData,
 				'timeDeltaData'=>$timeDeltaData,
+				'topConfusedData'=>$topConfusedData,
 			));
 		}
 		else {
@@ -111,6 +112,7 @@ class ReportController extends Controller {
 				'topEqData'=>$topEqData,
 				'topErrorsData'=>$topErrorsData,
 				'timeDeltaData'=>$timeDeltaData,
+				'topConfusedData'=>$topConfusedData,
 			));
 		}
 	}

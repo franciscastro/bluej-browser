@@ -23,9 +23,10 @@ echo CHtml::script($script);
 <h1>General Summary</h1>
 <div id="general-summary">
 <?php $this->renderPartial('_summary', array(
-					'topEqData'=>$topEqData,
-					'topErrorsData'=>$topErrorsData,
-					'timeDeltaData'=>$timeDeltaData,
-				)); 
+	'topEqData'=>$topEqData,
+	'topErrorsData'=>$topErrorsData,
+	'timeDeltaData'=>$timeDeltaData,
+	'topConfusedData'=>$topConfusedData,
+));
 ?>
 </div>
