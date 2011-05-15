@@ -267,6 +267,7 @@ class ImportSessionController extends Controller
 
 	public function actionExport()
 	{
+		set_time_limit(0);
 		$model = $this->loadModel();
 		$exportName = $this->getExportName();
 		$exportZip = Yii::app()->file->set(Yii::app()->params['exportRoot'] . '/' . $exportName . '.zip');
@@ -286,8 +287,11 @@ class ImportSessionController extends Controller
 		Yii::app()->getRequest()->sendFile(basename($exportZip->getBaseName()), file_get_contents($exportZip->getRealPath()));
 	}
 
+	private $_processed;
+
 	public function actionExportAll()
 	{
+		set_time_limit(0);
 		$search=new ImportSession('search');
 		$search->unsetAttributes();  // clear any default values
 		if(isset($_GET['ImportSession']))
@@ -295,12 +299,29 @@ class ImportSessionController extends Controller
 		if(Yii::app()->user->hasRole(array('Teacher'))) {
 			$search->sectionId = $this->modelArrayToAttributeArray(Yii::app()->user->getModel()->sections, 'id');
 		}
-		$models = $search->search()->getData();
+		$search = $search->search();
+		$search->setPagination(false);
+		$models = $search->getData();
+
 		$exportDirs = array();
+		$this->_processed = false;
+		$count = 0;
 		foreach($models as $model) {
+			$count++;
 			$exportName = $this->getExportName($model);
 			$exportDir = $this->makeExportDir($exportName, $model);
 			$exportDirs[] = $exportDir->getRealPath();
+			if($this->_processed) {
+				header('refresh:1;url='.Yii::app()->request->getRequestURI());
+				$count = (count($models)-$count);
+				if($count == 0) {
+					echo 'Almost done! Just zipping up the file...';
+				}
+				else {
+					echo 'Processing... ' . $count . ' to go!';
+				}
+				exit;
+			}
 		}
 
 		$exportName = 'all';
@@ -398,7 +419,7 @@ class ImportSessionController extends Controller
 			$sessionModel = $importModel->session->child;
 			$sessionModel->doExport($fp);
 		}
-
+		$this->_processed = true;
 		return $exportDir;
 	}
 }
