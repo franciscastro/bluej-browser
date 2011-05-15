@@ -92,7 +92,7 @@ CREATE TABLE Session
 (
 	id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
 	userId INTEGER,
-	date DATE,
+	date INTEGER,
 	type TEXT,
 	CONSTRAINT FK_user_session FOREIGN KEY (userId)
 		REFERENCES User (id)
@@ -190,8 +190,8 @@ CREATE TABLE ImportSession
 	sectionId INTEGER,
 	source TEXT,
 	path TEXT,
-	start DATE,
-	end DATE,
+	start INTEGER,
+	end INTEGER,
 	remarks TEXT
 );
 
