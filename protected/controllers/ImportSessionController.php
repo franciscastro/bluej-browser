@@ -89,9 +89,9 @@ class ImportSessionController extends Controller
 			else {
 				$file = null;
 			}
-			if($file !== null && $file->saveAs($sourceFile)) { 
+			if($file !== null && $file->saveAs($sourceFile)) {
 				$sourcePath = Yii::app()->params['importRoot'] . $this->id;
-				
+
 				$tempDir = Yii::app()->file->set($sourcePath);
 				if($tempDir->exists) {
 					$tempDir->delete(true);
@@ -101,7 +101,7 @@ class ImportSessionController extends Controller
 				if(Yii::app()->zip->extractZip($sourceFile, $sourcePath)) {
 					$files = CFileHelper::findFiles($sourcePath, array('fileTypes'=>array('sqlite'), 'exclude'=>array('.htaccess')));
 					$transaction = Import::model()->dbConnection->beginTransaction();
-					
+
 					$prevDir = '';
 					foreach($files as $file) {
 						$directory = dirname($file);
@@ -114,13 +114,13 @@ class ImportSessionController extends Controller
 							$model->path = $directory;
 							$termNames = str_ireplace(',', ';', $directory);
 							$termNames = str_ireplace(DIRECTORY_SEPARATOR, ',', $termNames);
-							
+
 							$_POST['term'][Term::TERM_OTHER] = $termNames;
 							$model->newTerms = $this->getTermModel()->getNewTerms();
-							$model->save();              
+							$model->save();
 						}
-						
-						
+
+
 						$import = new Import;
 						$import->sessionId = 0;
 						$import->importSessionId = $model->id;
@@ -130,7 +130,7 @@ class ImportSessionController extends Controller
 					}
 					$transaction->commit();
 					$this->redirect(array('view','id'=>$model->id));
-					
+
 				}
 				else {
 					$model->addError('source', 'There was a problem with the file you uploaded.');
@@ -143,14 +143,14 @@ class ImportSessionController extends Controller
 			'terms'=>$this->getTermModel()->getViewData(),
 		));
 	}
-	
+
 	public function actionCreateLive()
 	{
 		$model=new ImportSession;
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
-		
+
 		if(isset($_POST['ImportSession']))
 		{
 			$model->attributes=$_POST['ImportSession'];
@@ -170,11 +170,11 @@ class ImportSessionController extends Controller
 			'terms'=>$this->getTermModel()->getViewData(array()),
 		));
 	}
-	
+
 	public function actionStopLive()
 	{
 		$model=$this->loadModel();
-		
+
 		if(Yii::app()->request->isPostRequest)
 		{
 			$model->newTerms = $model->terms;
@@ -183,7 +183,7 @@ class ImportSessionController extends Controller
 				if(!isset($_GET['ajax']))
 					$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('view','id'=>$model->id));
 			}
-			
+
 		}
 		else
 			throw new CHttpException(400,'Invalid request. Please do not repeat this request again.');
@@ -196,7 +196,7 @@ class ImportSessionController extends Controller
 	public function actionUpdate()
 	{
 		$model=$this->loadModel();
-				
+
 		if(isset($_POST['ImportSession']))
 		{
 			$model->attributes=$_POST['ImportSession'];
@@ -249,7 +249,7 @@ class ImportSessionController extends Controller
 			'model'=>$model,
 		));
 	}
-	
+
 	/**
 	 * Does importing.
 	 */
@@ -258,21 +258,36 @@ class ImportSessionController extends Controller
 		$models = Import::model()->findAllByAttributes(array(
 			'sessionId' => 0,
 		));
-		
+
 		foreach($models as $model) {
 			$model->doImport();
 		}
 		$this->redirect(array('viewImports'));
 	}
-	
+
 	public function actionExport()
 	{
 		$model = $this->loadModel();
 		$importModels = $model->imports;
-		
-		$exportZip = Yii::app()->file->set(Yii::app()->params['exportRoot'] . '/' . $model->id . '.zip');
-		$exportDir = Yii::app()->file->set(Yii::app()->params['exportRoot'] . '/' . $model->id . '/');
-		
+
+		$exportName = $model->id;
+		if($model->source != 'live') {
+			$exportName = substr($model->path, 1);
+			$exportName = str_replace('\\', '-', $exportName);
+			$exportName = str_replace('/', '-', $exportName);
+		}
+		else {
+			$majorTerms = array();
+			foreach($model->terms as $term) {
+				if($term->parentId == Term::TERM_OTHER) continue;
+				$majorTerms[$term->parentId] = $term->name;
+			}
+			$majorTerms[] = $model->id;
+			$exportName = implode($majorTerms, '-');
+		}
+		$exportZip = Yii::app()->file->set(Yii::app()->params['exportRoot'] . '/' . $exportName . '.zip');
+		$exportDir = Yii::app()->file->set(Yii::app()->params['exportRoot'] . '/' . $exportName . '/');
+
 		if($exportDir->getIsDir()) {
 			$exportDir->delete(true);
 		}
@@ -281,11 +296,11 @@ class ImportSessionController extends Controller
 		}
 		$exportDir->createDir();
 		chdir($exportDir->getRealPath());
-		
+
 		foreach($importModels as $importModel) {
-			$fp = fopen($importModel->session->id . '.csv', 'w');
-			$sessionModel = CActiveRecord::model($importModel->session->type)->findByPk($importModel->sessionId);
-			$sessionModel->doExport($fp);			
+			$fp = fopen($importModel->session->user->name . '-' . $importModel->session->type . '-' . $importModel->session->id . '.csv', 'w');
+			$sessionModel = $importModel->session->child;
+			$sessionModel->doExport($fp);
 		}
 		$exportZip->create();
 		Yii::app()->zip->makeZip($exportDir->getRealPath(), $exportZip->getRealPath());
@@ -320,7 +335,7 @@ class ImportSessionController extends Controller
 			Yii::app()->end();
 		}
 	}
-	
+
 	public function getTermModel() {
 		if(Yii::app()->user->hasRole(array('Teacher'))) {
 			return CActiveRecord::model('Section');

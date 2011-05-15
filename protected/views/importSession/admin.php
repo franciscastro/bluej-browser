@@ -59,7 +59,13 @@ You may search by tags as well. The search finds all records which have all tags
 		'remarks',
 		array(
 			'class'=>'CButtonColumn',
-			'template'=>'{view} {update}',
+			'buttons'=>array(
+				'export'=>array(
+					'label'=>'Export',
+					'url'=>'Yii::app()->controller->createUrl("export",array("id"=>$row+1))',
+				),
+			),
+			'template'=>'{view} {update} {export}',
 		),
 	),
 )); ?>

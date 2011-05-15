@@ -8,14 +8,28 @@
  * @property integer $userId
  * @property string $date
  * @property string $type
- * 
+ *
  * A generic session. Delegates actions to it's "subclasses",
  * CompileSession and InvocationSession (so far).
  */
 class Session extends CActiveRecord
 {
 	public $newTerms = array();
-	
+	private $_child;
+
+	public function __get($var)
+	{
+		if($var == 'child') {
+			if(isset($_child)) {
+				return $_child;
+			}
+			$type = strtolower(substr($this->type, 0, 1)) . substr($this->type, 1);
+			$_child = $this->$type;
+			return $_child;
+		}
+		return parent::__get($var);
+	}
+
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return Session the static model class
@@ -101,7 +115,7 @@ class Session extends CActiveRecord
 			'criteria'=>$criteria,
 		));
 	}
-	
+
 	/**
 	 * Run after saving a record. Updates the terms of the session.
 	 */
@@ -111,7 +125,7 @@ class Session extends CActiveRecord
 		$this->addTerms(array_udiff($this->newTerms, $oldTerms, array('Term', 'compare')));
 		$this->removeTerms(array_udiff($oldTerms, $this->newTerms, array('Term', 'compare')));
 	}
-	
+
 	/**
 	 * Run before deleting a session, cascades the deletions.
 	 */
@@ -119,7 +133,7 @@ class Session extends CActiveRecord
 		$model = CActiveRecord::model($this->type)->findByPk($this->id)->delete();
 		return parent::beforeDelete();
 	}
-	
+
 	/**
 	 * Adds terms to the session.
 	 * @param array list of Terms to be added
@@ -132,7 +146,7 @@ class Session extends CActiveRecord
 			$relation->save();
 		}
 	}
-	
+
 	/**
 	 * Removes terms from a session.
 	 * @param array list of Terms to be removed
