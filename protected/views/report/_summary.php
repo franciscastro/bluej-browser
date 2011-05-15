@@ -19,7 +19,7 @@
 		</td>
 		<td>
 			<h2>Confused <?php echo CHtml::link('(details)', array('confusion', 'tags'=>$_GET['tags'])); ?></h2>
-			<table id="confusion-summary">        
+			<table id="confusion-summary">
 				<tr>
 					<th>Student</th>
 					<th>Confusion Rate</th>
@@ -38,7 +38,7 @@
 	<tr>
 		<td>
 			<h2>Errors <?php echo CHtml::link('(details)', array('error', 'tags'=>$_GET['tags'])); ?></h2>
-			<table id="error-summary">        
+			<table id="error-summary">
 				<tr>
 					<th>Error</th>
 					<th>Count</th>
@@ -47,7 +47,7 @@
 					<tr><td colspan=2>Nothing to list</td></tr>
 				<?php } else foreach($topErrorsData as $datum): ?>
 					<tr>
-						<td><?php echo $datum['messageText'] ?></td>
+						<td><?php echo $datum['messageText'] == '' ? '&lt;no error&gt;' : $datum['messageText'] ?></td>
 						<td><?php echo $datum['count'] ?></td>
 					</tr>
 				<?php endforeach; ?>

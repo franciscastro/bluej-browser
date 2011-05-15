@@ -12,7 +12,10 @@ $this->breadcrumbs=array(
 <?php $this->widget('zii.widgets.grid.CGridView', array(
 		'dataProvider'=>$dataProvider,
 		'columns'=>array(
-			'messageText:raw:Error',
+			'messageText' => array(
+				'name' => 'Error',
+				'value' => '$data["messageText"] == "" ? "<no error>" : $data["messageText"]'
+			),
 			'count:raw:Count',
 		),
 )); ?>
