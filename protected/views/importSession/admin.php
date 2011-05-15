@@ -64,6 +64,7 @@ You may search by tags as well. The search finds all records which have all tags
 				'export'=>array(
 					'label'=>'Export',
 					'url'=>'Yii::app()->controller->createUrl("export",array("id"=>$row+1))',
+					'imageUrl'=>Yii::app()->baseURL . "/images/disk.png",
 				),
 			),
 			'template'=>'{view} {update} {export}',

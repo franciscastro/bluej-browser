@@ -22,7 +22,7 @@ $this->breadcrumbs=array(
 			))) != null ? ($eqModel->eq >= 0) ? $eqModel->eq : 'n/a' : 'n/a',
 		),
 	),
-)); 
+));
 ?>
 <?php
 $this->widget('zii.widgets.jui.CJuiAccordion', array(
@@ -52,9 +52,10 @@ $this->widget('zii.widgets.jui.CJuiAccordion', array(
 					'label'=>'View',
 					'url'=>'Yii::app()->controller->createUrl("source",array("page"=>$row+1))',
 				),
-				'update'=>array(
+				'compare'=>array(
 					'label'=>'Compare with next',
 					'url'=>'Yii::app()->controller->createUrl("compare",array("page"=>$row+1))',
+					'imageUrl'=>Yii::app()->baseURL . "/images/doc_convert.png",
 					'visible'=>'$row < ' . ($dataProvider->totalItemCount-1),
 				),
 				'delete'=>array(
@@ -63,7 +64,7 @@ $this->widget('zii.widgets.jui.CJuiAccordion', array(
 					'visible'=>'Yii::app()->user->hasRole(array("Administrator", "Researcher"))',
 				),
 			),
-			'template'=>'{view} {update} {delete}'
+			'template'=>'{view} {compare} {delete}'
 		),
 	),
 ));
