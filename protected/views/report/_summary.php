@@ -1,7 +1,7 @@
 <table class='report'>
 	<tr>
 		<td>
-			<h2>EQ <?php echo CHtml::link('(details)', array('eq', 'tags'=>$_GET['tags'])); ?></h2>
+			<h2>EQ ( <?php echo CHtml::link('details', array('eq', 'tags'=>$_GET['tags'])); ?> )</h2>
 			<table id="eq-summary">
 				<tr>
 					<th>Student</th>
@@ -18,7 +18,7 @@
 			</table>
 		</td>
 		<td>
-			<h2>Confused <?php echo CHtml::link('(details)', array('confusion', 'tags'=>$_GET['tags'])); ?></h2>
+			<h2>Confused ( <?php echo CHtml::link('details', array('confusion', 'tags'=>$_GET['tags'])); ?> )</h2>
 			<table id="confusion-summary">
 				<tr>
 					<th>Student</th>
@@ -37,7 +37,10 @@
 	</tr>
 	<tr>
 		<td>
-			<h2>Errors <?php echo CHtml::link('(details)', array('error', 'tags'=>$_GET['tags'])); ?></h2>
+			<h2>Errors (
+				<?php echo CHtml::link('details', array('errorClass', 'tags'=>$_GET['tags'])); ?> |
+				<?php echo CHtml::link('all', array('error', 'tags'=>$_GET['tags'])); ?>
+			) </h2>
 			<table id="error-summary">
 				<tr>
 					<th>Error</th>

@@ -43,9 +43,9 @@ class ReportController extends Controller {
 	{
 		$importSessionIds = $this->getImportSessionIds();
 		$criteria = new CDbCriteria;
-		$criteria->select = 'messageText, COUNT(messageText) AS count';
-		$criteria->group = 'messageText';
-		$criteria->join = 'JOIN Import ON sessionId = compileSessionId';
+		$criteria->select = 'error AS messageText, COUNT(*) AS count';
+		$criteria->group = 'error';
+		$criteria->join = 'JOIN Import ON sessionId = compileSessionId LEFT JOIN ErrorClass ON compileSessionEntryId = t.id';
 		$criteria->condition = 'importSessionId IN ('.implode(',', $importSessionIds).')';
 		$criteria->limit = 10;
 		$criteria->order = 'count DESC';
@@ -277,6 +277,63 @@ class ReportController extends Controller {
 		$criteria->join = 'JOIN Import ON sessionId = compileSessionId';
 		//$criteria->condition = 'compileSessionId IN (' . implode(',', $compileSessionIds) . ')';
 		$criteria->condition = 'importSessionId IN (' . implode(',', $importSessionIds) . ')';
+
+		/*
+		$criteria->select = 'messageText, COUNT(messageText) AS count';
+		$criteria->group = 'messageText';
+		$criteria->condition = "compileSessionId IN (SELECT sessionId FROM SessionTerm WHERE termId IN ($termList) GROUP BY sessionId HAVING COUNT(sessionId) = $numTerms)";
+
+
+		$sort = new CSort('CompileSessionEntry');
+		$sort->ajaxEnabled = true;
+		$sort->attributes = array(
+			'count' => array(
+				'asc' => 'COUNT(messageText)',
+				'desc' => 'COUNT(messageText) DESC',
+				'Label' => 'Count',
+			),
+			'*'
+		);
+		$sort->defaultOrder = 'count DESC';
+		$sort->applyOrder($criteria);
+		*/
+		$command = Yii::app()->db->getCommandBuilder()->createFindCommand('CompileSessionEntry', $criteria);
+		$dataProvider = new CSqlDataProvider($command->text, array(
+			'keyField'=>'messageText',
+			'sort'=>array(
+				'attributes'=>array(
+					'messageText' => array(
+						'asc' => 'messageText',
+						'desc' => 'messageText DESC',
+						'Label' => 'Error',
+					),
+					'count' => array(
+						'asc' => 'COUNT(messageText)',
+						'desc' => 'COUNT(messageText) DESC',
+						'Label' => 'Count',
+					),
+					'*'
+				),
+				'defaultOrder' => 'count DESC',
+			),
+			'pagination'=>false,
+		));
+		$errorData = $dataProvider->getData();
+
+		$this->render('error', array(
+			'dataProvider'=>$dataProvider,
+		));
+
+	}
+
+	public function actionErrorClass() {
+		$importSessionIds = $this->getImportSessionIds();
+		//$compileSessionIds = $this->getCompileSessionIds();
+		$criteria = new CDbCriteria;
+		$criteria->select = 'error AS messageText, COUNT(*) AS count';
+		$criteria->group = 'error';
+		$criteria->join = 'JOIN Import ON sessionId = compileSessionId LEFT JOIN ErrorClass ON compileSessionEntryId = t.id';
+		$criteria->condition = 'importSessionId IN ('.implode(',', $importSessionIds).')';
 
 		/*
 		$criteria->select = 'messageText, COUNT(messageText) AS count';
