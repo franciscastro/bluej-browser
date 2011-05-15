@@ -68,7 +68,10 @@ Time deltas are actually a summary of how many times there
 were compilations that happened within 0-20 seconds of each
 other, 20-40 seconds of each other, etc.
 </p>
-
+<h4>Confusion</h4>
+<p>
+This is how confused the person is.
+</p>
 <h2>Users</h2>
 <p>
 There are 4 kinds of users, Adminstrators, Researchers,
