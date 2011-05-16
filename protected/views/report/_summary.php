@@ -57,7 +57,7 @@
 			</table>
 		</td>
 		<td>
-			<h2>Times</h2>
+			<h2>Times ( <?php echo CHtml::link('details', array('timeDelta', 'tags'=>$_GET['tags'])); ?> )</h2>
 			<table id="time-summary">
 				<tr>
 					<th colspan=3>Time Interval</th>
@@ -66,10 +66,10 @@
 				<?php foreach($timeDeltaData as $n=>$datum): ?>
 					<tr>
 						<?php if($n == 6): ?>
-						<td colspan=3>Above 120</td>
+						<td class="center" colspan=3>Beyond</td>
 						<?php else: ?>
 						<td class="right"><?php echo $datum['from'] ?></td>
-						<td>-</td>
+						<td class="center">-</td>
 						<td><?php echo $datum['to'] ?></td>
 						<?php endif; ?>
 						<td><?php echo $datum['count'] ?></td>

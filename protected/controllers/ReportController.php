@@ -77,16 +77,19 @@ class ReportController extends Controller {
 		// time delta
 		$criteria = new CDbCriteria;
 		if(Yii::app()->db->driverName == 'mysql') {
-			$criteria->select = 'COUNT(a.id) AS count, (a.timestamp - b.timestamp) DIV 20 AS delta';
+			$criteria->select = '(b.timestamp - a.timestamp) DIV 20 AS delta';
 		}
 		else {
-			$criteria->select = 'COUNT(a.id) AS count, (a.timestamp - b.timestamp)/20 AS delta';
+			$criteria->select = '(b.timestamp - a.timestamp)/20 AS delta';
 		}
-		$criteria->join = 'JOIN CompileSessionEntry b ON a.id = b.id+1 AND a.compileSessionId = b.compileSessionId JOIN Import ON a.compileSessionId = sessionId';
+		//$criteria->join = 'JOIN CompileSessionEntry b ON a.id = b.id+1 AND a.compileSessionId = b.compileSessionId JOIN Import ON a.compileSessionId = sessionId';
+		$criteria->join = 'JOIN CompileSessionEntry b ON a.id < b.id AND a.compileSessionId = b.compileSessionId JOIN Import ON a.compileSessionId = sessionId';
 		$criteria->condition = 'importSessionId IN ('.implode(',', $importSessionIds).')';
-		$criteria->group = 'delta';
+		$criteria->group = 'a.id';
 		//$command = Yii::app()->db->createCommand("SELECT COUNT(a.id) AS count, (a.timestamp - b.timestamp)/20 AS delta FROM CompileSessionEntry a, (SELECT id, compileSessionId, timestamp FROM CompileSessionEntry JOIN SessionTerm ON compileSessionId=sessionId WHERE termId = 7 GROUP BY id HAVING COUNT(id) = 1) b WHERE a.id = b.id+1 AND a.compileSessionId = b.compileSessionId GROUP BY delta");
 		$command = Yii::app()->db->getCommandBuilder()->createFindCommand('CompileSessionEntry', $criteria, 'a');
+		$subselect = $command->getText();
+		$command = Yii::app()->db->createCommand("SELECT COUNT(*) count, delta FROM ($subselect) c GROUP BY delta");
 		$timeDeltaData = $command->queryAll();
 		foreach($timeDeltaData as $n=>$datum) {
 			if($n > 6) {
@@ -385,7 +388,56 @@ class ReportController extends Controller {
 
 	}
 
+	public function actionTimeDelta() {
+		$interval = 20;
+		if(isset($_GET['interval']) && is_numeric($_GET['interval'])) {
+			$interval = $_GET['interval'];
+		}
 
+		$importSessionIds = $this->getImportSessionIds();
+		$criteria = new CDbCriteria;
+		if(Yii::app()->db->driverName == 'mysql') {
+			$criteria->select = '(b.timestamp - a.timestamp) DIV '.$interval.' AS delta';
+		}
+		else {
+			$criteria->select = '(b.timestamp - a.timestamp)/'.$interval.' AS delta';
+		}
+		//$criteria->join = 'JOIN CompileSessionEntry b ON a.id = b.id+1 AND a.compileSessionId = b.compileSessionId JOIN Import ON a.compileSessionId = sessionId';
+		$criteria->join = 'JOIN CompileSessionEntry b ON a.id < b.id AND a.compileSessionId = b.compileSessionId JOIN Import ON a.compileSessionId = sessionId';
+		$criteria->condition = 'importSessionId IN ('.implode(',', $importSessionIds).')';
+		$criteria->group = 'a.id';
+		//$command = Yii::app()->db->createCommand("SELECT COUNT(a.id) AS count, (a.timestamp - b.timestamp)/20 AS delta FROM CompileSessionEntry a, (SELECT id, compileSessionId, timestamp FROM CompileSessionEntry JOIN SessionTerm ON compileSessionId=sessionId WHERE termId = 7 GROUP BY id HAVING COUNT(id) = 1) b WHERE a.id = b.id+1 AND a.compileSessionId = b.compileSessionId GROUP BY delta");
+		$command = Yii::app()->db->getCommandBuilder()->createFindCommand('CompileSessionEntry', $criteria, 'a');
+		$subselect = $command->getText();
+
+		$dataProvider = new CSqlDataProvider("SELECT COUNT(*) count, delta FROM ($subselect) c GROUP BY delta", array(
+			'keyField'=>'delta',
+			'sort'=>array(
+				'attributes'=>array(
+					'delta' => array(
+						'asc' => 'delta',
+						'desc' => 'delta DESC',
+						'Label' => 'Range',
+					),
+					'count' => array(
+						'asc' => 'count',
+						'desc' => 'count DESC',
+						'Label' => 'Count',
+					),
+					'*'
+				),
+				'defaultOrder' => 'delta',
+			),
+			'pagination'=>false,
+		));
+		$errorData = $dataProvider->getData();
+
+		$this->render('timeDelta', array(
+			'dataProvider'=>$dataProvider,
+			'interval'=>$interval,
+		));
+
+	}
 // 	function getCompileSessionIds() {
 // 		if(isset($_GET['tags'])) {
 // 			$termNames = array_unique(preg_split('/\s*,\s*/', $_GET['tags'], null, PREG_SPLIT_NO_EMPTY));
