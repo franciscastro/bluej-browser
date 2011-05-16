@@ -3,9 +3,12 @@
 /**
  * Generic session handler that forwards the request to the appropriate
  * controller for the "subclass".
+ *
+ * @author Thomas Dy <thatsmydoing@gmail.com>
+ * @copyright Copyright &copy; 2010-2011 Ateneo de Manila University
+ * @license http://www.opensource.org/licenses/mit-license.php
  */
-class SessionController extends Controller
-{
+class SessionController extends Controller {
 	/**
 	 * @var string the default layout for the views. Defaults to '//layouts/column2', meaning
 	 * using two-column layout. See 'protected/views/layouts/column2.php'.
@@ -20,8 +23,7 @@ class SessionController extends Controller
 	/**
 	 * @return array action filters
 	 */
-	public function filters()
-	{
+	public function filters() {
 		return array(
 			'accessControl', // perform access control for CRUD operations
 		);
@@ -32,8 +34,7 @@ class SessionController extends Controller
 	 * This method is used by the 'accessControl' filter.
 	 * @return array access control rules
 	 */
-	public function accessRules()
-	{
+	public function accessRules() {
 		return array(
 			array('allow',  // allow all users to perform 'index' and 'view' actions
 				'actions'=>array('view','delete'),
@@ -51,8 +52,7 @@ class SessionController extends Controller
 	/**
 	 * Displays a particular model.
 	 */
-	public function actionView()
-	{
+	public function actionView() {
 		$model = $this->loadModel();
 		if(isset($model->type)) {
 			$this->redirect(array($model->type . '/view', 'id'=>$_GET['id']));
@@ -66,10 +66,8 @@ class SessionController extends Controller
 	 * Deletes a particular model.
 	 * If deletion is successful, the browser will be redirected to the 'index' page.
 	 */
-	public function actionDelete()
-	{
-		if(Yii::app()->request->isPostRequest)
-		{
+	public function actionDelete() {
+		if(Yii::app()->request->isPostRequest) {
 			// we only allow deletion via POST request
 			$this->loadModel()->delete();
 
@@ -86,10 +84,8 @@ class SessionController extends Controller
 	 * Returns the data model based on the primary key given in the GET variable.
 	 * If the data model is not found, an HTTP exception will be raised.
 	 */
-	public function loadModel()
-	{
-		if($this->_model===null)
-		{
+	public function loadModel() {
+		if($this->_model===null) {
 			if(isset($_GET['id']))
 				$this->_model=Session::model()->findbyPk($_GET['id']);
 			if($this->_model===null)

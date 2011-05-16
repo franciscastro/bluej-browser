@@ -2,9 +2,12 @@
 
 /**
  * Handles viewing of compile sessions and their entries.
+ *
+ * @author Thomas Dy <thatsmydoing@gmail.com>
+ * @copyright Copyright &copy; 2010-2011 Ateneo de Manila University
+ * @license http://www.opensource.org/licenses/mit-license.php
  */
-class CompileSessionController extends Controller
-{
+class CompileSessionController extends Controller {
 	/**
 	 * @var string the default layout for the views. Defaults to '//layouts/column2', meaning
 	 * using two-column layout. See 'protected/views/layouts/column2.php'.
@@ -19,8 +22,7 @@ class CompileSessionController extends Controller
 	/**
 	 * @return array action filters
 	 */
-	public function filters()
-	{
+	public function filters() {
 		return array(
 			'accessControl', // perform access control for CRUD operations
 		);
@@ -31,11 +33,10 @@ class CompileSessionController extends Controller
 	 * This method is used by the 'accessControl' filter.
 	 * @return array access control rules
 	 */
-	public function accessRules()
-	{
+	public function accessRules() {
 		return array(
 			array('allow',  // allow all users to perform 'index' and 'view' actions
-				'actions'=>array('index','view','source','compare'),
+				'actions'=>array('view','source','compare'),
 				'roles'=>array('Teacher', 'Researcher'),
 			),
 			array('allow',  // allow all users to perform 'index' and 'view' actions
@@ -54,8 +55,7 @@ class CompileSessionController extends Controller
 	/**
 	 * Displays a particular model.
 	 */
-	public function actionView()
-	{
+	public function actionView() {
 		$model = $this->loadModel();
 		$dataProvider = new CActiveDataProvider('CompileSessionEntry', array(
 			'criteria'=> array(
@@ -63,71 +63,54 @@ class CompileSessionController extends Controller
 			),
 			'pagination'=>false,
 		));
-		
+
 		$criteria = new CDBCriteria($dataProvider->criteria);
-		
+
 		$sort = new CSort('CompileSessionEntry');
 		$sort->applyOrder($criteria);
 		$dataProvider->sort = $sort;
-		
+
 		$importSessionId = $model->session->import->importSessionId;
 		$breadcrumbs=array(
 			'Imports'=>array('importSession/index'),
 			'Import #'.$importSessionId=>array('importSession/view', 'id'=>$importSessionId),
 			'Session #'.$_GET['id']=>array('compileSession/view', 'id'=>$_GET['id']),
 		);
-		
+
 		Yii::app()->user->setState('compileSession_breadcrumbs', $breadcrumbs);
 		Yii::app()->user->setState('compileSession_criteria', $criteria);
-		
+
 		$this->render('view',array(
 			'model'=>$model,
 			'dataProvider'=>$dataProvider,
 		));
 	}
 
-	/**
-	 * Manages all models.
-	 */
-	public function actionIndex()
-	{
-		$model=new CompileSession('search');
-		$model->unsetAttributes();  // clear any default values
-		if(isset($_GET['CompileSession']))
-			$model->attributes=$_GET['CompileSession'];
-
-		$this->render('admin',array(
-			'model'=>$model,
-		));
-	}
-	
-	public function actionSource()
-	{
+	public function actionSource() {
 		$criteria = Yii::app()->user->getState('compileSession_criteria');
 		$count = CompileSessionEntry::model()->count($criteria);
 		$pages = new CPagination($count);
-		
+
 		$pages->pageSize = 1;
 		$pages->applyLimit($criteria);
 		$model = CompileSessionEntry::model()->find($criteria);
-		
+
 		$this->render('source',array(
 			'model'=>$model,
 			'pages'=>$pages,
 		));
 	}
-	
-	public function actionCompare()
-	{
+
+	public function actionCompare() {
 		$criteria = Yii::app()->user->getState('compileSession_criteria');
 		$count = CompileSessionEntry::model()->count($criteria);
 		$pages = new CPagination($count-1);
-		
+
 		$pages->pageSize = 1;
 		$pages->applyLimit($criteria);
 		$criteria->limit = 2;
 		$models = CompileSessionEntry::model()->findAll($criteria);
-		
+
 		$model = $models[0];
 		$model2 = $models[1];
 		$diff = CompileSession::diff($model->fileContents, $model2->fileContents);
@@ -138,20 +121,17 @@ class CompileSessionController extends Controller
 			'pages'=>$pages,
 		));
 	}
-	
+
 	/**
-	 * Deletes a particular model.
-	 * If deletion is successful, the browser will be redirected to the 'index' page.
+	 * Deletes a compile session entry.
 	 */
-	public function actionDeleteEntry()
-	{
-		if(Yii::app()->request->isPostRequest)
-		{
+	public function actionDeleteEntry() {
+		if(Yii::app()->request->isPostRequest) {
 			// we only allow deletion via POST request
 			$model = CompileSessionEntry::model()->findByPk($_GET['id']);
 			$model->compileSessionId = -$model->compileSessionId;
 			$model->save();
-			
+
 
 			// if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
 			if(!isset($_GET['ajax']))
@@ -165,10 +145,8 @@ class CompileSessionController extends Controller
 	 * Returns the data model based on the primary key given in the GET variable.
 	 * If the data model is not found, an HTTP exception will be raised.
 	 */
-	public function loadModel()
-	{
-		if($this->_model===null)
-		{
+	public function loadModel() {
+		if($this->_model===null) {
 			if(isset($_GET['id']))
 				$this->_model=CompileSession::model()->findbyPk($_GET['id']);
 			if($this->_model===null)

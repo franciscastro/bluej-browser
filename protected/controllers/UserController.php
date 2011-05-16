@@ -2,9 +2,12 @@
 
 /**
  * Handles user management actions.
+ *
+ * @author Thomas Dy <thatsmydoing@gmail.com>
+ * @copyright Copyright &copy; 2010-2011 Ateneo de Manila University
+ * @license http://www.opensource.org/licenses/mit-license.php
  */
-class UserController extends Controller
-{
+class UserController extends Controller {
 	/**
 	 * @var string the default layout for the views. Defaults to '//layouts/column2', meaning
 	 * using two-column layout. See 'protected/views/layouts/column2.php'.
@@ -19,8 +22,7 @@ class UserController extends Controller
 	/**
 	 * @return array action filters
 	 */
-	public function filters()
-	{
+	public function filters() {
 		return array(
 			'accessControl', // perform access control for CRUD operations
 		);
@@ -31,8 +33,7 @@ class UserController extends Controller
 	 * This method is used by the 'accessControl' filter.
 	 * @return array access control rules
 	 */
-	public function accessRules()
-	{
+	public function accessRules() {
 		return array(
 			array('allow',  // allow all users to perform 'index' and 'view' actions
 				'actions'=>array('changePassword'),
@@ -51,15 +52,12 @@ class UserController extends Controller
 	 * Creates a new model.
 	 * If creation is successful, the browser will be redirected to the 'view' page.
 	 */
-	public function actionCreate()
-	{
+	public function actionCreate() {
 		$model=new User;
-		
-		// Uncomment the following line if AJAX validation is needed
+
 		$this->performAjaxValidation($model);
 
-		if(isset($_POST['User']))
-		{
+		if(isset($_POST['User'])) {
 			if($_POST['User']['roleId'] == '0') {
 				$model->addError('roleId', 'Please specify a role');
 			}
@@ -77,16 +75,13 @@ class UserController extends Controller
 	 * Updates a particular model.
 	 * If update is successful, the browser will be redirected to the 'view' page.
 	 */
-	public function actionUpdate()
-	{
+	public function actionUpdate() {
 		$model=$this->loadModel();
 		$model->password = '';
-		
-		// Uncomment the following line if AJAX validation is needed
+
 		$this->performAjaxValidation($model);
 
-		if(isset($_POST['User']))
-		{
+		if(isset($_POST['User'])) {
 			$model->attributes=$_POST['User'];
 			if($model->password == '') {
 				unset($model->password);
@@ -104,10 +99,8 @@ class UserController extends Controller
 	 * Deletes a particular model.
 	 * If deletion is successful, the browser will be redirected to the 'index' page.
 	 */
-	public function actionDelete()
-	{
-		if(Yii::app()->request->isPostRequest)
-		{
+	public function actionDelete() {
+		if(Yii::app()->request->isPostRequest) {
 			// we only allow deletion via POST request
 			$this->loadModel()->delete();
 
@@ -122,8 +115,7 @@ class UserController extends Controller
 	/**
 	 * Manages all models.
 	 */
-	public function actionIndex()
-	{
+	public function actionIndex() {
 		$model=new User('search');
 		$model->unsetAttributes();  // clear any default values
 		if(isset($_GET['User']))
@@ -133,18 +125,15 @@ class UserController extends Controller
 			'model'=>$model,
 		));
 	}
-	
-	public function actionChangePassword()
-	{
+
+	public function actionChangePassword() {
 		$model=User::model()->findByPk(Yii::app()->user->id);
 		$model->scenario = 'changePassword';
 		$model->password = '';
-		
-		// Uncomment the following line if AJAX validation is needed
+
 		$this->performAjaxValidation($model);
 
-		if(isset($_POST['User']))
-		{
+		if(isset($_POST['User'])) {
 			$model->attributes=$_POST['User'];
 			if($model->save())
 				$this->redirect(Yii::app()->user->returnUrl);
@@ -159,10 +148,8 @@ class UserController extends Controller
 	 * Returns the data model based on the primary key given in the GET variable.
 	 * If the data model is not found, an HTTP exception will be raised.
 	 */
-	public function loadModel()
-	{
-		if($this->_model===null)
-		{
+	public function loadModel() {
+		if($this->_model===null) {
 			if(isset($_GET['id']))
 				$this->_model=User::model()->findbyPk($_GET['id']);
 			if($this->_model===null)
@@ -175,10 +162,8 @@ class UserController extends Controller
 	 * Performs the AJAX validation.
 	 * @param CModel the model to be validated
 	 */
-	protected function performAjaxValidation($model)
-	{
-		if(isset($_POST['ajax']) && $_POST['ajax']==='user-form')
-		{
+	protected function performAjaxValidation($model) {
+		if(isset($_POST['ajax']) && $_POST['ajax']==='user-form') {
 			echo CActiveForm::validate($model);
 			Yii::app()->end();
 		}

@@ -3,6 +3,10 @@
 /**
  * This is the model class for table "InvocationSession".
  *
+ * @author Thomas Dy <thatsmydoing@gmail.com>
+ * @copyright Copyright &copy; 2010-2011 Ateneo de Manila University
+ * @license http://www.opensource.org/licenses/mit-license.php
+ *
  * The followings are the available columns in table 'InvocationSession':
  * @property integer $id
  * @property string $deltaVersion
@@ -20,35 +24,31 @@
  * @property string $projectPath
  * @property string $packagePath
  * @property string $deltaName
- * 
+ *
  * This stores information related to an invocation session. It also
  * handles the import and export logic for invocation sessions. Also,
  * it holds many instances of InvocationSessionEntry.
  */
-class InvocationSession extends CActiveRecord
-{
+class InvocationSession extends CActiveRecord {
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return InvocationSession the static model class
 	 */
-	public static function model($className=__CLASS__)
-	{
+	public static function model($className=__CLASS__) {
 		return parent::model($className);
 	}
 
 	/**
 	 * @return string the associated database table name
 	 */
-	public function tableName()
-	{
+	public function tableName() {
 		return 'InvocationSession';
 	}
 
 	/**
 	 * @return array validation rules for model attributes.
 	 */
-	public function rules()
-	{
+	public function rules() {
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
@@ -62,8 +62,7 @@ class InvocationSession extends CActiveRecord
 	/**
 	 * @return array relational rules.
 	 */
-	public function relations()
-	{
+	public function relations() {
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
@@ -75,8 +74,7 @@ class InvocationSession extends CActiveRecord
 	/**
 	 * @return array customized attribute labels (name=>label)
 	 */
-	public function attributeLabels()
-	{
+	public function attributeLabels() {
 		return array(
 			'id' => 'ID',
 			'deltaVersion' => 'Delta Version',
@@ -101,8 +99,7 @@ class InvocationSession extends CActiveRecord
 	 * Retrieves a list of models based on the current search/filter conditions.
 	 * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
 	 */
-	public function search()
-	{
+	public function search() {
 		// Warning: Please modify the following code to remove attributes that
 		// should not be searched.
 
@@ -144,13 +141,12 @@ class InvocationSession extends CActiveRecord
 			'criteria'=>$criteria,
 		));
 	}
-	
+
 	/**
 	 * A conversion table between parameter names and table columns in sqlite files.
 	 * @return array the conversion table
 	 */
-	private function externalLabels()
-	{
+	private function externalLabels() {
 		return array(
 			'id' => 'ID',
 			'deltaVersion' => 'DELTA_VERSION',
@@ -182,7 +178,7 @@ class InvocationSession extends CActiveRecord
 			'invocationStatus' => 'INVOCATION_STATUS',
 		);
 	}
-	
+
 	/**
 	 * Run before deleting a record. Cascades deletions.
 	 */
@@ -192,7 +188,7 @@ class InvocationSession extends CActiveRecord
 		}
 		return parent::beforeDelete();
 	}
-	
+
 	/**
 	 * Creates a new session
 	 * @param integer id of the session
@@ -218,10 +214,10 @@ class InvocationSession extends CActiveRecord
 		$session->packagePath = $row['PACKAGE_PATH'];
 		$session->deltaName = $row['DELTA_NAME'];
 		$session->save();
-		
+
 		return $session;
 	}
-	
+
 	/**
 	 * Inserts a row into the session
 	 * @param array the row to be inserted
@@ -241,14 +237,14 @@ class InvocationSession extends CActiveRecord
 		$newData->parameters = $row['PARAMETERS'];
 		$newData->result = $row['RESULT'];
 		$newData->invocationStatus = $row['INVOCATION_STATUS'];
-		$newData->save(); 
+		$newData->save();
 	}
-	
+
 	/**
 	 * Creates a new session and imports data into it
 	 * @param integer id of the session
 	 * @param array row containing session information
-	 * @param CDbReader data source for the row data 
+	 * @param CDbReader data source for the row data
 	 */
 	public function doImport($sessionId, $row, $reader) {
 		$session = $this->createSession($sessionId, $row);
@@ -256,7 +252,7 @@ class InvocationSession extends CActiveRecord
 			$session->insertSessionEntry($row);
 		}
 	}
-	
+
 	/**
 	 * Creates a new session if it does not already exist, and adds a
 	 * row to it. Used for live importing.
@@ -270,7 +266,7 @@ class InvocationSession extends CActiveRecord
 		}
 		$session->insertSessionEntry($row);
 	}
-	
+
 	/**
 	 * Generates a CSV file containing the data for this session.
 	 * @param file the file pointer to write to

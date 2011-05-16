@@ -2,9 +2,12 @@
 
 /**
  * Handles creation of import sessions, whether live or not.
+ *
+ * @author Thomas Dy <thatsmydoing@gmail.com>
+ * @copyright Copyright &copy; 2010-2011 Ateneo de Manila University
+ * @license http://www.opensource.org/licenses/mit-license.php
  */
-class ImportSessionController extends Controller
-{
+class ImportSessionController extends Controller {
 	/**
 	 * @var string the default layout for the views. Defaults to '//layouts/column2', meaning
 	 * using two-column layout. See 'protected/views/layouts/column2.php'.
@@ -19,8 +22,7 @@ class ImportSessionController extends Controller
 	/**
 	 * @return array action filters
 	 */
-	public function filters()
-	{
+	public function filters() {
 		return array(
 			'accessControl', // perform access control for CRUD operations
 		);
@@ -31,16 +33,15 @@ class ImportSessionController extends Controller
 	 * This method is used by the 'accessControl' filter.
 	 * @return array access control rules
 	 */
-	public function accessRules()
-	{
+	public function accessRules() {
 		return array(
 			array('deny',
-				'actions'=>array('view', 'export', 'update', 'stopLive'),
+				'actions'=>array('view', 'export', 'exportAll', 'update', 'stopLive'),
 				'roles'=>array('Teacher'),
 				'expression'=>'!ImportSession::checkTeacherAccess($user->getModel());',
 			),
 			array('allow',
-				'actions'=>array('index', 'view', 'export', 'createLive', 'stopLive', 'update'),
+				'actions'=>array('index', 'view', 'export', 'exportAll', 'createLive', 'stopLive', 'update'),
 				'roles'=>array('Teacher'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -55,8 +56,7 @@ class ImportSessionController extends Controller
 	/**
 	 * Displays a particular model.
 	 */
-	public function actionView()
-	{
+	public function actionView() {
 		$model = $this->loadModel();
 		$importModel=new Import('search');
 		$importModel->unsetAttributes();  // clear any default values
@@ -72,15 +72,10 @@ class ImportSessionController extends Controller
 	 * Creates a new model.
 	 * If creation is successful, the browser will be redirected to the 'view' page.
 	 */
-	public function actionCreate()
-	{
+	public function actionCreate() {
 		$model=new ImportSession;
 
-		// Uncomment the following line if AJAX validation is needed
-		// $this->performAjaxValidation($model);
-
-		if(isset($_POST['ImportSession']))
-		{
+		if(isset($_POST['ImportSession'])) {
 			$model->attributes=$_POST['ImportSession'];
 			$file = CUploadedFile::getInstance($model, 'source');
 			if(!$file->getTempName() == '') {
@@ -91,7 +86,6 @@ class ImportSessionController extends Controller
 			}
 			if($file !== null && $file->saveAs($sourceFile)) {
 				$sourcePath = Yii::app()->params['importRoot'] . $this->id;
-
 				$tempDir = Yii::app()->file->set($sourcePath);
 				if($tempDir->exists) {
 					$tempDir->delete(true);
@@ -101,7 +95,6 @@ class ImportSessionController extends Controller
 				if(Yii::app()->zip->extractZip($sourceFile, $sourcePath)) {
 					$files = CFileHelper::findFiles($sourcePath, array('fileTypes'=>array('sqlite'), 'exclude'=>array('.htaccess')));
 					$transaction = Import::model()->dbConnection->beginTransaction();
-
 					$prevDir = '';
 					foreach($files as $file) {
 						$directory = dirname($file);
@@ -119,8 +112,6 @@ class ImportSessionController extends Controller
 							$model->newTerms = $this->getTermModel()->getNewTerms();
 							$model->save();
 						}
-
-
 						$import = new Import;
 						$import->sessionId = 0;
 						$import->importSessionId = $model->id;
@@ -130,7 +121,6 @@ class ImportSessionController extends Controller
 					}
 					$transaction->commit();
 					$this->redirect(array('view','id'=>$model->id));
-
 				}
 				else {
 					$model->addError('source', 'There was a problem with the file you uploaded.');
@@ -144,15 +134,10 @@ class ImportSessionController extends Controller
 		));
 	}
 
-	public function actionCreateLive()
-	{
+	public function actionCreateLive() {
 		$model=new ImportSession;
 
-		// Uncomment the following line if AJAX validation is needed
-		// $this->performAjaxValidation($model);
-
-		if(isset($_POST['ImportSession']))
-		{
+		if(isset($_POST['ImportSession'])) {
 			$model->attributes=$_POST['ImportSession'];
 			$model->source = 'live';
 			$model->start = time();
@@ -171,12 +156,10 @@ class ImportSessionController extends Controller
 		));
 	}
 
-	public function actionStopLive()
-	{
+	public function actionStopLive() {
 		$model=$this->loadModel();
 
-		if(Yii::app()->request->isPostRequest)
-		{
+		if(Yii::app()->request->isPostRequest) {
 			$model->newTerms = $model->terms;
 			$model->end = time();
 			if($model->save()) {
@@ -193,12 +176,10 @@ class ImportSessionController extends Controller
 	 * Updates a particular model.
 	 * If update is successful, the browser will be redirected to the 'view' page.
 	 */
-	public function actionUpdate()
-	{
+	public function actionUpdate() {
 		$model=$this->loadModel();
 
-		if(isset($_POST['ImportSession']))
-		{
+		if(isset($_POST['ImportSession'])) {
 			$model->attributes=$_POST['ImportSession'];
 			$model->newTerms = $this->getTermModel()->getNewTerms();
 			if(isset($_POST['term']['section'])) {
@@ -218,10 +199,8 @@ class ImportSessionController extends Controller
 	 * Deletes a particular model.
 	 * If deletion is successful, the browser will be redirected to the 'index' page.
 	 */
-	public function actionDelete()
-	{
-		if(Yii::app()->request->isPostRequest)
-		{
+	public function actionDelete() {
+		if(Yii::app()->request->isPostRequest) {
 			// we only allow deletion via POST request
 			$this->loadModel()->delete();
 
@@ -236,8 +215,7 @@ class ImportSessionController extends Controller
 	/**
 	 * Manages all models.
 	 */
-	public function actionIndex()
-	{
+	public function actionIndex() {
 		$model=new ImportSession('search');
 		$model->unsetAttributes();  // clear any default values
 		if(isset($_GET['ImportSession']))
@@ -253,8 +231,7 @@ class ImportSessionController extends Controller
 	/**
 	 * Does importing.
 	 */
-	public function actionExecuteImport()
-	{
+	public function actionExecuteImport() {
 		$models = Import::model()->findAllByAttributes(array(
 			'sessionId' => 0,
 		));
@@ -265,8 +242,7 @@ class ImportSessionController extends Controller
 		$this->redirect(array('viewImports'));
 	}
 
-	public function actionExport()
-	{
+	public function actionExport() {
 		set_time_limit(0);
 		$model = $this->loadModel();
 		$exportName = $this->getExportName();
@@ -289,8 +265,7 @@ class ImportSessionController extends Controller
 
 	private $_processed;
 
-	public function actionExportAll()
-	{
+	public function actionExportAll() {
 		set_time_limit(0);
 		$search=new ImportSession('search');
 		$search->unsetAttributes();  // clear any default values
@@ -344,10 +319,8 @@ class ImportSessionController extends Controller
 	 * Returns the data model based on the primary key given in the GET variable.
 	 * If the data model is not found, an HTTP exception will be raised.
 	 */
-	public function loadModel()
-	{
-		if($this->_model===null)
-		{
+	public function loadModel() {
+		if($this->_model===null) {
 			if(isset($_GET['id']))
 				$this->_model=ImportSession::model()->findbyPk($_GET['id']);
 			if($this->_model===null)
@@ -360,10 +333,8 @@ class ImportSessionController extends Controller
 	 * Performs the AJAX validation.
 	 * @param CModel the model to be validated
 	 */
-	protected function performAjaxValidation($model)
-	{
-		if(isset($_POST['ajax']) && $_POST['ajax']==='import-session-form')
-		{
+	protected function performAjaxValidation($model) {
+		if(isset($_POST['ajax']) && $_POST['ajax']==='import-session-form') {
 			echo CActiveForm::validate($model);
 			Yii::app()->end();
 		}
@@ -401,7 +372,6 @@ class ImportSessionController extends Controller
 
 	private function makeExportDir($exportName, $model) {
 		$exportDir = Yii::app()->file->set(Yii::app()->params['exportRoot'] . '/' . $exportName . '/');
-
 		if($exportDir->getIsDir()) {
 			if($model->start != null && ($model->end == null || $model->end > $exportDir->timeModified)) {
 				$exportDir->delete(true);
@@ -412,7 +382,6 @@ class ImportSessionController extends Controller
 		}
 		$exportDir->createDir();
 		chdir($exportDir->getRealPath());
-
 		$importModels = $model->imports;
 		foreach($importModels as $importModel) {
 			$fp = fopen($importModel->session->user->name . '-' . $importModel->session->type . '-' . $importModel->session->id . '.csv', 'w');

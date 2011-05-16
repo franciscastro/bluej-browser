@@ -3,6 +3,10 @@
 /**
  * This is the model class for table "Section".
  *
+ * @author Thomas Dy <thatsmydoing@gmail.com>
+ * @copyright Copyright &copy; 2010-2011 Ateneo de Manila University
+ * @license http://www.opensource.org/licenses/mit-license.php
+ *
  * The followings are the available columns in table 'Section':
  * @property integer $id
  * @property string  $name
@@ -14,37 +18,33 @@
  * @property Term $section
  * @property Term $course
  * @property Term $year
- * 
+ *
  * A section represents a year, course, and section term grouped
  * together. It is primarily used for restricting which terms a
  * teacher can access.
  */
-class Section extends CActiveRecord
-{
+class Section extends CActiveRecord {
 	public $newTeachers = array();
-	
+
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return Section the static model class
 	 */
-	public static function model($className=__CLASS__)
-	{
+	public static function model($className=__CLASS__) {
 		return parent::model($className);
 	}
 
 	/**
 	 * @return string the associated database table name
 	 */
-	public function tableName()
-	{
+	public function tableName() {
 		return 'Section';
 	}
 
 	/**
 	 * @return array validation rules for model attributes.
 	 */
-	public function rules()
-	{
+	public function rules() {
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
@@ -60,8 +60,7 @@ class Section extends CActiveRecord
 	/**
 	 * @return array relational rules.
 	 */
-	public function relations()
-	{
+	public function relations() {
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
@@ -75,8 +74,7 @@ class Section extends CActiveRecord
 	/**
 	 * @return array customized attribute labels (name=>label)
 	 */
-	public function attributeLabels()
-	{
+	public function attributeLabels() {
 		return array(
 			'id' => 'ID',
 			'yearId' => 'Year',
@@ -89,8 +87,7 @@ class Section extends CActiveRecord
 	 * Retrieves a list of models based on the current search/filter conditions.
 	 * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
 	 */
-	public function search()
-	{
+	public function search() {
 		// Warning: Please modify the following code to remove attributes that
 		// should not be searched.
 
@@ -105,7 +102,7 @@ class Section extends CActiveRecord
 			'criteria'=>$criteria,
 		));
 	}
-	
+
 	/**
 	 * Run after saving a record. Updates the teachers of the section.
 	 */
@@ -115,7 +112,7 @@ class Section extends CActiveRecord
 		$this->addTeachers(array_udiff($this->newTeachers, $oldTeachers, array('User', 'compare')));
 		$this->removeTeachers(array_udiff($oldTeachers, $this->newTeachers, array('User', 'compare')));
 	}
-	
+
 	/**
 	 * Adds teachers to the section.
 	 * @param array the list of Users (teachers) to be added.
@@ -128,7 +125,7 @@ class Section extends CActiveRecord
 			$relation->save();
 		}
 	}
-	
+
 	/**
 	 * Removes teachers from the section.
 	 * @param array the list of Users (teachers) to be removed.
@@ -141,7 +138,7 @@ class Section extends CActiveRecord
 			));
 		}
 	}
-	
+
 	/**
 	 * Replaces Term's getViewData
 	 * @param array the list of previously selected terms
@@ -169,7 +166,7 @@ class Section extends CActiveRecord
 		}
 		return $viewData;
 	}
-	
+
 	/**
 	 * Replaces Term's getNewTerms
 	 * @return the list of terms from the input form

@@ -2,18 +2,20 @@
 
 /**
  * Receives live import requests from the BlueJ plugin.
+ *
+ * @author Thomas Dy <thatsmydoing@gmail.com>
+ * @copyright Copyright &copy; 2010-2011 Ateneo de Manila University
+ * @license http://www.opensource.org/licenses/mit-license.php
  */
 
 include("xmlrpc.inc");
 include("xmlrpcs.inc");
 include("xmlrpc_wrappers.inc");
 
-class ImportController extends Controller
-{	
-	public function actionXmlrpc()
-	{
+class ImportController extends Controller {
+	public function actionXmlrpc() {
 		global $xmlrpcString, $xmlrpcArray, $xmlrpcStruct;
-	
+
 		if($_SERVER['REQUEST_METHOD'] == 'POST') {
 			$server=new xmlrpc_server(array(
 				"insert" => array(
@@ -21,7 +23,7 @@ class ImportController extends Controller
 					"signature" => array(array($xmlrpcString, $xmlrpcString, $xmlrpcArray, $xmlrpcArray, $xmlrpcStruct)),
 				)
 			), false);
-			
+
 			$server->functions_parameters_type='phpvals';
 			$server->setdebug(3);
 			$server->compress_response = true;
@@ -30,44 +32,14 @@ class ImportController extends Controller
 		}
 	}
 
-	// Uncomment the following methods and override them if needed
-	/*
-	public function filters()
-	{
-		// return the filter configuration for this controller, e.g.:
-		return array(
-			'inlineFilterName',
-			array(
-				'class'=>'path.to.FilterClass',
-				'propertyName'=>'propertyValue',
-			),
-		);
-	}
-
-	public function actions()
-	{
-		// return external action classes, e.g.:
-		return array(
-			'action1'=>'path.to.ActionClass',
-			'action2'=>array(
-				'class'=>'path.to.AnotherActionClass',
-				'propertyName'=>'propertyValue',
-			),
-		);
-	}
-	*/
-	
-	public static function insert($tableName, $columnNames, $columnTypes, $data)
-	{
+	public static function insert($tableName, $columnNames, $columnTypes, $data) {
 		global $xmlrpcerruser, $err;
-		
+
 		$pc = strripos($tableName, '_');
 		$userName = substr($tableName, 0, $pc);
-		$sessionType = substr($tableName, $pc+1); 
-		
-		ImportSession::model()->liveInsert($userName, $sessionType, $data);		
-		
-		//method response
+		$sessionType = substr($tableName, $pc+1);
+
+		ImportSession::model()->liveInsert($userName, $sessionType, $data);
 		return true;
 	}
 }

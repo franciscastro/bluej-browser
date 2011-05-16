@@ -2,14 +2,16 @@
 
 /**
  * Handles generic site functions such as logging in.
+ *
+ * @author Thomas Dy <thatsmydoing@gmail.com>
+ * @copyright Copyright &copy; 2010-2011 Ateneo de Manila University
+ * @license http://www.opensource.org/licenses/mit-license.php
  */
-class SiteController extends Controller
-{
+class SiteController extends Controller {
 	/**
 	 * Declares class-based actions.
 	 */
-	public function actions()
-	{
+	public function actions() {
 		return array(
 			// captcha action renders the CAPTCHA image displayed on the contact page
 			'captcha'=>array(
@@ -28,15 +30,13 @@ class SiteController extends Controller
 	 * This is the default 'index' action that is invoked
 	 * when an action is not explicitly requested by users.
 	 */
-	public function actionIndex()
-	{
+	public function actionIndex() {
 		// renders the view file 'protected/views/site/index.php'
 		// using the default layout 'protected/views/layouts/main.php'
 		$this->redirect(array('importSession/index'));
 	}
-	
-	public function actionHelp()
-	{
+
+	public function actionHelp() {
 		// renders the view file 'protected/views/site/index.php'
 		// using the default layout 'protected/views/layouts/main.php'
 		$this->render('help');
@@ -45,34 +45,29 @@ class SiteController extends Controller
 	/**
 	 * This is the action to handle external exceptions.
 	 */
-	public function actionError()
-	{
-			if($error=Yii::app()->errorHandler->error)
-			{
-				if(Yii::app()->request->isAjaxRequest)
-					echo $error['message'];
-				else
-						$this->render('error', $error);
-			}
+	public function actionError() {
+		if($error=Yii::app()->errorHandler->error) {
+			if(Yii::app()->request->isAjaxRequest)
+				echo $error['message'];
+			else
+					$this->render('error', $error);
+		}
 	}
 
 	/**
 	 * Displays the login page
 	 */
-	public function actionLogin()
-	{
+	public function actionLogin() {
 		$model=new LoginForm;
 
 		// if it is ajax validation request
-		if(isset($_POST['ajax']) && $_POST['ajax']==='login-form')
-		{
+		if(isset($_POST['ajax']) && $_POST['ajax']==='login-form') {
 			echo CActiveForm::validate($model);
 			Yii::app()->end();
 		}
 
 		// collect user input data
-		if(isset($_POST['LoginForm']))
-		{
+		if(isset($_POST['LoginForm'])) {
 			$model->attributes=$_POST['LoginForm'];
 			// validate user input and redirect to the previous page if valid
 			if($model->validate() && $model->login())
@@ -85,8 +80,7 @@ class SiteController extends Controller
 	/**
 	 * Logs out the current user and redirect to homepage.
 	 */
-	public function actionLogout()
-	{
+	public function actionLogout() {
 		Yii::app()->user->logout();
 		$this->redirect(Yii::app()->homeUrl);
 	}

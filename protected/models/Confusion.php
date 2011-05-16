@@ -3,6 +3,10 @@
 /**
  * This is the model class for table "Confusion".
  *
+ * @author Thomas Dy <thatsmydoing@gmail.com>
+ * @copyright Copyright &copy; 2010-2011 Ateneo de Manila University
+ * @license http://www.opensource.org/licenses/mit-license.php
+ *
  * The followings are the available columns in table 'Confusion':
  * @property integer $id
  * @property integer $compileSessionId
@@ -11,30 +15,26 @@
  * The followings are the available model relations:
  * @property CompileSession $compileSession
  */
-class Confusion extends CActiveRecord
-{
+class Confusion extends CActiveRecord {
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return Confusion the static model class
 	 */
-	public static function model($className=__CLASS__)
-	{
+	public static function model($className=__CLASS__) {
 		return parent::model($className);
 	}
 
 	/**
 	 * @return string the associated database table name
 	 */
-	public function tableName()
-	{
+	public function tableName() {
 		return 'Confusion';
 	}
 
 	/**
 	 * @return array validation rules for model attributes.
 	 */
-	public function rules()
-	{
+	public function rules() {
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
@@ -48,8 +48,7 @@ class Confusion extends CActiveRecord
 	/**
 	 * @return array relational rules.
 	 */
-	public function relations()
-	{
+	public function relations() {
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
@@ -60,8 +59,7 @@ class Confusion extends CActiveRecord
 	/**
 	 * @return array customized attribute labels (name=>label)
 	 */
-	public function attributeLabels()
-	{
+	public function attributeLabels() {
 		return array(
 			'id' => 'ID',
 			'compileSessionId' => 'Compile Session',
@@ -73,8 +71,7 @@ class Confusion extends CActiveRecord
 	 * Retrieves a list of models based on the current search/filter conditions.
 	 * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
 	 */
-	public function search()
-	{
+	public function search() {
 		// Warning: Please modify the following code to remove attributes that
 		// should not be searched.
 
@@ -103,8 +100,7 @@ class Confusion extends CActiveRecord
 
 		foreach($fileNames as $fileName) {
 			$hasMore = true;
-			while($hasMore)
-			{
+			while($hasMore) {
 				$entries = CompileSessionEntry::model()->findAll('compileSessionId=:id AND id>:lastId ORDER BY deltaSequenceNumber LIMIT 8', array('id'=>$this->compileSessionId, 'lastId'=>$lastId));
 				$count = count($entries);
 				if($count < 8) {
@@ -119,26 +115,21 @@ class Confusion extends CActiveRecord
 					$compileError = 0; // first error Compile time
 					$errorCount = 0;
 
-					foreach($entries as $compilation)
-					{
+					foreach($entries as $compilation) {
 						$currentCompTime = $compilation->timestamp;
 
-						if( $compileTime != 0 )
-						{
+						if( $compileTime != 0 ) {
 							$compTime[] = $currentCompTime - $compileTime;
 						}
 
-						if($compilation->messageType == "ERROR")
-						{
-							if($compileError != 0)
-							{
+						if($compilation->messageType == "ERROR") {
+							if($compileError != 0) {
 								$compTimeError[] = $currentCompTime - $compileError;
 							}
 							$compError = $currentCompTime;
 							$errorCount++;
 						}
-						else
-						{
+						else {
 							$compError = 0;
 						}
 
@@ -177,36 +168,25 @@ class Confusion extends CActiveRecord
 
 		$confused = true;
 
-		if( $numCompErr <= 3.500 )
-		{
-			if( $maxCompErr <= 23.500 )
-			{
+		if( $numCompErr <= 3.500 ) {
+			if( $maxCompErr <= 23.500 ) {
 				$confused = false;
 			}
-			else
-			{
-				if( $aveCompErr > 16.667 )
-				{
-					if( $maxCompErr > 88.500 )
-					{
+			else {
+				if( $aveCompErr > 16.667 ) {
+					if( $maxCompErr > 88.500 ) {
 						$confused = false;
 					}
-					else
-					{
-						if( $aveCompErr <= 21.917 )
-						{
+					else {
+						if( $aveCompErr <= 21.917 ) {
 							$confused = false;
 						}
-						else
-						{
-							if( $aveComp > 203.714 )
-							{
+						else {
+							if( $aveComp > 203.714 ) {
 								$confused = false;
 							}
-							else
-							{
-								if( $maxComp <= 329.500 )
-								{
+							else {
+								if( $maxComp <= 329.500 ) {
 									$confused = false;
 								}
 							}
@@ -220,24 +200,20 @@ class Confusion extends CActiveRecord
 	}
 
 
-	public function getAverage( $array )
-	{
+	public function getAverage( $array ) {
 		$sum = 0;
-		foreach( $array as $val )
-		{
+		foreach( $array as $val ) {
 			$sum = $sum + $val;
 		}
 		$total = count($array);
-		if($total == 0)
-		{
+		if($total == 0) {
 			$total = 1;
 		}
 		$average = $sum/$total;
 		return $average;
 	}
 
-	public function getMaxValue( $array )
-	{
+	public function getMaxValue( $array ) {
 		if(count($array) == 0) {
 			return 0;
 		}

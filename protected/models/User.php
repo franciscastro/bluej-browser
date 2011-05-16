@@ -3,49 +3,49 @@
 /**
  * This is the model class for table "User".
  *
+ * @author Thomas Dy <thatsmydoing@gmail.com>
+ * @copyright Copyright &copy; 2010-2011 Ateneo de Manila University
+ * @license http://www.opensource.org/licenses/mit-license.php
+ *
  * The followings are the available columns in table 'User':
  * @property integer $id
  * @property string $username
  * @property string $password
  * @property string $name
  * @property integer $roleId
- * 
+ *
  * A user.
  */
-class User extends CActiveRecord
-{  
+class User extends CActiveRecord {
 	const ROLE_ADMIN = 1;
 	const ROLE_RESEARCHER = 2;
 	const ROLE_TEACHER = 3;
 	const ROLE_STUDENT = 4;
-	
+
 	private $_oldPassword = '';
 	private $_currentPassword = '';
 	private $_passwordAgain = '';
-	
+
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return User the static model class
 	 */
-	public static function model($className=__CLASS__)
-	{
+	public static function model($className=__CLASS__) {
 		return parent::model($className);
 	}
-	
+
 
 	/**
 	 * @return string the associated database table name
 	 */
-	public function tableName()
-	{
+	public function tableName() {
 		return 'User';
 	}
 
 	/**
 	 * @return array validation rules for model attributes.
 	 */
-	public function rules()
-	{
+	public function rules() {
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
@@ -54,7 +54,7 @@ class User extends CActiveRecord
 			array('username', 'unique', 'on'=>array('insert', 'update')),
 			array('roleId', 'numerical', 'integerOnly'=>true, 'min'=>1, 'tooSmall'=>'Please select a role', 'on'=>array('insert', 'update')),
 			array('username, password', 'length', 'max'=>128),
-			
+
 			array('password, currentPassword, passwordAgain', 'safe', 'on'=>array('changePassword')),
 			array('password, currentPassword, passwordAgain', 'required', 'on'=>array('changePassword')),
 			array('currentPassword', 'authenticate', 'on'=>array('changePassword')),
@@ -69,8 +69,7 @@ class User extends CActiveRecord
 	/**
 	 * @return array relational rules.
 	 */
-	public function relations()
-	{
+	public function relations() {
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
@@ -82,8 +81,7 @@ class User extends CActiveRecord
 	/**
 	 * @return array customized attribute labels (name=>label)
 	 */
-	public function attributeLabels()
-	{
+	public function attributeLabels() {
 		return array(
 			'id' => 'ID',
 			'username' => 'Username',
@@ -97,8 +95,7 @@ class User extends CActiveRecord
 	 * Retrieves a list of models based on the current search/filter conditions.
 	 * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
 	 */
-	public function search()
-	{
+	public function search() {
 		// Warning: Please modify the following code to remove attributes that
 		// should not be searched.
 
@@ -118,7 +115,7 @@ class User extends CActiveRecord
 			'criteria'=>$criteria,
 		));
 	}
-	
+
 	/**
 	 * @return string the role of the user
 	 */
@@ -126,7 +123,7 @@ class User extends CActiveRecord
 		$roles = $this->roles();
 		return $roles[$this->roleId+0];
 	}
-	
+
 	/**
 	 * @return array of possible roles a user may have
 	 */
@@ -135,10 +132,10 @@ class User extends CActiveRecord
 			1=>'Administrator',
 			'Researcher',
 			'Teacher',
-			'Student',      
+			'Student',
 		);
 	}
-	
+
 	/**
 	 * Run before actually saving a record. Hashes the password if it was changed.
 	 * @return boolean whether the record should be saved
@@ -149,7 +146,7 @@ class User extends CActiveRecord
 		}
 		return parent::beforeSave();
 	}
-	
+
 	/**
 	 * Run after every find/load operation. Stores the old password in case of changes.
 	 */
@@ -157,7 +154,7 @@ class User extends CActiveRecord
 		$this->_oldPassword = $this->password;
 		return parent::afterFind();
 	}
-	
+
 	/**
 	 * Checks if the password is correct.
 	 * @param string the password
@@ -166,7 +163,7 @@ class User extends CActiveRecord
 	public function validatePassword($password) {
 		return $this->hashPassword($password) === $this->_oldPassword;
 	}
-	
+
 	/**
 	 * @param string the unhashed password
 	 * @return string the hashed password
@@ -174,17 +171,16 @@ class User extends CActiveRecord
 	public function hashPassword($password) {
 		return sha1($password);
 	}
-	
+
 	/**
 	 * Authenticate used by CWebUser.
 	 */
-	public function authenticate($attribute,$params)
-	{
+	public function authenticate($attribute,$params) {
 		if(!$this->validatePassword($this->currentPassword)) {
 			$this->addError('currentPassword', 'The password is wrong');
 		}
 	}
-	
+
 	/**
 	 * Gets all users with a certain role
 	 * @param integer the role id
@@ -193,24 +189,24 @@ class User extends CActiveRecord
 	public function getUsers($userType) {
 		return User::model()->findAllByAttributes(array('roleId' => $userType));
 	}
-	
+
 	public static function compare($userA, $userB) {
 		return $userA->id - $userB->id;
 	}
-	
+
 	// Getters and setters
 	public function getCurrentPassword() {
 		return $this->_currentPassword;
 	}
-	
+
 	public function setCurrentPassword($password) {
 		$this->_currentPassword = $password;
 	}
-	
+
 	public function getPasswordAgain() {
 		return $this->_passwordAgain;
 	}
-	
+
 	public function setPasswordAgain($password) {
 		$this->_passwordAgain = $password;
 	}
