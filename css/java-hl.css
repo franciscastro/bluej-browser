@@ -6,16 +6,12 @@ ol.java-hl-main {
 	margin: 0;
 }
 
-.java-hl-main .error {
-	background: tomato;
-}
-
-.java-hl-main .error pre {
-	font-weight: bold;
-}
-
 .java-hl-main .diff {
-	background: palegoldenrod;
+	background: #ffff66;
+}
+
+.java-hl-main .error {
+	background: #ffcc99;
 }
 
 .java-hl-comment {
@@ -35,5 +31,5 @@ ol.java-hl-main {
 }
 
 .java-hl-number {
-	color: orange;
+	color: darkorange;
 }

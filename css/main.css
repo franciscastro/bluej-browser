@@ -248,6 +248,10 @@ div.search-form
   text-align: right;
 }
 
+.center {
+  text-align: center;
+}
+
 div.form label.checkboxLabel {
   display: inline;
   font-weight: normal;
