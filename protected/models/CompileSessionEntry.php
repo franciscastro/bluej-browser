@@ -18,9 +18,10 @@
  * @property string $messageType
  * @property string $messageText
  * @property integer $messageLineNumber
+ * @property integer $messageColumnNumber
  * @property integer $compilesPerFile
  * @property integer $totalCompiles
- * 
+ *
  * Stores an individual compilation in a compilation session.
  */
 class CompileSessionEntry extends CActiveRecord
@@ -51,14 +52,14 @@ class CompileSessionEntry extends CActiveRecord
 		// will receive user inputs.
 		return array(
 			array('compileSuccessful', 'boolean'),
-			array('compileSessionId, timestamp, deltaSequenceNumber, deltaStartTime, deltaEndTime, messageLineNumber, compilesPerFile, totalCompiles', 'numerical', 'integerOnly'=>true),
+			array('compileSessionId, timestamp, deltaSequenceNumber, deltaStartTime, deltaEndTime, messageLineNumber, messageColumnNumber, compilesPerFile, totalCompiles', 'numerical', 'integerOnly'=>true),
 			array('filePath, fileName, fileContents, fileEncoding, messageType, messageText', 'safe'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, compileSessionId, timestamp, deltaSequenceNumber, deltaStartTime, deltaEndTime, filePath, fileName, fileContents, fileEncoding, compileSuccessful, messageType, messageText, messageLineNumber, compilesPerFile, totalCompiles', 'safe', 'on'=>'search'),
+			array('id, compileSessionId, timestamp, deltaSequenceNumber, deltaStartTime, deltaEndTime, filePath, fileName, fileContents, fileEncoding, compileSuccessful, messageType, messageText, messageLineNumber, messageColumnNumber, compilesPerFile, totalCompiles', 'safe', 'on'=>'search'),
 		);
 	}
-  
+
   public function behaviors()
   {
     return array(
@@ -98,6 +99,7 @@ class CompileSessionEntry extends CActiveRecord
 			'messageType' => 'Message Type',
 			'messageText' => 'Message Text',
 			'messageLineNumber' => 'Message Line Number',
+			'messageColumnNumber' => 'Message Column Number',
 			'compilesPerFile' => 'Compiles Per File',
 			'totalCompiles' => 'Total Compiles',
 		);
@@ -141,6 +143,8 @@ class CompileSessionEntry extends CActiveRecord
 		$criteria->compare('messageText',$this->messageText,true);
 
 		$criteria->compare('messageLineNumber',$this->messageLineNumber);
+
+		$criteria->compare('messageColumnNumber',$this->messageColumnNumber);
 
 		$criteria->compare('compilesPerFile',$this->compilesPerFile);
 

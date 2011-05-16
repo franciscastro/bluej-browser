@@ -20,7 +20,7 @@
  * @property string $projectPath
  * @property string $packagePath
  * @property string $deltaName
- * 
+ *
  * This stores information related to a compilation session. It also
  * handles the import and export logic for compilation sessions. Also,
  * it holds many instances of CompileSessionEntry.
@@ -104,7 +104,7 @@ class CompileSession extends CActiveRecord
 			'deltaName' => 'Delta Name',
 		);
 	}
-	
+
 	/**
 	 * A conversion table between parameter names and table columns in sqlite files.
 	 * @return array the conversion table
@@ -140,6 +140,7 @@ class CompileSession extends CActiveRecord
 			'messageType' => 'MSG_TYPE',
 			'messageText' => 'MSG_MESSAGE',
 			'messageLineNumber' => 'MSG_LINE_NUMBER',
+			'messageColumnNumber' => 'MSG_COLUMN_NUMBER',
 			'compilesPerFile' => 'COMPILES_PER_FILE',
 			'totalCompiles' => 'TOTAL_COMPILES',
 		);
@@ -195,20 +196,20 @@ class CompileSession extends CActiveRecord
 			),
 		));
 	}
-	
+
 	/**
 	 * An event raised after importing
 	 */
 	public function onAfterImport($event) {
 		$this->raiseEvent('onAfterImport', $event);
 	}
-	
+
 	protected function afterImport() {
 		if($this->hasEventHandler('onAfterImport')) {
 			$this->onAfterImport(new CEvent($this));
 		}
 	}
-	
+
 	/**
 	 * Run before deleting. Cascades deletions.
 	 */
@@ -218,7 +219,7 @@ class CompileSession extends CActiveRecord
 		}
 		return parent::beforeDelete();
 	}
-	
+
 	/**
 	 * Creates a new session
 	 * @param integer id of the session
@@ -244,10 +245,10 @@ class CompileSession extends CActiveRecord
 		$session->packagePath = $row['PACKAGE_PATH'];
 		$session->deltaName = $row['DELTA_NAME'];
 		$session->save();
-		
+
 		return $session;
 	}
-	
+
 	/**
 	 * Inserts a row into the session
 	 * @param array the row to be inserted
@@ -267,16 +268,17 @@ class CompileSession extends CActiveRecord
 		$newData->messageType = $row['MSG_TYPE'];
 		$newData->messageText = $row['MSG_MESSAGE'];
 		$newData->messageLineNumber = $row['MSG_LINE_NUMBER'];
+		$newData->messageColumnNumber = isset($row['MSG_COLUMN_NUMBER']) ? $row['MSG_COLUMN_NUMBER'] : -1;
 		$newData->compilesPerFile = $row['COMPILES_PER_FILE'];
 		$newData->totalCompiles = $row['TOTAL_COMPILES'];
 		$newData->save();
 	}
-	
+
 	/**
 	 * Creates a new session and imports data into it
 	 * @param integer id of the session
 	 * @param array row containing session information
-	 * @param CDbReader data source for the row data 
+	 * @param CDbReader data source for the row data
 	 */
 	public function doImport($sessionId, $row, $reader) {
 		$session = $this->createSession($sessionId, $row);
@@ -285,7 +287,7 @@ class CompileSession extends CActiveRecord
 		}
 		$session->afterImport();
 	}
-	
+
 	/**
 	 * Creates a new session if it does not already exist, and adds a
 	 * row to it. Used for live importing.
@@ -297,10 +299,10 @@ class CompileSession extends CActiveRecord
 		if($session == null) {
 			$session = $this->createSession($sessionId, $row);
 		}
-		$session->insertSessionEntry($row);	
+		$session->insertSessionEntry($row);
 		$session->afterImport();
 	}
-	
+
 	/**
 	 * Generates a CSV file containing the data for this session.
 	 * @param file the file pointer to write to
@@ -337,6 +339,7 @@ class CompileSession extends CActiveRecord
 			'MSG_TYPE',
 			'MSG_MESSAGE',
 			'MSG_LINE_NUMBER',
+			'MSG_COLUMN_NUMBER',
 			'COMPILES_PER_FILE',
 			'TOTAL_COMPILES'
 		);
@@ -370,7 +373,7 @@ class CompileSession extends CActiveRecord
 			fputcsv($fp, $toWrite);
 		}
 	}
-	
+
 	/**
 	 * Gets the difference between 2 sources
 	 * @return array the lines which are different

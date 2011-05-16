@@ -137,6 +137,7 @@ CREATE TABLE CompileSessionEntry
 	messageType TEXT,
 	messageText TEXT,
 	messageLineNumber INTEGER,
+	messageColumnNumber INTEGER,
 	compilesPerFile INTEGER,
 	totalCompiles INTEGER,
 	CONSTRAINT FK_compileSessionEntry_compileSession FOREIGN KEY (compileSessionId)

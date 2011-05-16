@@ -12,6 +12,7 @@
 		),
 		'messageText',
 		'messageLineNumber',
+		'messageColumnNumber',
 	),
 )); ?>
 
@@ -46,12 +47,22 @@ $this->widget('zii.widgets.jui.CJuiAccordion', array(
 			if($i == $model->messageLineNumber-1)
 			{
 				$class .= "error ";
+				if($model->messageColumnNumber > 0) {
+					$arrow = "\n";
+					for($j = 0; $j < $model->messageColumnNumber; $j++) {
+						$arrow .= ' ';
+					}
+					$arrow .= '^</pre>';
+					$toPrint = substr_replace($toPrint, $arrow, strpos($toPrint, '</pre>', $pc+1), 6);
+				}
 			}
 			if(isset($diff[$i]) && $diff[$i] != '')
 			{
 				$class .= "diff ";
 			}
-			$toPrint = substr_replace($toPrint, $class!='' ? "<li class='$class'>" : '<li>', $pc, 4);
-		}      
+			if($class != "") {
+				$toPrint = substr_replace($toPrint, "<li class='$class'>", $pc, 4);
+			}
+		}
 	echo $toPrint;
 ?>
