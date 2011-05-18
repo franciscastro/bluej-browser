@@ -1,14 +1,14 @@
 <?php
 $this->breadcrumbs=array(
-	'Sections'=>array('index'),
+	'Classes'=>array('index'),
 	'Create',
 );
 
 $this->menu=array(
-	array('label'=>'Manage Sections', 'url'=>array('index')),
+	array('label'=>'Manage Classes', 'url'=>array('index')),
 );
 ?>
 
-<h1>Create Section</h1>
+<h1>Create Class</h1>
 
 <?php echo $this->renderPartial('_form', array('model'=>$model,'terms'=>$terms,)); ?>

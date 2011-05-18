@@ -1,16 +1,16 @@
 <?php
 $this->breadcrumbs=array(
-	'Sections'=>array('index'),
+	'Classes'=>array('index'),
 	$model->id=>array('view','id'=>$model->id),
 	'Update',
 );
 
 $this->menu=array(
-	array('label'=>'Manage Sections', 'url'=>array('index')),
-	array('label'=>'Create Section', 'url'=>array('create')),
+	array('label'=>'Manage Classes', 'url'=>array('index')),
+	array('label'=>'Create Class', 'url'=>array('create')),
 );
 ?>
 
-<h1>Update Section <?php echo $model->id; ?></h1>
+<h1>Update Class <?php echo $model->id; ?></h1>
 
 <?php echo $this->renderPartial('_form', array('model'=>$model,'terms'=>$terms,)); ?>

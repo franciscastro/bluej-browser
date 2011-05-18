@@ -1,10 +1,10 @@
 <?php
 $this->breadcrumbs=array(
-	'Sections',
+	'Classes',
 );
 
 $this->menu=array(
-	array('label'=>'Create Section', 'url'=>array('create')),
+	array('label'=>'Create Class', 'url'=>array('create')),
 );
 
 Yii::app()->clientScript->registerScript('search', "
@@ -21,7 +21,7 @@ $('.search-form form').submit(function(){
 ");
 ?>
 
-<h1>Manage Sections</h1>
+<h1>Manage Classes</h1>
 
 <?php $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'section-grid',
@@ -31,7 +31,7 @@ $('.search-form form').submit(function(){
 		'name',
 		array(
 			'class'=>'CButtonColumn',
-			'template'=>'{update} {delete}',
+			'template'=>'{view} {update} {delete}',
 		),
 	),
 )); ?>
