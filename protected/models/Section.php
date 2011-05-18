@@ -67,7 +67,8 @@ class Section extends CActiveRecord {
 			'section' => array(self::BELONGS_TO, 'Term', 'sectionId'),
 			'course' => array(self::BELONGS_TO, 'Term', 'courseId'),
 			'year' => array(self::BELONGS_TO, 'Term', 'yearId'),
-			'teachers' => array(self::MANY_MANY, 'User', 'UserSection(sectionId, userId)'),
+			'teachers' => array(self::MANY_MANY, 'User', 'UserSection(sectionId, userId)', 'condition'=>'roleId='.User::ROLE_TEACHER),
+			'students' => array(self::MANY_MANY, 'User', 'UserSection(sectionId, userId)', 'condition'=>'roleId='.User::ROLE_STUDENT),
 		);
 	}
 
@@ -109,32 +110,34 @@ class Section extends CActiveRecord {
 	protected function afterSave() {
 		parent::afterSave();
 		$oldTeachers = $this->teachers;
-		$this->addTeachers(array_udiff($this->newTeachers, $oldTeachers, array('User', 'compare')));
-		$this->removeTeachers(array_udiff($oldTeachers, $this->newTeachers, array('User', 'compare')));
+		$this->addUsers(array_udiff($this->newTeachers, $oldTeachers, array('User', 'compare')));
+		$this->removeUsers(array_udiff($oldTeachers, $this->newTeachers, array('User', 'compare')));
 	}
 
 	/**
-	 * Adds teachers to the section.
-	 * @param array the list of Users (teachers) to be added.
+	 * Adds users to the section.
+	 * @param array the list of Users to be added.
 	 */
-	public function addTeachers($teachers) {
-		foreach($teachers as $teacher) {
+	public function addUsers($users) {
+		$users = is_array($users) ? $users : array($users);
+		foreach($users as $user) {
 			$relation = new UserSection;
 			$relation->sectionId = $this->id;
-			$relation->userId = $teacher->id;
+			$relation->userId = $user->id;
 			$relation->save();
 		}
 	}
 
 	/**
-	 * Removes teachers from the section.
-	 * @param array the list of Users (teachers) to be removed.
+	 * Removes users from the section.
+	 * @param array the list of Users to be removed.
 	 */
-	public function removeTeachers($teachers) {
-		foreach($teachers as $teacher) {
+	public function removeUsers($users) {
+		$users = is_array($users) ? $users : array($users);
+		foreach($users as $user) {
 			UserSection::model()->deleteAllByAttributes(array(
 				'sectionId'=>$this->id,
-				'userId'=>$teacher->id,
+				'userId'=>$user->id,
 			));
 		}
 	}

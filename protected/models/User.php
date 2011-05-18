@@ -87,6 +87,7 @@ class User extends CActiveRecord {
 			'username' => 'Username',
 			'password' => 'Password',
 			'name' => 'Name',
+			'computer' => 'Computer',
 			'roleId' => 'Role',
 		);
 	}
@@ -108,6 +109,8 @@ class User extends CActiveRecord {
 		$criteria->compare('password',$this->password,true);
 
 		$criteria->compare('name',$this->name,true);
+
+		$criteria->compare('computer',$this->computer,true);
 
 		$criteria->compare('roleId',$this->roleId);
 

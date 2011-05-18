@@ -136,14 +136,22 @@ class ImportSessionController extends Controller {
 
 	public function actionCreateLive() {
 		$model=new ImportSession;
+		$terms = array();
 
 		if(isset($_POST['ImportSession'])) {
+			$terms = $this->getTermModel()->getNewTerms();
 			$model->attributes=$_POST['ImportSession'];
 			$model->source = 'live';
 			$model->start = time();
-			$model->newTerms = $this->getTermModel()->getNewTerms();
+			$model->newTerms = $terms;
 			if(isset($_POST['term']['section'])) {
 				$model->sectionId = $_POST['term']['section'];
+			}
+			else {
+				$viewData = Section::model()->getViewData($terms);
+				if($viewData['section'] != '') {
+					$model->sectionId = $viewData['section'];
+				}
 			}
 			if($model->save()) {
 				$this->redirect(array('view','id'=>$model->id));
@@ -152,7 +160,7 @@ class ImportSessionController extends Controller {
 
 		$this->render('createLive',array(
 			'model'=>$model,
-			'terms'=>$this->getTermModel()->getViewData(array()),
+			'terms'=>$this->getTermModel()->getViewData($terms),
 		));
 	}
 

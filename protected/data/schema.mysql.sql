@@ -86,6 +86,7 @@ CREATE TABLE User
 	username VARCHAR(128) NOT NULL,
 	password CHAR(40) NOT NULL,
 	name TEXT,
+	computer VARCHAR(128),
 	roleId INTEGER NOT NULL
 );
 
@@ -247,4 +248,4 @@ INSERT INTO Term VALUES (NULL, 2, "2010-2011");
 INSERT INTO Term VALUES (NULL, 3, "CS21a");
 INSERT INTO Term VALUES (NULL, 4, "A");
 
-INSERT INTO User VALUES (NULL, 'admin', 'f97baaf2592507e4bc91f3a7c0a25c2f3d6a28ac', 'Administrator', 1);
+INSERT INTO User VALUES (NULL, 'admin', 'f97baaf2592507e4bc91f3a7c0a25c2f3d6a28ac', 'Administrator', '', 1);

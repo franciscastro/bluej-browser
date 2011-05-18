@@ -133,12 +133,12 @@ class ImportSession extends CActiveRecord {
 	 * @param array row of data to be added
 	 * @return boolean whether there was an active session that accepted the insert
 	 */
-	public function liveInsert($userName, $sessionType, $data) {
+	public function liveInsert($computer, $sessionType, $data) {
 		$liveSessions = ImportSession::model()->findAll('start IS NOT NULL AND end IS NULL');
 
 		foreach($liveSessions as $liveSession) {
-			if($liveSession->path == null || stripos($userName, $liveSession->path) == 0) {
-				$import = $liveSession->getAssociatedImport($userName, $sessionType, 'live');
+			if($liveSession->path == null || stripos($computer, $liveSession->path) == 0) {
+				$import = $liveSession->getAssociatedImport($computer, $sessionType, 'live');
 				$model = CActiveRecord::model($import->session->type);
 				$model->liveImport($import->sessionId, $data);
 				return true;
@@ -148,31 +148,45 @@ class ImportSession extends CActiveRecord {
 	}
 
 	/**
-	 * Gets the import associated with the specified username and session type.
+	 * Gets the import associated with the specified computer and session type.
 	 * If it does not exist, it creates a new one, along with corresponding
 	 * users and sessions as needed.
-	 * @param string username
+	 * @param string computer
 	 * @param string session type
 	 * @param string where the import came from
 	 * @return the associated import
 	 */
-	public function getAssociatedImport($userName, $sessionType, $path) {
+	public function getAssociatedImport($computer, $sessionType, $path) {
 		if(strtolower($sessionType) == 'compiledata') {
 			$sessionType = 'CompileSession';
 		}
 		if(strtolower($sessionType) == 'invocationdata') {
 			$sessionType = 'InvocationSession';
 		}
-		$userModel = User::model()->findByAttributes(array('name'=>$userName));
+		if($this->sectionId > 0) {
+			$sectionModel = Section::model()->with(array(
+				'students' => array(
+					'condition' => 'computer="' . $computer .'"',
+				),
+			))->findByPk($this->sectionId);
+			$userModel = ($sectionModel == null) ? null : $sectionModel->students[0];
+		}
+		else {
+			$userModel = User::model()->findByAttributes(array('computer'=>$computer));
+		}
 		if($userModel == null) {
 			$userModel = new User('import');
 			$userModel->username = '---';
 			$userModel->password = '---';
-			$userModel->name = $userName;
-			$userModel->roleId = 4;
-
+			$userModel->name = $computer;
+			$userModel->computer = $computer;
+			$userModel->roleId = User::ROLE_STUDENT;
 			if(!$userModel->save()) {
 				return null;
+			}
+			if($this->sectionId > 0) {
+				$sectionModel = Section::model()->findByPk($this->sectionId);
+				$sectionModel->addUsers($userModel);
 			}
 		}
 

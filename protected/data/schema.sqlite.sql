@@ -86,6 +86,7 @@ CREATE TABLE User
 	username VARCHAR(128) NOT NULL,
 	password CHAR(40) NOT NULL,
 	name TEXT,
+	computer VARCHAR(128),
 	roleId INTEGER NOT NULL
 );
 
