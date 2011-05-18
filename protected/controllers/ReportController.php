@@ -349,6 +349,9 @@ class ReportController extends Controller {
 
 	function getImportSessionIds() {
 		if(isset($_GET['tags']) && !empty($_GET['tags'])) {
+			if(isset($_GET['id'])) {
+				return array($_GET['id']);
+			}
 			$termNames = array_unique(preg_split('/\s*,\s*/', $_GET['tags'], null, PREG_SPLIT_NO_EMPTY));
 			$_GET['tags'] = implode(',', $termNames);
 
@@ -375,7 +378,33 @@ class ReportController extends Controller {
 			return $importSessionIds;
 		}
 		else {
+			$_GET['tags'] = '';
 			return false;
+		}
+	}
+
+	function makeDetailBreadcrumbs($name) {
+		if(isset($_GET['id'])) {
+			$this->breadcrumbs=array(
+				'Logs' => array('importSession/index'),
+				'Log Session #' . $_GET['id'] => array('importSession/view', 'id'=>$_GET['id']),
+				'Summary' => array('summary', 'id'=>$_GET['id']),
+				$name,
+			);
+		}
+		else if(isset($_GET['tags'])){
+			$this->breadcrumbs=array(
+				'Logs' => array('importSession/index', 'tags'=>$_GET['tags']),
+				'General Summary' => array('summary', 'tags'=>$_GET['tags']),
+				$name,
+			);
+		}
+		else {
+			$this->breadcrumbs=array(
+				'Logs' => array('importSession/index'),
+				'General Summary' => array('summary'),
+				$name,
+			);
 		}
 	}
 }

@@ -1,10 +1,5 @@
 <?php
-$this->breadcrumbs=array(
-	'Logs' => array('importSession/index', 'tags'=>$_GET['tags']),
-	'General Summary' => array('summary', 'tags'=>$_GET['tags']),
-	'Confusion Report',
-);
-
+$this->makeDetailBreadcrumbs('Confusion Report');
 ?>
 
 <h1>Confusion Report</h1>

@@ -1,7 +1,20 @@
+<?php
+function make_link($name, $route) {
+	if(isset($_GET['id'])) {
+		return CHtml::link($name, array($route, 'id'=>$_GET['id']));
+	}
+	else if(isset($_GET['tags'])) {
+		return CHtml::link($name, array($route, 'tags'=>$_GET['tags']));
+	}
+	else {
+		return CHtml::link($name, array($route));
+	}
+}
+?>
 <table class='report'>
 	<tr>
 		<td>
-			<h2>EQ ( <?php echo CHtml::link('details', array('eq', 'tags'=>$_GET['tags'])); ?> )</h2>
+			<h2>EQ ( <?php echo make_link('details', 'eq'); ?> )</h2>
 			<table id="eq-summary">
 				<tr>
 					<th>Student</th>
@@ -18,7 +31,7 @@
 			</table>
 		</td>
 		<td>
-			<h2>Confused ( <?php echo CHtml::link('details', array('confusion', 'tags'=>$_GET['tags'])); ?> )</h2>
+			<h2>Confused ( <?php echo make_link('details', 'confusion'); ?> )</h2>
 			<table id="confusion-summary">
 				<tr>
 					<th>Student</th>
@@ -38,8 +51,8 @@
 	<tr>
 		<td>
 			<h2>Errors (
-				<?php echo CHtml::link('details', array('errorClass', 'tags'=>$_GET['tags'])); ?> |
-				<?php echo CHtml::link('all', array('error', 'tags'=>$_GET['tags'])); ?>
+				<?php echo make_link('by class', 'errorClass'); ?> |
+				<?php echo make_link('details', 'error'); ?>
 			) </h2>
 			<table id="error-summary">
 				<tr>
@@ -57,7 +70,7 @@
 			</table>
 		</td>
 		<td>
-			<h2>Times ( <?php echo CHtml::link('details', array('timeDelta', 'tags'=>$_GET['tags'])); ?> )</h2>
+			<h2>Times ( <?php echo make_link('details', 'timeDelta'); ?> )</h2>
 			<table id="time-summary">
 				<tr>
 					<th colspan=3>Time Interval</th>

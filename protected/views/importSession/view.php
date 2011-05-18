@@ -6,7 +6,7 @@ $this->breadcrumbs=array(
 
 $this->menu=array(
 	array('label'=>'Stop Session', 'url'=>'#', 'linkOptions'=>array('submit'=>array('stopLive','id'=>$model->id),'confirm'=>'Are you sure you want to stop the logging?'), 'visible'=>($model->source == 'live' && $model->end == null)),
-	array('label'=>'View Report', 'url'=>array('report/summary', 'tags'=>implode(',', $this->modelArrayToAttributeArray($model->terms, 'name')))),
+	array('label'=>'View Report', 'url'=>array('report/summary', 'id'=>$model->id)),
 	array('label'=>'Export Logs', 'url'=>array('export', 'id'=>$model->id)),
 	array('label'=>'Update Information', 'url'=>array('update', 'id'=>$model->id)),
 	array('label'=>'Manage Logs', 'url'=>array('index')),

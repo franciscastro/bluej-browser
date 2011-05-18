@@ -1,10 +1,5 @@
 <?php
-$this->breadcrumbs=array(
-	'Logs' => array('importSession/index', 'tags'=>$_GET['tags']),
-	'General Summary' => array('summary', 'tags'=>$_GET['tags']),
-	'Time Delta Report',
-);
-
+$this->makeDetailBreadcrumbs('Time Delta Report');
 ?>
 
 <h1>Time Delta Report</h1>

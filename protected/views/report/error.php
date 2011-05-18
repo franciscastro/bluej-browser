@@ -1,10 +1,5 @@
 <?php
-$this->breadcrumbs=array(
-	'Logs' => array('importSession/index', 'tags'=>$_GET['tags']),
-	'General Summary' => array('summary', 'tags'=>$_GET['tags']),
-	'Error Report',
-);
-
+$this->makeDetailBreadcrumbs('Error Report');
 ?>
 
 <h1>Error Report</h1>

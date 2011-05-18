@@ -1,10 +1,5 @@
 <?php
-$this->breadcrumbs=array(
-	'Logs' => array('importSession/index', 'tags'=>$_GET['tags']),
-	'General Summary' => array('summary', 'tags'=>$_GET['tags']),
-	'EQ Report',
-);
-
+$this->makeDetailBreadcrumbs('EQ Report');
 ?>
 
 <h1>EQ Report</h1>
