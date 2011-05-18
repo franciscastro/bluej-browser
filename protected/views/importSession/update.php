@@ -1,15 +1,13 @@
 <?php
 $this->breadcrumbs=array(
-	'Imports'=>array('index'),
+	'Logs'=>array('index'),
 	$model->id=>array('view','id'=>$model->id),
 	'Update',
 );
 
 $this->menu=array(
 	array('label'=>'View Information', 'url'=>array('view', 'id'=>$model->id)),
-	array('label'=>'Manage Imports', 'url'=>array('index')),	
-	array('label'=>'Upload Log Files', 'url'=>array('create')),
-	array('label'=>'Start Live Session', 'url'=>array('createLive')),
+	array('label'=>'Manage Logs', 'url'=>array('index')),
 );
 ?>
 

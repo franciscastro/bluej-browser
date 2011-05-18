@@ -42,7 +42,7 @@ class ReportController extends Controller {
 		$criteria->select = 'error AS messageText, COUNT(*) AS count';
 		$criteria->group = 'error';
 		$criteria->join = 'JOIN Import ON sessionId = compileSessionId LEFT JOIN ErrorClass ON compileSessionEntryId = t.id';
-		$criteria->condition = 'importSessionId IN ('.implode(',', $importSessionIds).')';
+		if($importSessionIds !== false) $criteria->condition = 'importSessionId IN ('.implode(',', $importSessionIds).')';
 		$criteria->limit = 10;
 		$criteria->order = 'count DESC';
 		$command = Yii::app()->db->getCommandBuilder()->createFindCommand('CompileSessionEntry', $criteria);
@@ -52,7 +52,7 @@ class ReportController extends Controller {
 		$criteria = new CDbCriteria;
 		$criteria->select = 'name, eq';
 		$criteria->join = 'JOIN User on userId = User.id JOIN EqCalculation ON t.id = compileSessionId JOIN Import ON sessionId = compileSessionId';
-		$criteria->condition = 'importSessionId IN ('.implode(',', $importSessionIds).')';
+		if($importSessionIds !== false) $criteria->condition = 'importSessionId IN ('.implode(',', $importSessionIds).')';
 		$criteria->limit = 10;
 		$criteria->order = 'eq DESC';
 		$command = Yii::app()->db->getCommandBuilder()->createFindCommand('Session', $criteria);
@@ -62,7 +62,7 @@ class ReportController extends Controller {
 		$criteria = new CDbCriteria;
 		$criteria->select = 'name, confusion';
 		$criteria->join = 'JOIN User on userId = User.id JOIN Confusion ON t.id = compileSessionId JOIN Import ON sessionId = compileSessionId';
-		$criteria->condition = 'importSessionId IN ('.implode(',', $importSessionIds).')';
+		if($importSessionIds !== false) $criteria->condition = 'importSessionId IN ('.implode(',', $importSessionIds).')';
 		$criteria->order = 'confusion DESC';
 		$criteria->limit = 10;
 		$command = Yii::app()->db->getCommandBuilder()->createFindCommand('Session', $criteria);
@@ -78,7 +78,7 @@ class ReportController extends Controller {
 		}
 
 		$criteria->join = 'JOIN CompileSessionEntry b ON a.id < b.id AND a.compileSessionId = b.compileSessionId JOIN Import ON a.compileSessionId = sessionId';
-		$criteria->condition = 'importSessionId IN ('.implode(',', $importSessionIds).')';
+		if($importSessionIds !== false) $criteria->condition = 'importSessionId IN ('.implode(',', $importSessionIds).')';
 		$criteria->group = 'a.id';
 
 		$command = Yii::app()->db->getCommandBuilder()->createFindCommand('CompileSessionEntry', $criteria, 'a');
@@ -120,7 +120,7 @@ class ReportController extends Controller {
 		$criteria = new CDbCriteria;
 		$criteria->select = 'name, eq';
 		$criteria->join = 'JOIN User ON userId = User.id JOIN EqCalculation ON t.id = compileSessionId JOIN Import ON sessionId = compileSessionId';
-		$criteria->condition = 'importSessionId IN ('.implode(',', $importSessionIds).')';
+		if($importSessionIds !== false) $criteria->condition = 'importSessionId IN ('.implode(',', $importSessionIds).')';
 		$command = Yii::app()->db->getCommandBuilder()->createFindCommand('Session', $criteria);
 
 		$dataProvider = new CSqlDataProvider($command->text, array(
@@ -175,7 +175,7 @@ class ReportController extends Controller {
 		$criteria = new CDbCriteria;
 		$criteria->select = 'name, confusion';
 		$criteria->join = 'JOIN User ON userId = User.id JOIN Confusion ON t.id = compileSessionId JOIN Import ON sessionId = compileSessionId';
-		$criteria->condition = 'importSessionId IN (' . implode(',', $importSessionIds) . ')';
+		if($importSessionIds !== false) $criteria->condition = 'importSessionId IN ('.implode(',', $importSessionIds).')';
 		$command = Yii::app()->db->getCommandBuilder()->createFindCommand('Session', $criteria);
 
 		$dataProvider = new CSqlDataProvider($command->text, array(
@@ -229,7 +229,7 @@ class ReportController extends Controller {
 		$criteria->select = 'messageText, COUNT(messageText) AS count';
 		$criteria->group = 'messageText';
 		$criteria->join = 'JOIN Import ON sessionId = compileSessionId';
-		$criteria->condition = 'importSessionId IN (' . implode(',', $importSessionIds) . ')';
+		if($importSessionIds !== false) $criteria->condition = 'importSessionId IN ('.implode(',', $importSessionIds).')';
 		$command = Yii::app()->db->getCommandBuilder()->createFindCommand('CompileSessionEntry', $criteria);
 
 		$dataProvider = new CSqlDataProvider($command->text, array(
@@ -267,7 +267,7 @@ class ReportController extends Controller {
 		$criteria->select = 'error AS messageText, COUNT(*) AS count';
 		$criteria->group = 'error';
 		$criteria->join = 'JOIN Import ON sessionId = compileSessionId LEFT JOIN ErrorClass ON compileSessionEntryId = t.id';
-		$criteria->condition = 'importSessionId IN ('.implode(',', $importSessionIds).')';
+		if($importSessionIds !== false) $criteria->condition = 'importSessionId IN ('.implode(',', $importSessionIds).')';
 		$command = Yii::app()->db->getCommandBuilder()->createFindCommand('CompileSessionEntry', $criteria);
 
 		$dataProvider = new CSqlDataProvider($command->text, array(
@@ -313,7 +313,7 @@ class ReportController extends Controller {
 			$criteria->select = '(b.timestamp - a.timestamp)/'.$interval.' AS delta';
 		}
 		$criteria->join = 'JOIN CompileSessionEntry b ON a.id < b.id AND a.compileSessionId = b.compileSessionId JOIN Import ON a.compileSessionId = sessionId';
-		$criteria->condition = 'importSessionId IN ('.implode(',', $importSessionIds).')';
+		if($importSessionIds !== false) $criteria->condition = 'importSessionId IN ('.implode(',', $importSessionIds).')';
 		$criteria->group = 'a.id';
 		$command = Yii::app()->db->getCommandBuilder()->createFindCommand('CompileSessionEntry', $criteria, 'a');
 		$subselect = $command->getText();
@@ -348,7 +348,7 @@ class ReportController extends Controller {
 	}
 
 	function getImportSessionIds() {
-		if(isset($_GET['tags'])) {
+		if(isset($_GET['tags']) && !empty($_GET['tags'])) {
 			$termNames = array_unique(preg_split('/\s*,\s*/', $_GET['tags'], null, PREG_SPLIT_NO_EMPTY));
 			$_GET['tags'] = implode(',', $termNames);
 
@@ -369,10 +369,13 @@ class ReportController extends Controller {
 				Yii::app()->user->setState('report_tags', $termNames);
 				Yii::app()->user->setState('report_iids', $importSessionIds);
 			}
+			if(count($importSessionIds) == 0) {
+				$this->redirect(array('report/empty'));
+			}
 			return $importSessionIds;
 		}
 		else {
-			$this->redirect('index');
+			return false;
 		}
 	}
 }

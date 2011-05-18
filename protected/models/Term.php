@@ -287,7 +287,7 @@ class Term extends CActiveRecord {
 	public static function displayTerms($terms) {
 		$html = '';
 		foreach($terms as $term) {
-			$html .= CHtml::link($term->name, array('term/view', 'id'=>$term->id)) . ' ';
+			$html .= CHtml::link($term->name, array('importSession/index', 'tags'=>$term->name)) . ' ';
 		}
 		return $html;
 	}

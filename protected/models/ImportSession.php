@@ -90,7 +90,7 @@ class ImportSession extends CActiveRecord {
 
 		$criteria=new CDbCriteria;
 
-		if(isset($_GET['tags'])) {
+		if(isset($_GET['tags']) && !empty($_GET['tags'])) {
 			$termNames = preg_split('/\s*,\s*/', $_GET['tags'], null, PREG_SPLIT_NO_EMPTY);
 			$_GET['tags'] = implode(',', $termNames);
 			$criteria->condition = 'id IN (' . Term::createSubSelect('ImportSession', $termNames) . ')';

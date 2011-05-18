@@ -1,12 +1,13 @@
 <?php
 $this->breadcrumbs=array(
-	'Imports',
+	'Logs',
 );
 
 $this->menu=array(
 	array('label'=>'Upload Log Files', 'url'=>array('create')),
 	array('label'=>'Start Live Session', 'url'=>array('createLive')),
 	array('label'=>'Export All', 'url'=>isset($_GET['tags']) ? array('exportAll', 'tags'=>$_GET['tags']) : array('exportAll')),
+	array('label'=>'Generate Report', 'url'=>array('report/summary', 'tags'=>(isset($_GET['tags']) ? $_GET['tags'] : ''))),
 );
 /*
 Yii::app()->clientScript->registerScript('search', "
@@ -23,7 +24,7 @@ $('.search-form form').submit(function(){
 ");*/
 ?>
 
-<h1>Manage Imports</h1>
+<h1>Logs</h1>
 
 <?php /*
 <p>
@@ -42,7 +43,7 @@ or <b>=</b>) at the beginning of each of your search values to specify how the c
 <p>
 You may search by tags as well. The search finds all records which have all tags that you specify.
 </p>
-<?php $this->renderPartial('../term/_search'); ?>
+<?php $this->renderPartial('_search'); ?>
 
 <?php $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'import-session-grid',

@@ -5,13 +5,11 @@ $this->breadcrumbs=array(
 );
 
 $this->menu=array(
-	array('label'=>'View Report', 'url'=>array('report/summary', 'tags'=>implode(',', $this->modelArrayToAttributeArray($model->terms, 'name')))),
 	array('label'=>'Stop Session', 'url'=>'#', 'linkOptions'=>array('submit'=>array('stopLive','id'=>$model->id),'confirm'=>'Are you sure you want to stop the logging?'), 'visible'=>($model->source == 'live' && $model->end == null)),
+	array('label'=>'View Report', 'url'=>array('report/summary', 'tags'=>implode(',', $this->modelArrayToAttributeArray($model->terms, 'name')))),
 	array('label'=>'Export Logs', 'url'=>array('export', 'id'=>$model->id)),
 	array('label'=>'Update Information', 'url'=>array('update', 'id'=>$model->id)),
-	array('label'=>'Manage Imports', 'url'=>array('index')),	
-	array('label'=>'Upload Log Files', 'url'=>array('create')),
-	array('label'=>'Start Live Session', 'url'=>array('createLive')),
+	array('label'=>'Manage Logs', 'url'=>array('index')),
 );
 ?>
 

@@ -1,6 +1,6 @@
 <?php
 $this->breadcrumbs=array(
-	'Reports' => array('index'),
+	'Logs' => array('importSession/index', 'tags'=>$_GET['tags']),
 	'General Summary' => array('summary', 'tags'=>$_GET['tags']),
 	'Confusion Report',
 );
