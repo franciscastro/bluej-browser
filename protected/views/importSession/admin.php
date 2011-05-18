@@ -24,7 +24,7 @@ $('.search-form form').submit(function(){
 ");*/
 ?>
 
-<h1>Logs</h1>
+<h1>Log Sessions</h1>
 
 <?php /*
 <p>

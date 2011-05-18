@@ -41,7 +41,7 @@ class ReportController extends Controller {
 		$criteria = new CDbCriteria;
 		$criteria->select = 'error AS messageText, COUNT(*) AS count';
 		$criteria->group = 'error';
-		$criteria->join = 'JOIN Import ON sessionId = compileSessionId LEFT JOIN ErrorClass ON compileSessionEntryId = t.id';
+		$criteria->join = 'JOIN Import ON Import.id = compileSessionId LEFT JOIN ErrorClass ON compileSessionEntryId = t.id';
 		if($importSessionIds !== false) $criteria->condition = 'importSessionId IN ('.implode(',', $importSessionIds).')';
 		$criteria->limit = 10;
 		$criteria->order = 'count DESC';
@@ -51,21 +51,21 @@ class ReportController extends Controller {
 		// highest EQ
 		$criteria = new CDbCriteria;
 		$criteria->select = 'name, eq';
-		$criteria->join = 'JOIN User on userId = User.id JOIN EqCalculation ON t.id = compileSessionId JOIN Import ON sessionId = compileSessionId';
+		$criteria->join = ' JOIN Import ON Import.id = compileSessionId JOIN User on userId = User.id';
 		if($importSessionIds !== false) $criteria->condition = 'importSessionId IN ('.implode(',', $importSessionIds).')';
 		$criteria->limit = 10;
 		$criteria->order = 'eq DESC';
-		$command = Yii::app()->db->getCommandBuilder()->createFindCommand('Session', $criteria);
+		$command = Yii::app()->db->getCommandBuilder()->createFindCommand('EqCalculation', $criteria);
 		$topEqData = $command->queryAll();
 
 		// confused people
 		$criteria = new CDbCriteria;
 		$criteria->select = 'name, confusion';
-		$criteria->join = 'JOIN User on userId = User.id JOIN Confusion ON t.id = compileSessionId JOIN Import ON sessionId = compileSessionId';
+		$criteria->join = 'JOIN Import ON Import.id = compileSessionId JOIN User on userId = User.id';
 		if($importSessionIds !== false) $criteria->condition = 'importSessionId IN ('.implode(',', $importSessionIds).')';
 		$criteria->order = 'confusion DESC';
 		$criteria->limit = 10;
-		$command = Yii::app()->db->getCommandBuilder()->createFindCommand('Session', $criteria);
+		$command = Yii::app()->db->getCommandBuilder()->createFindCommand('Confusion', $criteria);
 		$topConfusedData = $command->queryAll();
 
 		// time delta
@@ -77,7 +77,7 @@ class ReportController extends Controller {
 			$criteria->select = '(b.timestamp - a.timestamp)/20 AS delta';
 		}
 
-		$criteria->join = 'JOIN CompileSessionEntry b ON a.id < b.id AND a.compileSessionId = b.compileSessionId JOIN Import ON a.compileSessionId = sessionId';
+		$criteria->join = 'JOIN Import ON a.compileSessionId = Import.id JOIN CompileSessionEntry b ON a.id < b.id AND a.compileSessionId = b.compileSessionId';
 		if($importSessionIds !== false) $criteria->condition = 'importSessionId IN ('.implode(',', $importSessionIds).')';
 		$criteria->group = 'a.id';
 
@@ -119,9 +119,9 @@ class ReportController extends Controller {
 
 		$criteria = new CDbCriteria;
 		$criteria->select = 'name, eq';
-		$criteria->join = 'JOIN User ON userId = User.id JOIN EqCalculation ON t.id = compileSessionId JOIN Import ON sessionId = compileSessionId';
+		$criteria->join = 'JOIN Import ON Import.id = compileSessionId JOIN User ON userId = User.id';
 		if($importSessionIds !== false) $criteria->condition = 'importSessionId IN ('.implode(',', $importSessionIds).')';
-		$command = Yii::app()->db->getCommandBuilder()->createFindCommand('Session', $criteria);
+		$command = Yii::app()->db->getCommandBuilder()->createFindCommand('EqCalculation', $criteria);
 
 		$dataProvider = new CSqlDataProvider($command->text, array(
 			'keyField'=>'name',
@@ -174,9 +174,9 @@ class ReportController extends Controller {
 
 		$criteria = new CDbCriteria;
 		$criteria->select = 'name, confusion';
-		$criteria->join = 'JOIN User ON userId = User.id JOIN Confusion ON t.id = compileSessionId JOIN Import ON sessionId = compileSessionId';
+		$criteria->join = 'JOIN Import ON Import.id = compileSessionId JOIN User ON userId = User.id';
 		if($importSessionIds !== false) $criteria->condition = 'importSessionId IN ('.implode(',', $importSessionIds).')';
-		$command = Yii::app()->db->getCommandBuilder()->createFindCommand('Session', $criteria);
+		$command = Yii::app()->db->getCommandBuilder()->createFindCommand('Confusion', $criteria);
 
 		$dataProvider = new CSqlDataProvider($command->text, array(
 			'keyField'=>'name',
@@ -228,7 +228,7 @@ class ReportController extends Controller {
 		$criteria = new CDbCriteria;
 		$criteria->select = 'messageText, COUNT(messageText) AS count';
 		$criteria->group = 'messageText';
-		$criteria->join = 'JOIN Import ON sessionId = compileSessionId';
+		$criteria->join = 'JOIN Import ON Import.id = compileSessionId';
 		if($importSessionIds !== false) $criteria->condition = 'importSessionId IN ('.implode(',', $importSessionIds).')';
 		$command = Yii::app()->db->getCommandBuilder()->createFindCommand('CompileSessionEntry', $criteria);
 
@@ -266,7 +266,7 @@ class ReportController extends Controller {
 		$criteria = new CDbCriteria;
 		$criteria->select = 'error AS messageText, COUNT(*) AS count';
 		$criteria->group = 'error';
-		$criteria->join = 'JOIN Import ON sessionId = compileSessionId LEFT JOIN ErrorClass ON compileSessionEntryId = t.id';
+		$criteria->join = 'JOIN Import ON Import.id = compileSessionId LEFT JOIN ErrorClass ON compileSessionEntryId = t.id';
 		if($importSessionIds !== false) $criteria->condition = 'importSessionId IN ('.implode(',', $importSessionIds).')';
 		$command = Yii::app()->db->getCommandBuilder()->createFindCommand('CompileSessionEntry', $criteria);
 
@@ -312,7 +312,7 @@ class ReportController extends Controller {
 		else {
 			$criteria->select = '(b.timestamp - a.timestamp)/'.$interval.' AS delta';
 		}
-		$criteria->join = 'JOIN CompileSessionEntry b ON a.id < b.id AND a.compileSessionId = b.compileSessionId JOIN Import ON a.compileSessionId = sessionId';
+		$criteria->join = 'JOIN Import ON a.compileSessionId = Import.id JOIN CompileSessionEntry b ON a.id < b.id AND a.compileSessionId = b.compileSessionId';
 		if($importSessionIds !== false) $criteria->condition = 'importSessionId IN ('.implode(',', $importSessionIds).')';
 		$criteria->group = 'a.id';
 		$command = Yii::app()->db->getCommandBuilder()->createFindCommand('CompileSessionEntry', $criteria, 'a');

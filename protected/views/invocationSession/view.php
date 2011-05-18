@@ -1,11 +1,13 @@
 <?php
+$importSessionId = $model->import->importSessionId;
 $this->breadcrumbs=array(
-	'Invocation Sessions'=>array('index'),
-	$model->id,
-);
+			'Logs'=>array('importSession/index'),
+			'Log Session #'.$importSessionId=>array('importSession/view', 'id'=>$importSessionId),
+			'Invocation Log #'.$_GET['id'],
+		);
 ?>
 
-<h1>View InvocationSession #<?php echo $model->id; ?></h1>
+<h1>Invocation Log #<?php echo $model->id; ?></h1>
 
 <?php $this->widget('zii.widgets.CDetailView', array(
 	'data'=>$model,

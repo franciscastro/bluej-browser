@@ -66,7 +66,7 @@ class InvocationSession extends CActiveRecord {
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'session' => array(self::BELONGS_TO, 'Session', 'id'),
+			'import' => array(self::BELONGS_TO, 'Import', 'id'),
 			'entries' => array(self::HAS_MANY, 'InvocationSessionEntry', 'invocationSessionId'),
 		);
 	}

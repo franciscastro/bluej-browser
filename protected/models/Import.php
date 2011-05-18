@@ -10,13 +10,29 @@
  * The followings are the available columns in table 'Import':
  * @property integer $id
  * @property integer $importSessionId
- * @property integer $sessionId
  * @property string $path
+ * @property integer $userId
+ * @property string $date
+ * @property string $type
  *
  * Links a session to an import session. Also stores import information
  * for delayed importing.
  */
 class Import extends CActiveRecord {
+
+	private $_session;
+
+	public function __get($var) {
+		if($var == 'session') {
+			if(isset($_session)) {
+				return $_session;
+			}
+			$_session = CActiveRecord::model($this->type)->findByPk($this->id);
+			return $_session;
+		}
+		return parent::__get($var);
+	}
+
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return Import the static model class
@@ -39,11 +55,11 @@ class Import extends CActiveRecord {
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('importSessionId, sessionId', 'numerical', 'integerOnly'=>true),
+			array('importSessionId, userId', 'numerical', 'integerOnly'=>true),
 			array('path', 'safe'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, importSessionId, sessionId, path', 'safe', 'on'=>'search'),
+			array('id, importSessionId, userId, path', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -55,7 +71,7 @@ class Import extends CActiveRecord {
 		// class name for the relations automatically generated below.
 		return array(
 			'importSession' => array(self::BELONGS_TO, 'ImportSession', 'importSessionId'),
-			'session' => array(self::BELONGS_TO, 'Session', 'sessionId'),
+			'user' => array(self::BELONGS_TO, 'User', 'userId'),
 		);
 	}
 
@@ -85,9 +101,13 @@ class Import extends CActiveRecord {
 
 		$criteria->compare('importSessionId',$this->importSessionId);
 
-		$criteria->compare('sessionId',$this->sessionId);
-
 		$criteria->compare('path',$this->path,true);
+
+		$criteria->compare('userId',$this->userId);
+
+		$criteria->compare('date',$this->date);
+
+		$criteria->compare('type',$this->type,true);
 
 		return new CActiveDataProvider(get_class($this), array(
 			'criteria'=>$criteria,
@@ -95,10 +115,10 @@ class Import extends CActiveRecord {
 	}
 
 	/**
-	 * Run before deleting. Cascades deletions.
+	 * Run before deleting a session, cascades the deletions.
 	 */
 	protected function beforeDelete() {
-		$this->session->delete();
+		$model = $this->session->delete();
 		return parent::beforeDelete();
 	}
 
@@ -106,75 +126,35 @@ class Import extends CActiveRecord {
 	 * Runs an import.
 	 */
 	public function doImport() {
-		if($this->sessionId != 0) return;
+		if(isset($this->type)) return;
 		$connection = new CDbConnection('sqlite:'.$this->path);
 		$connection->active = true;
 
 		$command = $connection->createCommand('SELECT * FROM sqlite_master WHERE type=\'table\'');
 		$temp = $command->queryRow();
-
 		$tableName = $temp['name'];
-
-		$path = str_replace($this->importSession->path, '', $this->path);
-		$path = explode(DIRECTORY_SEPARATOR, $path);
-
 		$command = $connection->createCommand('SELECT * FROM `' . $tableName . '`');
 
 		$pc = strripos($tableName, '_');
-		$userName = substr($tableName, 0, $pc);
 		$sessionType = substr($tableName, $pc+1);
-
-		$userModel = User::model()->findByAttributes(array('name'=>$userName));
-
-		if($userModel == null) {
-			$userModel = new User('import');
-			$userModel->username = '---';
-			$userModel->password = '---';
-			$userModel->name = $userName;
-			$userModel->roleId = 4;
-
-			if(!$userModel->save()) {
-				return null;
-			}
-		}
-
-		$session = new Session;
-
-		$basename = basename($this->path, '.sqlite');
-		if(stripos($basename, 'compiledata')) {
-			$session->type = 'CompileSession';
-		}
-		else if(stripos($basename, 'invocationdata')) {
-			$session->type= 'InvocationSession';
-		}
-		else {
+		$sessionType = ImportSession::parseSessionType($sessionType);
+		if($sessionType === false) {
+			$this->type = 'error';
+			$this->save();
 			return;
 		}
 
+		$computer = substr($tableName, 0, $pc);
+		$userModel = $this->importSession->getAssociatedUser($computer);
+
 		$row = $command->queryRow();
-		$session->userId = $userModel->id;
-		$session->date = $row['TIMESTAMP'];
+		$reader = $command->query();
 
-		if($session->save()) {
-			$reader = $command->query();
-			$model = CActiveRecord::model($session->type);
-			$temp = $model->doImport($session->id, $row, $reader);
-			$this->sessionId = $session->id;
-			$this->save();
-
-			/*
-			$transaction = $model->dbConnection->beginTransaction();
-
-			try {
-				$temp = $model->doImport($session->id, $row, $reader);
-				$this->sessionId = $session->id;
-				$this->save();
-				$transaction->commit();
-			}
-			catch (Exception $e) {
-				$transaction->rollback();
-				$session->delete();
-			}*/
-		}
+		$this->userId = $userModel->id;
+		$this->date = $row['TIMESTAMP'];
+		$this->type = $sessionType;
+		$model = CActiveRecord::model($this->type);
+		$temp = $model->doImport($this->id, $row, $reader);
+		$this->save();
 	}
 }

@@ -2,7 +2,6 @@ DROP TABLE IF EXISTS Term;
 DROP TABLE IF EXISTS UserTerm;
 DROP TABLE IF EXISTS ImportSessionTerm;
 DROP TABLE IF EXISTS User;
-DROP TABLE IF EXISTS Session;
 DROP TABLE IF EXISTS Section;
 DROP TABLE IF EXISTS UserSection;
 DROP TABLE IF EXISTS CompileSession;
@@ -77,16 +76,6 @@ CREATE TABLE User
 	name TEXT,
 	computer VARCHAR(128),
 	roleId INTEGER NOT NULL
-);
-
-CREATE TABLE Session
-(
-	id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-	userId INTEGER,
-	date INTEGER,
-	type TEXT,
-	CONSTRAINT FK_user_session FOREIGN KEY (userId)
-		REFERENCES User (id)
 );
 
 CREATE TABLE CompileSession
@@ -191,10 +180,12 @@ CREATE TABLE Import
 (
 	id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
 	importSessionId INTEGER,
-	sessionId INTEGER,
 	path TEXT,
-	CONSTRAINT FK_import_session FOREIGN KEY (sessionId)
-		REFERENCES Session (id),
+	userId INTEGER,
+	date INTEGER,
+	type TEXT,
+	CONSTRAINT FK_user_session FOREIGN KEY (userId)
+		REFERENCES User (id),
 	CONSTRAINT FK_import_importSession FOREIGN KEY (importSessionId)
 		REFERENCES ImportSession (id)
 );
@@ -233,8 +224,4 @@ INSERT INTO Term VALUES (4, 1, "Section");
 INSERT INTO Term VALUES (5, 1, "Lab");
 INSERT INTO Term VALUES (6, 1, "Other");
 
-INSERT INTO Term VALUES (NULL, 2, "2010-2011");
-INSERT INTO Term VALUES (NULL, 3, "CS21a");
-INSERT INTO Term VALUES (NULL, 4, "A");
-
-INSERT INTO User VALUES (NULL, 'admin', 'f97baaf2592507e4bc91f3a7c0a25c2f3d6a28ac', 'Administrator', 1);
+INSERT INTO User VALUES (NULL, 'admin', 'f97baaf2592507e4bc91f3a7c0a25c2f3d6a28ac', 'Administrator', '', 1);

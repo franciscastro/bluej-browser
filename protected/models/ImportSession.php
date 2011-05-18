@@ -134,13 +134,17 @@ class ImportSession extends CActiveRecord {
 	 * @return boolean whether there was an active session that accepted the insert
 	 */
 	public function liveInsert($computer, $sessionType, $data) {
+		$sessionType = self::parseSessionType($sessionType);
+		if($sessionType === false) {
+			return false;
+		}
 		$liveSessions = ImportSession::model()->findAll('start IS NOT NULL AND end IS NULL');
 
 		foreach($liveSessions as $liveSession) {
 			if($liveSession->path == null || stripos($computer, $liveSession->path) == 0) {
 				$import = $liveSession->getAssociatedImport($computer, $sessionType, 'live');
-				$model = CActiveRecord::model($import->session->type);
-				$model->liveImport($import->sessionId, $data);
+				$model = CActiveRecord::model($import->type);
+				$model->liveImport($import->id, $data);
 				return true;
 			}
 		}
@@ -157,12 +161,27 @@ class ImportSession extends CActiveRecord {
 	 * @return the associated import
 	 */
 	public function getAssociatedImport($computer, $sessionType, $path) {
-		if(strtolower($sessionType) == 'compiledata') {
-			$sessionType = 'CompileSession';
+		$userModel = $this->getAssociatedUser($computer);
+		$importModel = Import::model()->findByAttributes(array(
+			'importSessionId'=>$this->id,
+			'type'=>$sessionType,
+			'userId'=>$userModel->id,
+		));
+
+		if($importModel == null) {
+			$importModel = new Import;
+			$importModel->importSessionId = $this->id;
+			$importModel->path = $path;
+			$importModel->userId = $userModel->id;
+			$importModel->date = time();
+			$importModel->type = $sessionType;
+			$importModel->save();
 		}
-		if(strtolower($sessionType) == 'invocationdata') {
-			$sessionType = 'InvocationSession';
-		}
+
+		return $importModel;
+	}
+
+	public function getAssociatedUser($computer) {
 		if($this->sectionId > 0) {
 			$sectionModel = Section::model()->with(array(
 				'students' => array(
@@ -189,33 +208,17 @@ class ImportSession extends CActiveRecord {
 				$sectionModel->addUsers($userModel);
 			}
 		}
+		return $userModel;
+	}
 
-		$importModel = Import::model()->with(array(
-			'session'=>array(
-				'condition'=>'type = :type AND userId=:id',
-				'params'=>array(
-					':type'=>$sessionType,
-					':id'=>$userModel->id,
-				),
-			),
-		))->findByAttributes(array('importSessionId'=>$this->id));
-
-		if($importModel == null) {
-			$sessionModel = new Session;
-			$sessionModel->userId = $userModel->id;
-			$sessionModel->date = time();
-			$sessionModel->type = $sessionType;
-			$sessionModel->newTerms = $this->terms;
-			$sessionModel->save();
-
-			$importModel = new Import;
-			$importModel->sessionId = $sessionModel->id;
-			$importModel->importSessionId = $this->id;
-			$importModel->path = $path;
-			$importModel->save();
+	public static function parseSessionType($sessionType) {
+		if(stripos('compiledata', $sessionType) !== false) {
+			return 'CompileSession';
 		}
-
-		return $importModel;
+		else if(stripos('invocationdata', $sessionType) !== false) {
+			return 'InvocationSession';
+		}
+		return false;
 	}
 
 	/**

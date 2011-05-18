@@ -1,6 +1,6 @@
 <?php
 $this->breadcrumbs=Yii::app()->user->getState('compileSession_breadcrumbs');
-$this->breadcrumbs[] = 'Log #'.$model->deltaSequenceNumber . ' vs Log #' . $model2->deltaSequenceNumber;
+$this->breadcrumbs[] = 'Entry #'.$model->deltaSequenceNumber . ' vs Entry #' . $model2->deltaSequenceNumber;
 Yii::app()->getClientScript()->registerCssFile(Yii::app()->baseUrl . '/css/compare.css');
 ?>
 
@@ -11,7 +11,7 @@ Yii::app()->getClientScript()->registerCssFile(Yii::app()->baseUrl . '/css/compa
 ));?>
 </div>
 
-<h1>Comparing Logs #<?php echo $model->deltaSequenceNumber; ?> and #<?php echo $model2->deltaSequenceNumber; ?> </h1>
+<h1>Comparing Entries #<?php echo $model->deltaSequenceNumber; ?> and #<?php echo $model2->deltaSequenceNumber; ?> </h1>
 
 <table id='compare-container'>
 	<tr>

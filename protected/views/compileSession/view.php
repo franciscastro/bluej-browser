@@ -1,19 +1,19 @@
 <?php
-$importSessionId = $model->session->import->importSessionId;
+$importSessionId = $model->import->importSessionId;
 $this->breadcrumbs=array(
-			'Imports'=>array('importSession/index'),
-			'Import #'.$importSessionId=>array('importSession/view', 'id'=>$importSessionId),
-			'Session #'.$_GET['id'],
+			'Logs'=>array('importSession/index'),
+			'Log Session #'.$importSessionId=>array('importSession/view', 'id'=>$importSessionId),
+			'Compile Log #'.$_GET['id'],
 		);
 ?>
 
-<h1>View CompileSession #<?php echo $model->id; ?></h1>
+<h1>Compile Log #<?php echo $model->id; ?></h1>
 
 <?php $this->widget('zii.widgets.CDetailView', array(
 	'data'=>$model,
 	'attributes'=>array(
-		'session.user.name',
-		'session.date:date',
+		'import.user.name',
+		'import.date:date',
 		array(
 			'label'=>'EQ',
 			'type'=>'raw',

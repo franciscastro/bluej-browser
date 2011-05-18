@@ -113,7 +113,6 @@ class ImportSessionController extends Controller {
 							$model->save();
 						}
 						$import = new Import;
-						$import->sessionId = 0;
 						$import->importSessionId = $model->id;
 						$import->path = $file;
 						$import->save();

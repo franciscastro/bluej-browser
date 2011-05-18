@@ -94,7 +94,11 @@ class EqCalculation extends CActiveRecord {
 	public function calculate() {
 		$entries = CompileSessionEntry::model()->findAll('compileSessionId=:id ORDER BY fileName, deltaSequenceNumber', array('id'=>$this->compileSessionId));
 		$numRows = count($entries);
-
+		if($numRows < 2) {
+			$this->eq = -1;
+			$this->save();
+			return;
+		}
 		$prevEntry = $entries[0];
 		$count = 0;
 		$eq = 0;

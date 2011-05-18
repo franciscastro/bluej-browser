@@ -70,11 +70,11 @@ class CompileSessionController extends Controller {
 		$sort->applyOrder($criteria);
 		$dataProvider->sort = $sort;
 
-		$importSessionId = $model->session->import->importSessionId;
+		$importSessionId = $model->import->importSessionId;
 		$breadcrumbs=array(
-			'Imports'=>array('importSession/index'),
-			'Import #'.$importSessionId=>array('importSession/view', 'id'=>$importSessionId),
-			'Session #'.$_GET['id']=>array('compileSession/view', 'id'=>$_GET['id']),
+			'Logs'=>array('importSession/index'),
+			'Log Session #'.$importSessionId=>array('importSession/view', 'id'=>$importSessionId),
+			'Compile Log #'.$_GET['id']=>array('compileSession/view', 'id'=>$_GET['id']),
 		);
 
 		Yii::app()->user->setState('compileSession_breadcrumbs', $breadcrumbs);

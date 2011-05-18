@@ -1,7 +1,7 @@
 <?php
 $this->breadcrumbs=array(
-	'Imports'=>array('index'),
-	'Import #' . $model->id,
+	'Logs'=>array('index'),
+	'Log Session #' . $model->id,
 );
 
 $this->menu=array(
@@ -13,7 +13,7 @@ $this->menu=array(
 );
 ?>
 
-<h1>View Import #<?php echo $model->id; ?></h1>
+<h1>Log Session #<?php echo $model->id; ?></h1>
 
 <?php $this->widget('zii.widgets.CDetailView', array(
 	'data'=>$model,
@@ -55,22 +55,23 @@ $this->menu=array(
 	'id'=>'import-grid',
 	'dataProvider'=>$import->search(),
 	'columns'=>array(
-		'sessionId',
+		'id',
+		'user.name:raw:Student',
 		array(
 			'name'=>'path',
-			'value'=>'basename($data->path)',
+			'value'=>'($data->path == "live") ? $data->user->computer . "-" . $data->type : basename($data->path)',
 		),
 		array(
 			'class'=>'CButtonColumn',
 			'template'=>'{view} {delete}',
 			'buttons'=>array(
 				'view'=>array(
-					'url'=>'Yii::app()->controller->createUrl("session/view", array("id"=>$data->sessionId))',
-					'visible'=>'$data->sessionId != 0',
+					'url'=>'Yii::app()->controller->createUrl("import/view", array("id"=>$data->id))',
+					'visible'=>'isset($data->type)',
 				),
 				'delete'=>array(
 					'url'=>'Yii::app()->controller->createUrl("import/delete", array("id"=>$data->id))',
-					'visible'=>'$data->sessionId != 0',
+					'visible'=>'isset($data->type)',
 				),
 			),
 		),
