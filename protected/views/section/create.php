@@ -1,7 +1,7 @@
 <?php
 $this->breadcrumbs=array(
 	'Classes'=>array('index'),
-	'Create',
+	'Add',
 );
 
 $this->menu=array(
@@ -9,6 +9,6 @@ $this->menu=array(
 );
 ?>
 
-<h1>Create Class</h1>
+<h1>Add Class</h1>
 
 <?php echo $this->renderPartial('_form', array('model'=>$model,'terms'=>$terms,)); ?>

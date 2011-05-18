@@ -4,7 +4,7 @@ $this->breadcrumbs=array(
 );
 
 $this->menu=array(
-	array('label'=>'Create Class', 'url'=>array('create')),
+	array('label'=>'Add Class', 'url'=>array('create')),
 );
 
 Yii::app()->clientScript->registerScript('search', "

@@ -48,7 +48,7 @@ class Section extends CActiveRecord {
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('name, yearId, courseId, sectionId', 'required'),
+			array('yearId, courseId, sectionId', 'required'),
 			array('name', 'unique'),
 			array('yearId, courseId, sectionId', 'numerical', 'integerOnly'=>true),
 			// The following rule is used by search().
@@ -147,7 +147,7 @@ class Section extends CActiveRecord {
 	 * @param array the list of previously selected terms
 	 * @return view data to be used for Section's input form
 	 */
-	public function getViewData($terms) {
+	public function getViewData($terms=array()) {
 		$viewData = Term::model()->getViewData($terms);
 		if(!array_key_exists(Term::TERM_YEAR, $viewData) ||
 			 !array_key_exists(Term::TERM_COURSE, $viewData) ||

@@ -349,10 +349,10 @@ class ImportSessionController extends Controller {
 	}
 
 	public function getTermModel() {
-		if(Yii::app()->user->hasRole(array('Teacher'))) {
+		//if(Yii::app()->user->hasRole(array('Teacher'))) {
 			return CActiveRecord::model('Section');
-		}
-		return CActiveRecord::model('Term');
+		//}
+		//return CActiveRecord::model('Term');
 	}
 
 	private function getExportName($model = null) {

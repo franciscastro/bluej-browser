@@ -142,9 +142,17 @@ class TermController extends Controller {
 
 	public function actionSearch() {
 		if(Yii::app()->getRequest()->getIsAjaxRequest()) {
-			$terms = Term::model()->findAll('name LIKE :name AND parentId > 1', array(
-				':name' => $_GET['term'].'%',
-			));
+			if(!isset($_GET['parent'])) {
+				$terms = Term::model()->findAll('name LIKE :name AND parentId > 1', array(
+					':name' => $_GET['term'].'%',
+				));
+			}
+			else {
+				$terms = Term::model()->findAll('name LIKE :name AND parentId = :parent', array(
+					':name' => $_GET['term'].'%',
+					':parent' => $_GET['parent'],
+				));
+			}
 			$termNames = array();
 			foreach($terms as $term) {
 				$termNames[] = $term->name;

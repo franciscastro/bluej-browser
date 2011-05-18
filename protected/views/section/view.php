@@ -6,13 +6,13 @@ $this->breadcrumbs=array(
 
 $this->menu=array(
 	array('label'=>'Manage Classes', 'url'=>array('index')),
-	array('label'=>'Create Class', 'url'=>array('create')),
-	array('label'=>'Update Class', 'url'=>array('update', 'id'=>$model->id)),
+	array('label'=>'Add Class', 'url'=>array('create')),
+	array('label'=>'Change Teachers', 'url'=>array('update', 'id'=>$model->id)),
 	array('label'=>'Delete Class', 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
 );
 ?>
 
-<h1>View Class <?php echo $model->name; ?></h1>
+<h1><?php echo $model->name; ?></h1>
 
 <h2>Teachers</h2>
 <?php $this->widget('zii.widgets.grid.CGridView', array(
