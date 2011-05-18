@@ -17,7 +17,6 @@
  * CompileSession and InvocationSession (so far).
  */
 class Session extends CActiveRecord {
-	public $newTerms = array();
 	private $_child;
 
 	public function __get($var) {
@@ -73,7 +72,6 @@ class Session extends CActiveRecord {
 			'import' => array(self::HAS_ONE, 'Import', 'sessionId'),
 			'invocationSession' => array(self::HAS_ONE, 'InvocationSession', 'id'),
 			'user' => array(self::BELONGS_TO, 'User', 'userId'),
-			'terms' => array(self::MANY_MANY, 'Term', 'SessionTerm(sessionId, termId'),
 		);
 	}
 
@@ -113,46 +111,10 @@ class Session extends CActiveRecord {
 	}
 
 	/**
-	 * Run after saving a record. Updates the terms of the session.
-	 */
-	protected function afterSave() {
-		parent::afterSave();
-		$oldTerms = $this->terms;
-		$this->addTerms(array_udiff($this->newTerms, $oldTerms, array('Term', 'compare')));
-		$this->removeTerms(array_udiff($oldTerms, $this->newTerms, array('Term', 'compare')));
-	}
-
-	/**
 	 * Run before deleting a session, cascades the deletions.
 	 */
 	protected function beforeDelete() {
 		$model = CActiveRecord::model($this->type)->findByPk($this->id)->delete();
 		return parent::beforeDelete();
-	}
-
-	/**
-	 * Adds terms to the session.
-	 * @param array list of Terms to be added
-	 */
-	public function addTerms($terms) {
-		foreach($terms as $term) {
-			$relation = new SessionTerm;
-			$relation->sessionId = $this->id;
-			$relation->termId = $term->id;
-			$relation->save();
-		}
-	}
-
-	/**
-	 * Removes terms from a session.
-	 * @param array list of Terms to be removed
-	 */
-	public function removeTerms($terms) {
-		foreach($terms as $term) {
-			SessionTerm::model()->deleteAllByAttributes(array(
-				'sessionId'=>$this->id,
-				'termId'=>$term->id,
-			));
-		}
 	}
 }

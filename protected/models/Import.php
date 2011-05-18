@@ -154,7 +154,6 @@ class Import extends CActiveRecord {
 		$row = $command->queryRow();
 		$session->userId = $userModel->id;
 		$session->date = $row['TIMESTAMP'];
-		$session->newTerms = $this->importSession->terms;
 
 		if($session->save()) {
 			$reader = $command->query();

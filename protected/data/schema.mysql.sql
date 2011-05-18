@@ -1,6 +1,5 @@
 DROP TABLE IF EXISTS Term;
 DROP TABLE IF EXISTS UserTerm;
-DROP TABLE IF EXISTS SessionTerm;
 DROP TABLE IF EXISTS ImportSessionTerm;
 DROP TABLE IF EXISTS User;
 DROP TABLE IF EXISTS Session;
@@ -58,16 +57,6 @@ CREATE TABLE UserTerm
 		REFERENCES Term (id),
 	CONSTRAINT FK_ut_user FOREIGN KEY (userId)
 		REFERENCES User (id)
-);
-
-CREATE TABLE SessionTerm
-(
-	sessionId INTEGER NOT NULL,
-	termId INTEGER NOT NULL,
-	CONSTRAINT FK_st_term FOREIGN KEY (termId)
-		REFERENCES Term (id),
-	CONSTRAINT FK_st_session FOREIGN KEY (sessionId)
-		REFERENCES Session (id)
 );
 
 CREATE TABLE ImportSessionTerm

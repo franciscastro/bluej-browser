@@ -61,7 +61,6 @@ class Term extends CActiveRecord {
 		// class name for the relations automatically generated below.
 		return array(
 			'importSessions' => array(self::HAS_MANY, 'ImportSession', 'ImportSessionTerm(termId, importSessionId)'),
-			'sessions' => array(self::HAS_MANY, 'Session', 'SessionTerm(termId, sessionId)'),
 			'parent' => array(self::BELONGS_TO, 'Term', 'parentId'),
 			'terms' => array(self::HAS_MANY, 'Term', 'parentId'),
 			'users' => array(self::HAS_MANY, 'User', 'UserTerm(termId, userId)'),
