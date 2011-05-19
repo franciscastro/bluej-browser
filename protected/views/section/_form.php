@@ -5,17 +5,10 @@
 	'enableAjaxValidation'=>false,
 )); ?>
 
-	<p class="note">Fields with <span class="required">*</span> are required.</p>
-
 	<?php echo $form->errorSummary($model); ?>
 
 <?php
 function createInput($view, $label, $termType, $terms) {
-	$termModels = Term::model()->getTerms($termType);
-	if(count($termModels) > 0):
-			if(!isset($terms[$termType])) {
-				$terms[$termType] = $termModels[count($termModels)-1]->id;
-			}
 	?>
 	<div class="row">
 		<?php echo CHtml::label($label, 'term['.$termType.']'); ?>
@@ -27,7 +20,6 @@ function createInput($view, $label, $termType, $terms) {
 		?>
 	</div>
 	<?php
-	endif;
 }
 ?>
 	<?php if($model->isNewRecord): ?>

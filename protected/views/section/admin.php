@@ -7,6 +7,13 @@ $this->menu=array(
 	array('label'=>'Add Class', 'url'=>array('create')),
 );
 
+$this->contextHelp = <<<CNH
+<em>Classes</em> correspond to real-life classes. This
+primarily serves to identify students while collecting logs.
+It also enables access control for which logs teachers can
+view.
+CNH;
+
 Yii::app()->clientScript->registerScript('search', "
 $('.search-button').click(function(){
 	$('.search-form').toggle();

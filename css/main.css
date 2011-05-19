@@ -252,6 +252,10 @@ div.search-form
   text-align: center;
 }
 
+.justify {
+  text-align: justify;
+}
+
 div.form label.checkboxLabel {
   display: inline;
   font-weight: normal;

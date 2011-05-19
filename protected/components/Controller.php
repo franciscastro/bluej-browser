@@ -24,6 +24,10 @@ class Controller extends CController {
 	 * for more details on how to specify this property.
 	 */
 	public $breadcrumbs=array();
+	/**
+	 * @var string provides contextual information
+	 */
+	public $contextHelp = '';
 
 	/**
 	 * Converts an array of models to an array of strings taken from the model's attribute.

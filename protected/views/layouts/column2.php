@@ -16,6 +16,11 @@
 				'htmlOptions'=>array('class'=>'operations'),
 			));
 			$this->endWidget();
+			$this->beginWidget('zii.widgets.CPortlet', array(
+				'title'=>'Information',
+			));
+			echo isset($this->contextHelp) ? $this->contextHelp : '';
+			$this->endWidget();
 		?>
 		</div><!-- sidebar -->
 	</div>

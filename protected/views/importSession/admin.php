@@ -9,6 +9,18 @@ $this->menu=array(
 	array('label'=>'Export All', 'url'=>isset($_GET['tags']) ? array('exportAll', 'tags'=>$_GET['tags']) : array('exportAll')),
 	array('label'=>'Generate Report', 'url'=>array('report/summary', 'tags'=>(isset($_GET['tags']) ? $_GET['tags'] : ''))),
 );
+
+$this->contextHelp = <<<CNH
+<p>
+The search finds all records which have all tags that you specify.
+You can use this to, for example, see a list of all logs from CS21a
+lab A regardless of section.
+</p>
+<p>
+Also note that exporting logs and generating reports will be limited
+to the currently displayed logs.
+</p>
+CNH;
 /*
 Yii::app()->clientScript->registerScript('search', "
 $('.search-button').click(function(){
@@ -26,23 +38,6 @@ $('.search-form form').submit(function(){
 
 <h1>Log Sessions</h1>
 
-<?php /*
-<p>
-You may optionally enter a comparison operator (<b>&lt;</b>, <b>&lt;=</b>, <b>&gt;</b>, <b>&gt;=</b>, <b>&lt;&gt;</b>
-or <b>=</b>) at the beginning of each of your search values to specify how the comparison should be done.
-</p>
-
-<?php echo CHtml::link('Advanced Search','#',array('class'=>'search-button')); ?>
-<div class="search-form" style="display:none">
-<?php $this->renderPartial('_search',array(
-	'model'=>$model,
-)); ?>
-</div><!-- search-form -->
-*/ ?>
-
-<p>
-You may search by tags as well. The search finds all records which have all tags that you specify.
-</p>
 <?php $this->renderPartial('_search'); ?>
 
 <?php $this->widget('zii.widgets.grid.CGridView', array(
