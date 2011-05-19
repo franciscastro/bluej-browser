@@ -20,7 +20,13 @@ $this->makeDetailBreadcrumbs('Confusion Report');
 			'name:raw:Student',
 			'confusion' => array(
 				'name' => 'Confusion Rate',
-				'value' => 'sprintf("%.2f", $data["confusion"] * 100)',
+				'value' => 'sprintf("%.2f%%", $data["confusion"] * 100)',
+				'cssClassExpression' => '"right"',
+			),
+			'clips' => array(
+				'name' => 'Clips',
+				'value' => '$data["clips"]',
+				'cssClassExpression' => '"right"',
 			),
 		),
 )); ?>

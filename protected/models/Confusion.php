@@ -156,6 +156,7 @@ class Confusion extends CActiveRecord {
 			$conf = $labeledConfused/$totalClips;
 		}
 		$this->confusion = $conf; // put confusion % heeeere
+		$this->clips = $totalClips;
 		$this->save();
 	}
 

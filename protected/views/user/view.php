@@ -21,20 +21,20 @@ $this->widget('zii.widgets.CDetailView', array(
 	'attributes'=>array(
 		'compileCount' => array(
 			'label' => 'Compile Count',
-			'value' => sprintf("%d (Average per session: %.2f)", $data["compileCount"], $data["compileCount"] / $data["sessionCount"]),
+			'value' => ($data['sessionCount'] == 0) ? null : sprintf("%d (Average per session: %.2f)", $data["compileCount"], $data["compileCount"] / $data["sessionCount"]),
 		),
 		'errorCount' => array(
 			'label' => 'Error Count',
-			'value' => sprintf("%d (Average per session: %.2f)", $data["errorCount"], $data["errorCount"] / $data["sessionCount"]),
+			'value' => ($data['sessionCount'] == 0) ? null : sprintf("%d (Average per session: %.2f)", $data["errorCount"], $data["errorCount"] / $data["sessionCount"]),
 		),
 		'errorPercentage' => array(
 			'label' => 'Error Percentage',
-			'value' => sprintf("%.2f%%", $data["errorCount"] / $data["compileCount"] * 100),
+			'value' => ($data['compileCount'] == 0) ? null : sprintf("%.2f%%", $data["errorCount"] / $data["compileCount"] * 100),
 		),
 		'eq:raw:Average EQ',
 		'confusion' => array(
 			'label' => 'Average Confusion Rate',
-			'value' => sprintf("%.2f%%", $data["confusion"] * 100),
+			'value' => sprintf("%.2f%% (Average clips: %d)", $data["confusion"] * 100, $data['clipCount']),
 		),
 	),
 )); ?>

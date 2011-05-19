@@ -60,7 +60,7 @@ class ReportController extends Controller {
 
 		// confused people
 		$criteria = new CDbCriteria;
-		$criteria->select = 'name, confusion';
+		$criteria->select = 'name, confusion, clips';
 		$criteria->join = 'JOIN Import ON Import.id = compileSessionId JOIN User on userId = User.id';
 		if($importSessionIds !== false) $criteria->condition = 'importSessionId IN ('.implode(',', $importSessionIds).')';
 		$criteria->order = 'confusion DESC';
@@ -173,7 +173,7 @@ class ReportController extends Controller {
 		$importSessionIds = $this->getImportSessionIds();
 
 		$criteria = new CDbCriteria;
-		$criteria->select = 'name, confusion';
+		$criteria->select = 'name, confusion, clips';
 		$criteria->join = 'JOIN Import ON Import.id = compileSessionId JOIN User ON userId = User.id';
 		if($importSessionIds !== false) $criteria->condition = 'importSessionId IN ('.implode(',', $importSessionIds).')';
 		$command = Yii::app()->db->getCommandBuilder()->createFindCommand('Confusion', $criteria);

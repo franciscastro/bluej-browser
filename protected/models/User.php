@@ -141,9 +141,11 @@ class User extends CActiveRecord {
 		$command = Yii::app()->db->getCommandBuilder()->createFindCommand('EqCalculation', $criteria);
 		$statistics['eq'] = $command->queryScalar();
 
-		$criteria->select = 'AVG(confusion)';
+		$criteria->select = 'AVG(confusion) AS avgConfusion, AVG(clips) AS avgClips';
 		$command = Yii::app()->db->getCommandBuilder()->createFindCommand('Confusion', $criteria);
-		$statistics['confusion'] = $command->queryScalar();
+		$temp = $command->queryRow();
+		$statistics['confusion'] = $temp['avgConfusion'];
+		$statistics['clipCount'] = $temp['avgClips'];
 
 		return $statistics;
 	}

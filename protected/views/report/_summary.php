@@ -35,14 +35,16 @@ function make_link($name, $route) {
 			<table id="confusion-summary">
 				<tr>
 					<th>Student</th>
-					<th>Confusion Rate</th>
+					<th class="right">Confusion Rate</th>
+					<th class="right">Clips</th>
 				</tr>
 				<?php if(empty($topConfusedData)) { ?>
-					<tr><td colspan=2>Nothing to list</td></tr>
+					<tr><td colspan=3>Nothing to list</td></tr>
 				<?php } else foreach($topConfusedData as $datum): ?>
 					<tr>
 						<td><?php echo $datum['name'] ?></td>
-						<td><?php printf("%.2f", $datum['confusion'] * 100) ?></td>
+						<td class='right'><?php printf("%.2f%%", $datum['confusion'] * 100) ?></td>
+						<td class='right'><?php echo $datum['clips'] ?></td>
 					</tr>
 				<?php endforeach; ?>
 			</table>

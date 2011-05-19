@@ -204,6 +204,7 @@ CREATE TABLE Confusion
 	id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
 	compileSessionId INTEGER,
 	confusion REAL,
+	clips INTEGER,
 	CONSTRAINT FK_confusion_compileSession FOREIGN KEY (compileSessionId)
 		REFERENCES CompileSession (id)
 );
