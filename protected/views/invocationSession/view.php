@@ -12,7 +12,11 @@ $this->breadcrumbs=array(
 <?php $this->widget('zii.widgets.CDetailView', array(
 	'data'=>$model,
 	'attributes'=>array(
-		'id',
+		array(
+			'label'=>'Name',
+			'type'=>'raw',
+			'value'=>CHtml::link($model->import->user->name, array('user/view', 'id'=>$model->import->userId)),
+		),
 		'deltaVersion',
 		'extensionVersion',
 		'systemUser',

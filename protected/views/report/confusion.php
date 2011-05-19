@@ -17,7 +17,11 @@ $this->makeDetailBreadcrumbs('Confusion Report');
 <?php $this->widget('zii.widgets.grid.CGridView', array(
 		'dataProvider'=>$dataProvider,
 		'columns'=>array(
-			'name:raw:Student',
+			'name' => array(
+				'name' => 'Student',
+				'type' => 'raw',
+				'value' => '(isset($_GET["id"])) ? CHtml::link($data["name"], array("compileSession/view", "id"=>$data["compileSessionId"])) : CHtml::link($data["name"], array("user/view", "id"=>$data["userId"]))',
+			),
 			'confusion' => array(
 				'name' => 'Confusion Rate',
 				'value' => 'sprintf("%.2f%%", $data["confusion"] * 100)',

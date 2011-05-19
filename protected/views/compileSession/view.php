@@ -12,7 +12,11 @@ $this->breadcrumbs=array(
 <?php $this->widget('zii.widgets.CDetailView', array(
 	'data'=>$model,
 	'attributes'=>array(
-		'import.user.name',
+		array(
+			'label'=>'Name',
+			'type'=>'raw',
+			'value'=>CHtml::link($model->import->user->name, array('user/view', 'id'=>$model->import->userId)),
+		),
 		'import.date:date',
 		array(
 			'label'=>'EQ',

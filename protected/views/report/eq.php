@@ -14,7 +14,11 @@ $this->makeDetailBreadcrumbs('EQ Report');
 <?php $this->widget('zii.widgets.grid.CGridView', array(
 		'dataProvider'=>$dataProvider,
 		'columns'=>array(
-			'name:raw:Student',
+			'name' => array(
+				'name' => 'Student',
+				'type' => 'raw',
+				'value' => '(isset($_GET["id"])) ? CHtml::link($data["name"], array("compileSession/view", "id"=>$data["compileSessionId"])) : CHtml::link($data["name"], array("user/view", "id"=>$data["userId"]))',
+			),
 			'eq:raw:EQ',
 		),
 )); ?>

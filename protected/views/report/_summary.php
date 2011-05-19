@@ -24,7 +24,11 @@ function make_link($name, $route) {
 					<tr><td colspan=2>Nothing to list</td></tr>
 				<?php } else foreach($topEqData as $datum): ?>
 					<tr>
-						<td><?php echo $datum['name'] ?></td>
+					<?php if(isset($_GET['id'])): ?>
+						<td><?php echo CHtml::link($datum['name'], array('compileSession/view', 'id'=>$datum['compileSessionId'])); ?></td>
+					<?php else: ?>
+						<td><?php echo CHtml::link($datum['name'], array('user/view', 'id'=>$datum['userId'])); ?></td>
+					<?php endif; ?>
 						<td><?php echo $datum['eq'] ?></td>
 					</tr>
 				<?php endforeach; ?>
@@ -42,7 +46,11 @@ function make_link($name, $route) {
 					<tr><td colspan=3>Nothing to list</td></tr>
 				<?php } else foreach($topConfusedData as $datum): ?>
 					<tr>
-						<td><?php echo $datum['name'] ?></td>
+					<?php if(isset($_GET['id'])): ?>
+						<td><?php echo CHtml::link($datum['name'], array('compileSession/view', 'id'=>$datum['compileSessionId'])); ?></td>
+					<?php else: ?>
+						<td><?php echo CHtml::link($datum['name'], array('user/view', 'id'=>$datum['userId'])); ?></td>
+					<?php endif; ?>
 						<td class='right'><?php printf("%.2f%%", $datum['confusion'] * 100) ?></td>
 						<td class='right'><?php echo $datum['clips'] ?></td>
 					</tr>

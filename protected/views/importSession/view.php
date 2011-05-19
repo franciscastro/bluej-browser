@@ -18,7 +18,6 @@ $this->menu=array(
 <?php $this->widget('zii.widgets.CDetailView', array(
 	'data'=>$model,
 	'attributes'=>array(
-		'id',
 		array(
 			'label' => 'Tags',
 			'type' => 'raw',
@@ -56,7 +55,11 @@ $this->menu=array(
 	'dataProvider'=>$import->search(),
 	'columns'=>array(
 		'id',
-		'user.name:raw:Student',
+		'user.name' => array(
+			'name'=>'Student',
+			'type'=>'raw',
+			'value'=>'CHtml::link($data->user->name, array("user/view", "id"=>$data->user->id))',
+		),
 		array(
 			'name'=>'path',
 			'value'=>'($data->path == "live") ? $data->user->computer . "-" . $data->type : basename($data->path)',

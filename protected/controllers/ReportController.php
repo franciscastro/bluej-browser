@@ -289,7 +289,7 @@ class ReportController extends Controller {
 		$table = '';
 		if($reportType == self::EQ) {
 			$table = 'EqCalculation';
-			$criteria->select = 'name, eq';
+			$criteria->select = 'userId, compileSessionId, name, eq';
 			$criteria->join = 'JOIN Import ON Import.id = compileSessionId JOIN User ON userId = User.id';
 			$criteria->order = 'eq DESC';
 		}
@@ -324,7 +324,7 @@ class ReportController extends Controller {
 		}
 		else if($reportType == self::CONFUSION) {
 			$table = 'Confusion';
-			$criteria->select = 'name, confusion, clips';
+			$criteria->select = 'userId, compileSessionId, name, confusion, clips';
 			$criteria->join = 'JOIN Import ON Import.id = compileSessionId JOIN User ON userId = User.id';
 			$criteria->order = 'confusion DESC, clips DESC';
 		}
