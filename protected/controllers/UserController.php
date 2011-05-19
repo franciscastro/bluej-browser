@@ -36,7 +36,7 @@ class UserController extends Controller {
 	public function accessRules() {
 		return array(
 			array('allow',  // allow all users to perform 'index' and 'view' actions
-				'actions'=>array('changePassword'),
+				'actions'=>array('view', 'changePassword'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -46,6 +46,17 @@ class UserController extends Controller {
 				'users'=>array('*'),
 			),
 		);
+	}
+
+	public function actionView() {
+		$model=$this->loadModel();
+		$importSearch = new Import('search');
+		$importSearch->userId = $model->id;
+
+		$this->render('view',array(
+			'model'=>$model,
+			'dataProvider'=>$importSearch->search(),
+		));
 	}
 
 	/**

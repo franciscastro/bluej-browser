@@ -4,7 +4,7 @@ $this->breadcrumbs=array(
 );
 
 $this->menu=array(
-	array('label'=>'Create User', 'url'=>array('create')),
+	array('label'=>'Add User', 'url'=>array('create')),
 );
 
 $this->contextHelp = <<<CNH
@@ -60,7 +60,7 @@ $('.search-form form').submit(function(){
 		),
 		array(
 			'class'=>'CButtonColumn',
-			'template'=>'{update} {delete}',
+			'template'=>'{view} {update} {delete}',
 		),
 	),
 )); ?>

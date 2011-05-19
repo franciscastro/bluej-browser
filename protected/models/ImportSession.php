@@ -195,8 +195,8 @@ class ImportSession extends CActiveRecord {
 		}
 		if($userModel == null) {
 			$userModel = new User('import');
-			$userModel->username = '---';
-			$userModel->password = '---';
+			$userModel->username = '';
+			$userModel->password = '';
 			$userModel->name = $computer;
 			$userModel->computer = $computer;
 			$userModel->roleId = User::ROLE_STUDENT;

@@ -12,6 +12,7 @@
  * @property string $username
  * @property string $password
  * @property string $name
+ * @property string $computer
  * @property integer $roleId
  *
  * A user.
@@ -49,7 +50,7 @@ class User extends CActiveRecord {
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('username, roleId', 'required'),
+			array('name, computer, roleId', 'required'),
 			array('password', 'required', 'on'=>array('insert')),
 			array('username', 'unique', 'on'=>array('insert', 'update')),
 			array('roleId', 'numerical', 'integerOnly'=>true, 'min'=>1, 'tooSmall'=>'Please select a role', 'on'=>array('insert', 'update')),
@@ -73,7 +74,7 @@ class User extends CActiveRecord {
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'sessions' => array(self::HAS_MANY, 'Session', 'userId'),
+			'sessions' => array(self::HAS_MANY, 'Import', 'userId'),
 			'sections' => array(self::MANY_MANY, 'Section', 'UserSection(userId, sectionId)'),
 		);
 	}
@@ -117,6 +118,34 @@ class User extends CActiveRecord {
 		return new CActiveDataProvider(get_class($this), array(
 			'criteria'=>$criteria,
 		));
+	}
+
+	public function getStatistics() {
+		$statistics = array();
+		$criteria = new CDbCriteria;
+		$criteria->select = 'COUNT(*) AS count';
+		$criteria->condition = 'userId = '.$this->id;
+		$command = Yii::app()->db->getCommandBuilder()->createFindCommand('Import', $criteria);
+		$statistics['sessionCount'] = $command->queryScalar();
+
+		$criteria->join = 'JOIN Import ON Import.id = compileSessionId';
+		$command = Yii::app()->db->getCommandBuilder()->createFindCommand('CompileSessionEntry', $criteria);
+		$statistics['compileCount'] = $command->queryScalar();
+
+		$criteria->condition .= ' AND messageType="ERROR"';
+		$command = Yii::app()->db->getCommandBuilder()->createFindCommand('CompileSessionEntry', $criteria);
+		$statistics['errorCount'] = $command->queryScalar();
+
+		$criteria->select = 'AVG(eq)';
+		$criteria->condition = 'userId = '.$this->id;
+		$command = Yii::app()->db->getCommandBuilder()->createFindCommand('EqCalculation', $criteria);
+		$statistics['eq'] = $command->queryScalar();
+
+		$criteria->select = 'AVG(confusion)';
+		$command = Yii::app()->db->getCommandBuilder()->createFindCommand('Confusion', $criteria);
+		$statistics['confusion'] = $command->queryScalar();
+
+		return $statistics;
 	}
 
 	/**

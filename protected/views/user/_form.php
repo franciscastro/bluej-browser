@@ -28,6 +28,12 @@
 	</div>
 
 	<div class="row">
+		<?php echo $form->labelEx($model,'computer'); ?>
+		<?php echo $form->textField($model,'computer',array('size'=>20,'maxlength'=>128)); ?>
+		<?php echo $form->error($model,'computer'); ?>
+	</div>
+
+	<div class="row">
 		<?php echo $form->labelEx($model,'roleId'); ?>
 		<?php echo $form->dropDownList($model,'roleId',$model->roles()); ?>
 		<?php echo $form->error($model,'roleId'); ?>

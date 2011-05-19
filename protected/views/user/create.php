@@ -5,7 +5,7 @@ $this->breadcrumbs=array(
 );
 
 $this->menu=array(
-	array('label'=>'Manage User', 'url'=>array('index')),
+	array('label'=>'Manage Users', 'url'=>array('index')),
 );
 ?>
 
