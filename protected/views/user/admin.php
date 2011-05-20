@@ -1,5 +1,6 @@
 <?php
 $this->breadcrumbs=array(
+	'Administration'=>array('admin/index'),
 	'Users',
 );
 
