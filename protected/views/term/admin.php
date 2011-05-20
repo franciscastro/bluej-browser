@@ -6,6 +6,7 @@ $this->breadcrumbs=array(
 
 $this->menu=array(
 	array('label'=>'Add Tag', 'url'=>array('create')),
+	array('label'=>'Merge Tags', 'url'=>array('merge')),
 );
 
 ?>

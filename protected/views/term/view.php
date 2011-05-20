@@ -7,7 +7,6 @@ $this->breadcrumbs=array(
 
 $this->menu=array(
 	array('label'=>'Manage Tags', 'url'=>array('index')),
-	array('label'=>'Add Tag', 'url'=>array('create')),
 	array('label'=>'Update Tag', 'url'=>array('update', 'id'=>$model->id)),
 	array('label'=>'Delete Tag', 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
 );

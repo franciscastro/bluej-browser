@@ -10,6 +10,7 @@ $this->breadcrumbs=array(
 		array('label'=>'Tags', 'items'=>array(
 			array('label'=>'Manage Tags', 'url'=>array('term/index')),
 			array('label'=>'Add Tag', 'url'=>array('term/create')),
+			array('label'=>'Merge Tags', 'url'=>array('term/merge')),
 		)),
 		array('label'=>'Users', 'items'=>array(
 			array('label'=>'Manage Users', 'url'=>array('user/index')),

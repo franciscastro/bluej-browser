@@ -258,6 +258,17 @@ class Term extends CActiveRecord {
 		);
 	}
 
+	public function mergeWith($term) {
+		if($term == null) return $this;
+		if($term->id == $this->id) return $this;
+		Yii::app()->db->createCommand('DELETE a FROM UserTerm a, UserTerm b WHERE a.termId='.$term->id.' AND b.termId='.$this->id.' AND a.userId=b.userId')->execute();
+		Yii::app()->db->createCommand('DELETE a FROM ImportSessionTerm a, ImportSessionTerm b WHERE a.termId='.$term->id.' AND b.termId='.$this->id.' AND a.importSessionId=b.importSessionId')->execute();
+		Yii::app()->db->createCommand('UPDATE UserTerm SET termId='.$this->id.' WHERE termId='.$term->id)->execute();
+		Yii::app()->db->createCommand('UPDATE ImportSessionTerm SET termId='.$this->id.' WHERE termId='.$term->id)->execute();
+		$term->delete();
+		return $this;
+	}
+
 	/**
 	 * Creates a subselect when selecting via multiple terms.
 	 * @param string the table where the original select will be done

@@ -55,8 +55,8 @@ class TermController extends Controller {
 	/**
 	 * Displays a particular model.
 	 */
-	public function actionView() {
-		$termModel = $this->loadModel();
+	public function actionView($id) {
+		$termModel = $this->loadModel($id);
 		$dataProvider = new CActiveDataProvider('ImportSession', array(
 			'criteria'=>array(
 				'join'=>'INNER JOIN ImportSessionTerm ON id = importSessionId',
@@ -96,8 +96,8 @@ class TermController extends Controller {
 	 * Updates a particular model.
 	 * If update is successful, the browser will be redirected to the 'view' page.
 	 */
-	public function actionUpdate() {
-		$model=$this->loadModel();
+	public function actionUpdate($id) {
+		$model=$this->loadModel($id);
 
 		if(isset($_POST['Term'])) {
 			$model->attributes=$_POST['Term'];
@@ -110,14 +110,29 @@ class TermController extends Controller {
 		));
 	}
 
+	public function actionMerge() {
+		if(isset($_POST['tags'])) {
+			$terms = preg_split('/\s*,\s*/', $_POST['tags']);
+			$terms = array_unique($terms);
+
+			$model = Term::model()->findByAttributes(array('name'=>$terms[0]));
+			foreach($terms as $term) {
+				$termModel = Term::model()->findByAttributes(array('name'=>$term));
+				$model->mergeWith($termModel);
+			}
+			$this->redirect(array('view','id'=>$model->id));
+		}
+		$this->render('merge');
+	}
+
 	/**
 	 * Deletes a particular model.
 	 * If deletion is successful, the browser will be redirected to the 'index' page.
 	 */
-	public function actionDelete() {
+	public function actionDelete($id) {
 		if(Yii::app()->request->isPostRequest) {
 			// we only allow deletion via POST request
-			$this->loadModel()->delete();
+			$this->loadModel($id)->delete();
 
 			// if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
 			if(!isset($_GET['ajax']))
@@ -164,15 +179,14 @@ class TermController extends Controller {
 	/**
 	 * Returns the data model based on the primary key given in the GET variable.
 	 * If the data model is not found, an HTTP exception will be raised.
+	 * @param integer the ID of the model to be loaded
 	 */
-	public function loadModel() {
-		if($this->_model===null) {
-			if(isset($_GET['id']))
-				$this->_model=Term::model()->findbyPk($_GET['id']);
-			if($this->_model===null)
-				throw new CHttpException(404,'The requested page does not exist.');
-		}
-		return $this->_model;
+	public function loadModel($id)
+	{
+		$model=Term::model()->findByPk((int)$id);
+		if($model===null)
+			throw new CHttpException(404,'The requested page does not exist.');
+		return $model;
 	}
 
 	/**
