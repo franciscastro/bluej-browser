@@ -3,7 +3,7 @@ $this->breadcrumbs=Yii::app()->user->getState('compileSession_breadcrumbs');
 $this->breadcrumbs[] = 'Entry #'.$model->deltaSequenceNumber;
 ?>
 <div class='navigation'>
-<?php $this->widget('CLinkPager', array(
+<?php if(isset($pages)) $this->widget('CLinkPager', array(
 	'pages'=>$pages,
 ));?>
 </div>
@@ -15,7 +15,7 @@ $this->breadcrumbs[] = 'Entry #'.$model->deltaSequenceNumber;
 )); ?>
 
 <div class='navigation'>
-<?php $this->widget('CLinkPager', array(
+<?php if(isset($pages)) $this->widget('CLinkPager', array(
 	'pages'=>$pages,
 ));?>
 </div>

@@ -92,7 +92,7 @@ class EqCalculation extends CActiveRecord {
 	 * Calculates EQ of a compilation session.
 	 */
 	public function calculate() {
-		$entries = CompileSessionEntry::model()->findAll('compileSessionId=:id ORDER BY fileName, deltaSequenceNumber', array('id'=>$this->compileSessionId));
+		$entries = CompileSessionEntry::model()->findAll('compileSessionId=:id ORDER BY fileName, timestamp', array('id'=>$this->compileSessionId));
 		$numRows = count($entries);
 		if($numRows < 2) {
 			$this->eq = -1;

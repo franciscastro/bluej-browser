@@ -83,7 +83,7 @@ class CompileSessionEntry extends CActiveRecord {
 	public function attributeLabels() {
 		return array(
 			'id' => 'ID',
-			'compileSessionId' => 'Compile Session',
+			'compileSessionId' => 'Compile Log #',
 			'timestamp' => 'Timestamp',
 			'deltaSequenceNumber' => 'Delta Sequence Number',
 			'deltaStartTime' => 'Delta Start Time',

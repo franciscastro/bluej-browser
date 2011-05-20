@@ -1,10 +1,10 @@
 <?php
 $importSessionId = $model->import->importSessionId;
 $this->breadcrumbs=array(
-			'Logs'=>array('importSession/index'),
-			'Log Session #'.$importSessionId=>array('importSession/view', 'id'=>$importSessionId),
-			'Compile Log #'.$_GET['id'],
-		);
+	'Logs'=>array('importSession/index'),
+	'Log Session #'.$importSessionId=>array('importSession/view', 'id'=>$importSessionId),
+	'Compile Log #'.$_GET['id'],
+);
 ?>
 
 <h1>Compile Log #<?php echo $model->id; ?></h1>
@@ -53,7 +53,6 @@ $this->widget('zii.widgets.jui.CJuiAccordion', array(
 			'class'=>'CButtonColumn',
 			'buttons'=>array(
 				'view'=>array(
-					'label'=>'View',
 					'url'=>'Yii::app()->controller->createUrl("source",array("page"=>$row+1))',
 				),
 				'compare'=>array(
@@ -62,14 +61,46 @@ $this->widget('zii.widgets.jui.CJuiAccordion', array(
 					'imageUrl'=>Yii::app()->baseURL . "/images/doc_convert.png",
 					'visible'=>'$row < ' . ($dataProvider->totalItemCount-1),
 				),
+				'update'=>array(
+					'url'=>'Yii::app()->controller->createUrl("updateEntry",array("id"=>$data->id))',
+					'visible'=>'Yii::app()->user->hasRole(array("Administrator", "Researcher"))',
+				),
 				'delete'=>array(
-					'label'=>'Delete',
 					'url'=>'Yii::app()->controller->createUrl("deleteEntry",array("id"=>$data->id))',
 					'visible'=>'Yii::app()->user->hasRole(array("Administrator", "Researcher"))',
 				),
 			),
-			'template'=>'{view} {compare} {delete}'
+			'template'=>'{view} {compare} {update} {delete}'
 		),
 	),
 ));
 ?>
+
+<?php if(count($deleted) > 0): ?>
+<br>
+<h3>Deleted entries</h3>
+<?php $this->widget('zii.widgets.grid.CGridView', array(
+	'id'=>'deleted-compile-session-entry-grid',
+	'dataProvider'=>new CArrayDataProvider($deleted),
+	'columns'=>array(
+		'deltaSequenceNumber:raw:Id',
+		'fileName',
+		'timestamp:time:Time',
+		'messageText',
+		array(
+			'class'=>'CButtonColumn',
+			'buttons'=>array(
+				'view'=>array(
+					'url'=>'Yii::app()->controller->createUrl("source",array("id"=>$data->id))',
+				),
+				'update'=>array(
+					'url'=>'Yii::app()->controller->createUrl("updateEntry",array("id"=>$data->id))',
+					'visible'=>'Yii::app()->user->hasRole(array("Administrator", "Researcher"))',
+				),
+			),
+			'template'=>'{view} {update}'
+		),
+	),
+));
+?>
+<?php endif; ?>

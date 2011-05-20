@@ -248,7 +248,7 @@ class CompileSession extends CActiveRecord {
 	 * Inserts a row into the session
 	 * @param array the row to be inserted
 	 */
-	private function insertSessionEntry($row) {
+	private function insertEntry($row) {
 		$newData = new CompileSessionEntry;
 		$newData->compileSessionId = $this->id;
 		$newData->timestamp = isset($row['TIMESTAMP']) ? $row['TIMESTAMP'] : time();
@@ -278,7 +278,7 @@ class CompileSession extends CActiveRecord {
 	public function doImport($sessionId, $row, $reader) {
 		$session = $this->createSession($sessionId, $row);
 		foreach($reader as $row) {
-			$session->insertSessionEntry($row);
+			$session->insertEntry($row);
 		}
 		$session->afterImport();
 	}
@@ -294,8 +294,37 @@ class CompileSession extends CActiveRecord {
 		if($session == null) {
 			$session = $this->createSession($sessionId, $row);
 		}
-		$session->insertSessionEntry($row);
+		$session->insertEntry($row);
 		$session->afterImport();
+	}
+
+	public function moveEntry($entry, $to) {
+		$entry->compileSessionId = $to;
+		if($entry->save()) {
+			$this->afterImport();
+			$entry->refresh();
+			$entry->compileSession->afterImport();
+			return true;
+		}
+		return false;
+	}
+
+	public function deleteEntry($entry) {
+		$entry->compileSessionId = -$this->id;
+		if($entry->save()) {
+			$this->afterImport();
+			return true;
+		}
+		return false;
+	}
+
+	public function undeleteEntry($entry) {
+		$entry->compileSessionId = $this->id;
+		if($entry->save()) {
+			$this->afterImport();
+			return true;
+		}
+		return false;
 	}
 
 	/**
