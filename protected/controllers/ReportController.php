@@ -315,7 +315,7 @@ class ReportController extends Controller {
 			else {
 				$criteria->select = "(b.timestamp - a.timestamp)/$interval AS delta";
 			}
-			$criteria->join = 'JOIN Import ON a.compileSessionId = Import.id JOIN CompileSessionEntry b ON a.id < b.id AND a.compileSessionId = b.compileSessionId';
+			$criteria->join = 'JOIN Import ON a.compileSessionId = Import.id JOIN CompileSessionEntry b ON a.timestamp < b.timestamp AND a.compileSessionId = b.compileSessionId';
 			$criteria->group = 'a.id';
 			$command = Yii::app()->db->getCommandBuilder()->createFindCommand('CompileSessionEntry', $criteria, 'a');
 			$subselect = $command->getText();
