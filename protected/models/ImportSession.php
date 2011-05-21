@@ -125,6 +125,33 @@ class ImportSession extends CActiveRecord {
 		$this->removeTerms(array_udiff($oldTerms, $this->newTerms, array('Term', 'compare')));
 	}
 
+	public function fileImport($file) {
+		$connection = new CDbConnection('sqlite:'.$file);
+		$connection->active = true;
+
+		$command = $connection->createCommand('SELECT * FROM sqlite_master WHERE type=\'table\'');
+		$temp = $command->queryRow();
+		$tableName = $temp['name'];
+		$command = $connection->createCommand('SELECT * FROM `' . $tableName . '`');
+
+		$pc = strripos($tableName, '_');
+		$sessionType = substr($tableName, $pc+1);
+		$sessionType = ImportSession::parseSessionType($sessionType);
+		if($sessionType === false) {
+			$this->type = 'error';
+			$this->save();
+			return;
+		}
+
+		$computer = substr($tableName, 0, $pc);
+
+		$row = $command->queryRow();
+		$reader = $command->query();
+
+		$import = $this->getAssociatedImport($computer, $row['TIMESTAMP']);
+		$sessionType::model()->doImport($import->id, $row, $reader);
+	}
+
 	/**
 	 * Run when a live insert is received. Finds any active sessions that
 	 * accept the record and adds it to that one.
@@ -142,9 +169,8 @@ class ImportSession extends CActiveRecord {
 
 		foreach($liveSessions as $liveSession) {
 			if($liveSession->path == null || stripos($computer, $liveSession->path) == 0) {
-				$import = $liveSession->getAssociatedImport($computer, $sessionType, 'live');
-				$model = CActiveRecord::model($import->type);
-				$model->liveImport($import->id, $data);
+				$import = $liveSession->getAssociatedImport($computer);
+				$sessionType::model()->liveImport($import->id, $data);
 				return true;
 			}
 		}
@@ -160,28 +186,7 @@ class ImportSession extends CActiveRecord {
 	 * @param string where the import came from
 	 * @return the associated import
 	 */
-	public function getAssociatedImport($computer, $sessionType, $path) {
-		$userModel = $this->getAssociatedUser($computer);
-		$importModel = Import::model()->findByAttributes(array(
-			'importSessionId'=>$this->id,
-			'type'=>$sessionType,
-			'userId'=>$userModel->id,
-		));
-
-		if($importModel == null) {
-			$importModel = new Import;
-			$importModel->importSessionId = $this->id;
-			$importModel->path = $path;
-			$importModel->userId = $userModel->id;
-			$importModel->date = time();
-			$importModel->type = $sessionType;
-			$importModel->save();
-		}
-
-		return $importModel;
-	}
-
-	public function getAssociatedUser($computer) {
+	public function getAssociatedImport($computer, $time=0) {
 		if($this->sectionId > 0) {
 			$sectionModel = Section::model()->with(array(
 				'students' => array(
@@ -208,7 +213,21 @@ class ImportSession extends CActiveRecord {
 				$sectionModel->addUsers($userModel);
 			}
 		}
-		return $userModel;
+
+		$importModel = Import::model()->findByAttributes(array(
+			'importSessionId'=>$this->id,
+			'userId'=>$userModel->id,
+		));
+
+		if($importModel == null) {
+			$importModel = new Import;
+			$importModel->importSessionId = $this->id;
+			$importModel->userId = $userModel->id;
+			$importModel->date = ($time == 0) ? time() : $time;
+			$importModel->save();
+		}
+
+		return $importModel;
 	}
 
 	public static function parseSessionType($sessionType) {

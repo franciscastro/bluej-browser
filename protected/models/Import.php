@@ -20,19 +20,6 @@
  */
 class Import extends CActiveRecord {
 
-	private $_session;
-
-	public function __get($var) {
-		if($var == 'session') {
-			if(isset($_session)) {
-				return $_session;
-			}
-			$_session = CActiveRecord::model($this->type)->findByPk($this->id);
-			return $_session;
-		}
-		return parent::__get($var);
-	}
-
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return Import the static model class
@@ -72,6 +59,8 @@ class Import extends CActiveRecord {
 		return array(
 			'importSession' => array(self::BELONGS_TO, 'ImportSession', 'importSessionId'),
 			'user' => array(self::BELONGS_TO, 'User', 'userId'),
+			'compileSession' => array(self::HAS_ONE, 'CompileSession', 'id'),
+			'invocationSession' => array(self::HAS_ONE, 'InvocationSession', 'id'),
 		);
 	}
 
@@ -82,8 +71,6 @@ class Import extends CActiveRecord {
 		return array(
 			'id' => 'ID',
 			'importSessionId' => 'Import Session',
-			'sessionId' => 'Session',
-			'path' => 'Path',
 		);
 	}
 
@@ -101,13 +88,9 @@ class Import extends CActiveRecord {
 
 		$criteria->compare('importSessionId',$this->importSessionId);
 
-		$criteria->compare('path',$this->path,true);
-
 		$criteria->compare('userId',$this->userId);
 
 		$criteria->compare('date',$this->date);
-
-		$criteria->compare('type',$this->type,true);
 
 		return new CActiveDataProvider(get_class($this), array(
 			'criteria'=>$criteria,
@@ -118,43 +101,8 @@ class Import extends CActiveRecord {
 	 * Run before deleting a session, cascades the deletions.
 	 */
 	protected function beforeDelete() {
-		$model = $this->session->delete();
+		if($this->compileSession != null) $this->compileSession->delete();
+		if($this->invocationSession != null) $this->invocationSession->delete();
 		return parent::beforeDelete();
-	}
-
-	/**
-	 * Runs an import.
-	 */
-	public function doImport() {
-		if(isset($this->type)) return;
-		$connection = new CDbConnection('sqlite:'.$this->path);
-		$connection->active = true;
-
-		$command = $connection->createCommand('SELECT * FROM sqlite_master WHERE type=\'table\'');
-		$temp = $command->queryRow();
-		$tableName = $temp['name'];
-		$command = $connection->createCommand('SELECT * FROM `' . $tableName . '`');
-
-		$pc = strripos($tableName, '_');
-		$sessionType = substr($tableName, $pc+1);
-		$sessionType = ImportSession::parseSessionType($sessionType);
-		if($sessionType === false) {
-			$this->type = 'error';
-			$this->save();
-			return;
-		}
-
-		$computer = substr($tableName, 0, $pc);
-		$userModel = $this->importSession->getAssociatedUser($computer);
-
-		$row = $command->queryRow();
-		$reader = $command->query();
-
-		$this->userId = $userModel->id;
-		$this->date = $row['TIMESTAMP'];
-		$this->type = $sessionType;
-		$model = CActiveRecord::model($this->type);
-		$temp = $model->doImport($this->id, $row, $reader);
-		$this->save();
 	}
 }

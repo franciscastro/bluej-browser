@@ -60,21 +60,28 @@ $this->menu=array(
 			'type'=>'raw',
 			'value'=>'CHtml::link($data->user->name, array("user/view", "id"=>$data->user->id))',
 		),
-		array(
-			'name'=>'path',
-			'value'=>'($data->path == "live") ? $data->user->computer . "-" . $data->type : basename($data->path)',
-		),
+		'user.computer',
 		array(
 			'class'=>'CButtonColumn',
-			'template'=>'{view} {delete}',
+			'template'=>'{compile} {invocation} {delete}',
 			'buttons'=>array(
 				'view'=>array(
 					'url'=>'Yii::app()->controller->createUrl("import/view", array("id"=>$data->id))',
-					'visible'=>'isset($data->type)',
 				),
 				'delete'=>array(
 					'url'=>'Yii::app()->controller->createUrl("import/delete", array("id"=>$data->id))',
-					'visible'=>'isset($data->type)',
+				),
+				'compile'=>array(
+					'label'=>'Compilation Log',
+					'url'=>'Yii::app()->controller->createUrl("compileSession/view", array("id"=>$data->id))',
+					'visible'=>'$data->compileSession != null',
+					'imageUrl'=>Yii::app()->baseURL . '/images/page_white_cup.png',
+				),
+				'invocation'=>array(
+					'label'=>'Invocation Log',
+					'url'=>'Yii::app()->controller->createUrl("invocationSession/view", array("id"=>$data->id))',
+					'visible'=>'$data->invocationSession != null',
+					'imageUrl'=>Yii::app()->baseURL . '/images/page_white_gear.png',
 				),
 			),
 		),

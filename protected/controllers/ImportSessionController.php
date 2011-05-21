@@ -112,11 +112,7 @@ class ImportSessionController extends Controller {
 							$model->newTerms = $this->getTermModel()->getNewTerms();
 							$model->save();
 						}
-						$import = new Import;
-						$import->importSessionId = $model->id;
-						$import->path = $file;
-						$import->save();
-						$import->doImport();
+						$model->fileImport($file);
 					}
 					$transaction->commit();
 					$this->redirect(array('view','id'=>$model->id));
@@ -233,20 +229,6 @@ class ImportSessionController extends Controller {
 		$this->render('admin',array(
 			'model'=>$model,
 		));
-	}
-
-	/**
-	 * Does importing.
-	 */
-	public function actionExecuteImport() {
-		$models = Import::model()->findAllByAttributes(array(
-			'sessionId' => 0,
-		));
-
-		foreach($models as $model) {
-			$model->doImport();
-		}
-		$this->redirect(array('viewImports'));
 	}
 
 	public function actionExport() {
@@ -391,9 +373,18 @@ class ImportSessionController extends Controller {
 		chdir($exportDir->getRealPath());
 		$importModels = $model->imports;
 		foreach($importModels as $importModel) {
-			$fp = fopen($importModel->session->user->name . '-' . $importModel->session->type . '-' . $importModel->session->id . '.csv', 'w');
-			$sessionModel = $importModel->session->child;
-			$sessionModel->doExport($fp);
+			$sessionModel = $importModel->invocationSession;
+			if($sessionModel != null) {
+				$fp = fopen($importModel->user->name . '-InvocationData-' . $importModel->id . '.csv', 'w');
+				$sessionModel->doExport($fp);
+				fclose($fp);
+			}
+			$sessionModel = $importModel->compileSession;
+			if($sessionModel != null) {
+				$fp = fopen($importModel->user->name . '-CompileData-' . $importModel->id . '.csv', 'w');
+				$sessionModel->doExport($fp);
+				fclose($fp);
+			}
 		}
 		$this->_processed = true;
 		return $exportDir;

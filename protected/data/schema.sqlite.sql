@@ -180,10 +180,8 @@ CREATE TABLE Import
 (
 	id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
 	importSessionId INTEGER,
-	path TEXT,
 	userId INTEGER,
 	date INTEGER,
-	type TEXT,
 	CONSTRAINT FK_user_session FOREIGN KEY (userId)
 		REFERENCES User (id),
 	CONSTRAINT FK_import_importSession FOREIGN KEY (importSessionId)

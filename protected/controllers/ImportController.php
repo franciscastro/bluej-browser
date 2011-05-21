@@ -39,7 +39,7 @@ class ImportController extends Controller {
 				'users'=>array('*'),
 			),
 			array('allow',  // allow all users to perform 'index' and 'view' actions
-				'actions'=>array('view','delete'),
+				'actions'=>array('delete'),
 				'roles'=>array('Teacher', 'Researcher'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -49,18 +49,6 @@ class ImportController extends Controller {
 				'users'=>array('*'),
 			),
 		);
-	}
-
-	/**
-	 * Displays a particular model.
-	 */
-	public function actionView() {
-		$model = $this->loadModel();
-		if(isset($model->type)) {
-			$this->redirect(array($model->type . '/view', 'id'=>$_GET['id']));
-			exit;
-		}
-		throw new CHttpException(400,'Invalid request. Please do not repeat this request again.');
 	}
 
 	/**

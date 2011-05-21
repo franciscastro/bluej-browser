@@ -43,24 +43,22 @@ $this->widget('zii.widgets.CDetailView', array(
 <h2>Compile Logs</h2>
 <?php $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'import-grid',
-	'dataProvider'=>$dataProvider,
+	'dataProvider'=>$import->search(),
 	'columns'=>array(
 		'id',
 		array(
-			'name'=>'path',
-			'value'=>'($data->path == "live") ? $data->user->computer . "-" . $data->type : basename($data->path)',
-		),
-		array(
 			'class'=>'CButtonColumn',
-			'template'=>'{view} {delete}',
+			'template'=>'{compile} {invocation} {delete}',
 			'buttons'=>array(
-				'view'=>array(
-					'url'=>'Yii::app()->controller->createUrl("import/view", array("id"=>$data->id))',
-					'visible'=>'isset($data->type)',
+				'compile'=>array(
+					'url'=>'Yii::app()->controller->createUrl("compileSession/view", array("id"=>$data->id))',
+					'visible'=>'$data->compileSession != null',
+					'imageUrl'=>Yii::app()->baseURL . '/images/page_white_cup.png',
 				),
-				'delete'=>array(
-					'url'=>'Yii::app()->controller->createUrl("import/delete", array("id"=>$data->id))',
-					'visible'=>'isset($data->type)',
+				'invocation'=>array(
+					'url'=>'Yii::app()->controller->createUrl("invocationSession/view", array("id"=>$data->id))',
+					'visible'=>'$data->invocationSession != null',
+					'imageUrl'=>Yii::app()->baseURL . '/images/page_white_gear.png',
 				),
 			),
 		),
