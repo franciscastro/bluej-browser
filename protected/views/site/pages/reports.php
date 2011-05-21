@@ -24,7 +24,7 @@ This measure is the work of Matt Jadud.
 <h4>Errors</h4>
 <p>
 This is a list of errors and how many times they have occurred
-for the session. There are two different displays for this, one
+for the log. There are two different displays for this, one
 is the normal error display, which aggregates errors as is. The
 other one aggregates errors based on their error class. For example,
 <tt>cannot find symbol - variable</tt> errors typically specify the variable
@@ -54,7 +54,7 @@ as confused or not confused. The percentage of confused clips
 is then the confusion rate.
 </p>
 <p>
-It is important to note that the confusion rate is heavily reliant
+It is logant to note that the confusion rate is heavily reliant
 on the number of clips available for calculation. As such, they
 are displayed alongside the confusion rate.
 </p>

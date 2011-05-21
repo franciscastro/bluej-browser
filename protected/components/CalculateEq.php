@@ -1,7 +1,7 @@
 <?php
 
 /**
- * A mixin that causes imports to automatically have their eq calculated.
+ * A mixin that causes logs to automatically have their eq calculated.
  *
  * @author Thomas Dy <thatsmydoing@gmail.com>
  * @copyright Copyright &copy; 2010-2011 Ateneo de Manila University
@@ -15,15 +15,15 @@ class CalculateEq extends CActiveRecordBehavior {
 
 	public function events() {
 		return array_merge(parent::events(), array(
-			'onAfterImport'=>'afterImport',
+			'onAfterLog'=>'afterLog',
 		));
 	}
 
-	public function afterImport($event) {
-		$eqCalculation = EqCalculation::model()->findByAttributes(array('compileSessionId'=>$this->owner->id));
+	public function afterLog($event) {
+		$eqCalculation = EqCalculation::model()->findByAttributes(array('logId'=>$this->owner->id));
 		if($eqCalculation == null) {
 			$eqCalculation = new EqCalculation;
-			$eqCalculation->compileSessionId = $this->owner->id;
+			$eqCalculation->logId = $this->owner->id;
 			$eqCalculation->save();
 		}
 		$eqCalculation->calculate();

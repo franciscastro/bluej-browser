@@ -1,7 +1,7 @@
 <?php
 
 /**
- * A mixin that causes imports to automatically have their error assigned.
+ * A mixin that causes logs to automatically have their error assigned.
  *
  * @author Thomas Dy <thatsmydoing@gmail.com>
  * @copyright Copyright &copy; 2010-2011 Ateneo de Manila University
@@ -21,9 +21,9 @@ class AssignErrorClass extends CActiveRecordBehavior {
 
   public function afterSave($event) {
     if($this->owner->messageText == '') return;
-    if(ErrorClass::model()->exists('compileSessionEntryId = :id', array(':id' => $this->owner->id))) return;
+    if(ErrorClass::model()->exists('compileLogEntryId = :id', array(':id' => $this->owner->id))) return;
     $errorClass = new ErrorClass;
-    $errorClass->compileSessionEntryId = $this->owner->id;
+    $errorClass->compileLogEntryId = $this->owner->id;
     $errorClass->assignClass($this->owner->messageText);
     $errorClass->save();
   }

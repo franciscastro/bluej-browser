@@ -9,11 +9,11 @@
  *
  * The followings are the available columns in table 'ErrorClass':
  * @property integer $id
- * @property integer $compileSessionEntryId
+ * @property integer $compileLogEntryId
  * @property string $error
  *
  * The followings are the available model relations:
- * @property CompileSession $compileSessionEntry
+ * @property CompileLog $compileLogEntry
  */
 class ErrorClass extends CActiveRecord {
 	/**
@@ -38,11 +38,11 @@ class ErrorClass extends CActiveRecord {
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('compileSessionEntryId', 'numerical', 'integerOnly'=>true),
+			array('compileLogEntryId', 'numerical', 'integerOnly'=>true),
 			array('error', 'safe'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, compileSessionEntryId, error', 'safe', 'on'=>'search'),
+			array('id, compileLogEntryId, error', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -53,7 +53,7 @@ class ErrorClass extends CActiveRecord {
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'compileSessionEntry' => array(self::BELONGS_TO, 'CompileSessionEntry', 'compileSessionEntryId'),
+			'compileLogEntry' => array(self::BELONGS_TO, 'CompileLogEntry', 'compileLogEntryId'),
 		);
 	}
 
@@ -63,7 +63,7 @@ class ErrorClass extends CActiveRecord {
 	public function attributeLabels() {
 		return array(
 			'id' => 'ID',
-			'compileSessionEntryId' => 'Compile Session',
+			'compileLogEntryId' => 'Compile Session',
 			'error' => 'Error',
 		);
 	}
@@ -79,7 +79,7 @@ class ErrorClass extends CActiveRecord {
 		$criteria=new CDbCriteria;
 
 		$criteria->compare('id',$this->id);
-		$criteria->compare('compileSessionEntryId',$this->compileSessionEntryId);
+		$criteria->compare('compileLogEntryId',$this->compileLogEntryId);
 		$criteria->compare('error',$this->error,true);
 
 		return new CActiveDataProvider(get_class($this), array(
@@ -88,7 +88,7 @@ class ErrorClass extends CActiveRecord {
 	}
 
 	/**
-	 * Gets the error class of the associated compilation session.
+	 * Gets the error class of the associated compilation log.
 	 */
 	public function assignClass($message) {
 		if($message == '') return;

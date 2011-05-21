@@ -1,47 +1,47 @@
 <?php
 
-class ImportSessionTest extends CDbTestCase {
+class LogSessionTest extends CDbTestCase {
 	
 	public $fixtures = array(
-		'importSessions' => 'ImportSession',
+		'logSessions' => 'LogSession',
 		'user' => 'User',
 	);
 	
 	/**
-	 * @dataProvider getAssociatedImportProvider
+	 * @dataProvider getAssociatedLogProvider
 	 */
-	public function testGetAssociatedImport($userName, $sessionType, $importExists=false) {
-		if($importExists) {
+	public function testGetAssociatedLog($userName, $logType, $logExists=false) {
+		if($logExists) {
 			$userModel = User::model()->findByAttributes(array('name'=>$userName));
 			$this->assertTrue($userModel instanceof User);
 			
-			$sessionModel = new Session;
-			$sessionModel->userId = $userModel->id;
-			$sessionModel->date = time();
-			$sessionModel->type = $sessionType;
-			$this->assertTrue($sessionModel->save());
+			$logModel = new Session;
+			$logModel->userId = $userModel->id;
+			$logModel->date = time();
+			$logModel->type = $logType;
+			$this->assertTrue($logModel->save());
 			
-			$importModel = new Import;
-			$importModel->sessionId = $sessionModel->id;
-			$importModel->importSessionId = 1;
-			$importModel->path = '';
-			$this->assertTrue($importModel->save());
+			$logModel = new Log;
+			$logModel->logId = $logModel->id;
+			$logModel->logSessionId = 1;
+			$logModel->path = '';
+			$this->assertTrue($logModel->save());
 		}
 		
-		$importModel = ImportSession::model()->getAssociatedImport($userName, $sessionType, '');
-		$this->assertTrue($importModel instanceof Import);
+		$logModel = LogSession::model()->getAssociatedLog($userName, $logType, '');
+		$this->assertTrue($logModel instanceof Log);
 		
-		$this->assertEquals($importModel->session->user->name, $userName);
+		$this->assertEquals($logModel->log->user->name, $userName);
 		
-		if($sessionType == 'invocationdata') {
-			$this->assertEquals($importModel->session->type, 'InvocationSession');		
+		if($logType == 'invocationdata') {
+			$this->assertEquals($logModel->log->type, 'InvocationLog');		
 		}
-		else if($sessionType == 'compiledata') {
-			$this->assertEquals($importModel->session->type, 'CompileSession');		
+		else if($logType == 'compiledata') {
+			$this->assertEquals($logModel->log->type, 'CompileLog');		
 		}
 	}
 	
-	public function getAssociatedImportProvider() {
+	public function getAssociatedLogProvider() {
 		return array(
 			array(
 				'F227_10',
@@ -73,19 +73,19 @@ class ImportSessionTest extends CDbTestCase {
 	}
 	
 	/**
-	 * @depends testGetAssociatedImport
+	 * @depends testGetAssociatedLog
 	 * @dataProvider liveInsertProvider
 	 */
-	public function testLiveInsert($userName, $sessionType, $data, $importSessionOk) {
-		if($importSessionOk) {
-			$importSessionModel = new ImportSession;
-			$importSessionModel->source = 'live';
-			$importSessionModel->start = 123123;
-			$this->assertTrue($importSessionModel->save());
+	public function testLiveInsert($userName, $logType, $data, $logSessionOk) {
+		if($logSessionOk) {
+			$logSessionModel = new LogSession;
+			$logSessionModel->source = 'live';
+			$logSessionModel->start = 123123;
+			$this->assertTrue($logSessionModel->save());
 		}
 		
-		$insertOk = ImportSession::model()->liveInsert($userName, $sessionType, $data);
-		$this->assertEquals($insertOk, $importSessionOk);		
+		$insertOk = LogSession::model()->liveInsert($userName, $logType, $data);
+		$this->assertEquals($insertOk, $logSessionOk);		
 	}
 	
 	public function liveInsertProvider() {

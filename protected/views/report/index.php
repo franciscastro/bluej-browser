@@ -11,4 +11,4 @@ $this->breadcrumbs=array(
 Here, you can generate reports by tags. It will summarize all data that have those tags.
 </p>
 
-<?php $this->renderPartial('../term/_search'); ?>
+<?php $this->renderPartial('../tag/_search'); ?>

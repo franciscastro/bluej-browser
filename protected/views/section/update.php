@@ -13,4 +13,4 @@ $this->menu=array(
 
 <h1>Edit Teachers of <?php echo $model->name; ?></h1>
 
-<?php echo $this->renderPartial('_form', array('model'=>$model,'terms'=>$terms,)); ?>
+<?php echo $this->renderPartial('_form', array('model'=>$model,'tags'=>$tags,)); ?>

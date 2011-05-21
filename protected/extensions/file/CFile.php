@@ -1344,12 +1344,12 @@ class CFile extends CApplicationComponent
 		}
 
 		/**
-		 * Determines the MIME type based on the extension of the current file.
+		 * Detagines the MIME type based on the extension of the current file.
 		 * This method will use a local map between extension name and MIME type.
 		 * This method works only for files.
 		 *
 		 * @return string the MIME type. Null is returned if the MIME type cannot
-		 * be determined.
+		 * be detagined.
 		 */
 		public function getMimeTypeByExtension()
 		{

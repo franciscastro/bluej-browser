@@ -20,7 +20,7 @@ $this->makeDetailBreadcrumbs('Confusion Report');
 			'name' => array(
 				'name' => 'Student',
 				'type' => 'raw',
-				'value' => '(isset($_GET["id"])) ? CHtml::link($data["name"], array("compileSession/view", "id"=>$data["compileSessionId"])) : CHtml::link($data["name"], array("user/view", "id"=>$data["userId"]))',
+				'value' => '(isset($_GET["id"])) ? CHtml::link($data["name"], array("compileLog/view", "id"=>$data["logId"])) : CHtml::link($data["name"], array("user/view", "id"=>$data["userId"]))',
 			),
 			'confusion' => array(
 				'name' => 'Confusion Rate',

@@ -25,7 +25,7 @@ function make_link($name, $route) {
 				<?php } else foreach($topEqData as $datum): ?>
 					<tr>
 					<?php if(isset($_GET['id'])): ?>
-						<td><?php echo CHtml::link($datum['name'], array('compileSession/view', 'id'=>$datum['compileSessionId'])); ?></td>
+						<td><?php echo CHtml::link($datum['name'], array('compileLog/view', 'id'=>$datum['logId'])); ?></td>
 					<?php else: ?>
 						<td><?php echo CHtml::link($datum['name'], array('user/view', 'id'=>$datum['userId'])); ?></td>
 					<?php endif; ?>
@@ -47,7 +47,7 @@ function make_link($name, $route) {
 				<?php } else foreach($topConfusedData as $datum): ?>
 					<tr>
 					<?php if(isset($_GET['id'])): ?>
-						<td><?php echo CHtml::link($datum['name'], array('compileSession/view', 'id'=>$datum['compileSessionId'])); ?></td>
+						<td><?php echo CHtml::link($datum['name'], array('compileLog/view', 'id'=>$datum['logId'])); ?></td>
 					<?php else: ?>
 						<td><?php echo CHtml::link($datum['name'], array('user/view', 'id'=>$datum['userId'])); ?></td>
 					<?php endif; ?>

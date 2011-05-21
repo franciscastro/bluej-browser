@@ -28,7 +28,7 @@
 	<div id="mainmenu">
 		<?php $this->widget('zii.widgets.CMenu',array(
 			'items'=>array(
-				array('label'=>'Logs', 'url'=>array('/importSession/index'), 'visible'=>Yii::app()->user->hasRole(array('Teacher', 'Researcher', 'Administrator'))),
+				array('label'=>'Logs', 'url'=>array('/logSession/index'), 'visible'=>Yii::app()->user->hasRole(array('Teacher', 'Researcher', 'Administrator'))),
 				array('label'=>'Classes', 'url'=>array('/section/index'), 'visible'=>Yii::app()->user->hasRole(array('Researcher', 'Administrator'))),
 				array('label'=>'Administration', 'url'=>array('/admin/index'), 'visible'=>Yii::app()->user->hasRole(array('Administrator'))),
 				array('label'=>'Change Password', 'url'=>array('/user/changePassword'), 'visible'=>!Yii::app()->user->isGuest),

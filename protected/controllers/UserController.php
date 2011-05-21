@@ -50,12 +50,12 @@ class UserController extends Controller {
 
 	public function actionView() {
 		$model=$this->loadModel();
-		$importSearch = new Import('search');
-		$importSearch->userId = $model->id;
+		$logSearch = new Log('search');
+		$logSearch->userId = $model->id;
 
 		$this->render('view',array(
 			'model'=>$model,
-			'dataProvider'=>$importSearch->search(),
+			'dataProvider'=>$logSearch->search(),
 		));
 	}
 

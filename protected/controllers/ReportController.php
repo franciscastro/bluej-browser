@@ -36,7 +36,7 @@ class ReportController extends Controller {
 		if(isset($_GET['tags'])) {
 			$this->redirect(array('summary', 'tags'=>$_GET['tags']), true);
 		}
-		$models = Term::model()->findAll('parentId > 1');
+		$models = Tag::model()->findAll('parentId > 1');
 		$this->render('index', array(
 			'models' => $models,
 		));
@@ -283,28 +283,28 @@ class ReportController extends Controller {
 	}
 
 	function getCommand($reportType, $extraOptions = array()) {
-		$importSessionIds = $this->getImportSessionIds();
+		$logSessionIds = $this->getLogSessionIds();
 		$criteria = new CDbCriteria;
-		if($importSessionIds !== false) $criteria->condition = 'importSessionId IN ('.implode(',', $importSessionIds).')';
+		if($logSessionIds !== false) $criteria->condition = 'logSessionId IN ('.implode(',', $logSessionIds).')';
 		$table = '';
 		if($reportType == self::EQ) {
 			$table = 'EqCalculation';
-			$criteria->select = 'userId, compileSessionId, name, eq';
-			$criteria->join = 'JOIN Import ON Import.id = compileSessionId JOIN User ON userId = User.id';
+			$criteria->select = 'userId, logId, name, eq';
+			$criteria->join = 'JOIN Log ON Log.id = logId JOIN User ON userId = User.id';
 			$criteria->order = 'eq DESC';
 		}
 		else if($reportType == self::ERROR) {
-			$table = 'CompileSessionEntry';
+			$table = 'CompileLogEntry';
 			$criteria->select = 'messageText, COUNT(messageText) AS count';
 			$criteria->group = 'messageText';
-			$criteria->join = 'JOIN Import ON Import.id = compileSessionId';
+			$criteria->join = 'JOIN Log ON Log.id = logId';
 			$criteria->order = 'count DESC';
 		}
 		else if($reportType == self::ERROR_CLASS) {
-			$table = 'CompileSessionEntry';
+			$table = 'CompileLogEntry';
 			$criteria->select = 'error AS messageText, COUNT(*) AS count';
 			$criteria->group = 'error';
-			$criteria->join = 'JOIN Import ON Import.id = compileSessionId LEFT JOIN ErrorClass ON compileSessionEntryId = t.id';
+			$criteria->join = 'JOIN Log ON Log.id = logId LEFT JOIN ErrorClass ON compileLogEntryId = t.id';
 			$criteria->order = 'count DESC';
 		}
 		else if($reportType == self::TIME_DELTA) {
@@ -315,17 +315,17 @@ class ReportController extends Controller {
 			else {
 				$criteria->select = "(b.timestamp - a.timestamp)/$interval AS delta";
 			}
-			$criteria->join = 'JOIN Import ON a.compileSessionId = Import.id JOIN CompileSessionEntry b ON a.timestamp < b.timestamp AND a.compileSessionId = b.compileSessionId';
+			$criteria->join = 'JOIN Log ON a.logId = Log.id JOIN CompileLogEntry b ON a.timestamp < b.timestamp AND a.logId = b.logId';
 			$criteria->group = 'a.id';
-			$command = Yii::app()->db->getCommandBuilder()->createFindCommand('CompileSessionEntry', $criteria, 'a');
+			$command = Yii::app()->db->getCommandBuilder()->createFindCommand('CompileLogEntry', $criteria, 'a');
 			$subselect = $command->getText();
 			$command = Yii::app()->db->createCommand("SELECT COUNT(*) AS count, delta FROM ($subselect) c GROUP BY delta");
 			return $command;
 		}
 		else if($reportType == self::CONFUSION) {
 			$table = 'Confusion';
-			$criteria->select = 'userId, compileSessionId, name, confusion, clips';
-			$criteria->join = 'JOIN Import ON Import.id = compileSessionId JOIN User ON userId = User.id';
+			$criteria->select = 'userId, logId, name, confusion, clips';
+			$criteria->join = 'JOIN Log ON Log.id = logId JOIN User ON userId = User.id';
 			$criteria->order = 'confusion DESC, clips DESC';
 		}
 		if(array_key_exists('limit', $extraOptions)) {
@@ -339,35 +339,35 @@ class ReportController extends Controller {
 		}
 	}
 
-	function getImportSessionIds() {
+	function getLogSessionIds() {
 		if(isset($_GET['tags']) && !empty($_GET['tags'])) {
 			if(isset($_GET['id'])) {
 				return array($_GET['id']);
 			}
-			$termNames = array_unique(preg_split('/\s*,\s*/', $_GET['tags'], null, PREG_SPLIT_NO_EMPTY));
-			$_GET['tags'] = implode(',', $termNames);
+			$tagNames = array_unique(preg_split('/\s*,\s*/', $_GET['tags'], null, PREG_SPLIT_NO_EMPTY));
+			$_GET['tags'] = implode(',', $tagNames);
 
-			if(Yii::app()->user->getState('report_tags') == $termNames) {
-				$importSessionIds = Yii::app()->user->getState('report_iids');
+			if(Yii::app()->user->getState('report_tags') == $tagNames) {
+				$logSessionIds = Yii::app()->user->getState('report_iids');
 			}
 			else {
 				$criteria = new CDbCriteria;
-				$criteria->select = 'importSessionId';
-				$criteria->group = 'importSessionId';
-				$criteria->join = 'JOIN Term on termId = Term.id';
-				$criteria->addInCondition('name', $termNames);
-				$criteria->having = 'COUNT(importSessionId) = '.count($termNames);
-				$command = Yii::app()->db->getCommandBuilder()->createFindCommand('ImportSessionTerm', $criteria);
+				$criteria->select = 'logSessionId';
+				$criteria->group = 'logSessionId';
+				$criteria->join = 'JOIN Tag on tagId = Tag.id';
+				$criteria->addInCondition('name', $tagNames);
+				$criteria->having = 'COUNT(logSessionId) = '.count($tagNames);
+				$command = Yii::app()->db->getCommandBuilder()->createFindCommand('LogSessionTag', $criteria);
 
-				$importSessionIds = $command->queryColumn();
+				$logSessionIds = $command->queryColumn();
 
-				Yii::app()->user->setState('report_tags', $termNames);
-				Yii::app()->user->setState('report_iids', $importSessionIds);
+				Yii::app()->user->setState('report_tags', $tagNames);
+				Yii::app()->user->setState('report_iids', $logSessionIds);
 			}
-			if(count($importSessionIds) == 0) {
+			if(count($logSessionIds) == 0) {
 				$this->redirect(array('report/empty'));
 			}
-			return $importSessionIds;
+			return $logSessionIds;
 		}
 		else {
 			$_GET['tags'] = '';
@@ -378,22 +378,22 @@ class ReportController extends Controller {
 	function makeDetailBreadcrumbs($name) {
 		if(isset($_GET['id'])) {
 			$this->breadcrumbs=array(
-				'Logs' => array('importSession/index'),
-				'Log Session #' . $_GET['id'] => array('importSession/view', 'id'=>$_GET['id']),
+				'Logs' => array('logSession/index'),
+				'Log Session #' . $_GET['id'] => array('logSession/view', 'id'=>$_GET['id']),
 				'Summary' => array('summary', 'id'=>$_GET['id']),
 				$name,
 			);
 		}
 		else if(isset($_GET['tags'])){
 			$this->breadcrumbs=array(
-				'Logs' => array('importSession/index', 'tags'=>$_GET['tags']),
+				'Logs' => array('logSession/index', 'tags'=>$_GET['tags']),
 				'General Summary' => array('summary', 'tags'=>$_GET['tags']),
 				$name,
 			);
 		}
 		else {
 			$this->breadcrumbs=array(
-				'Logs' => array('importSession/index'),
+				'Logs' => array('logSession/index'),
 				'General Summary' => array('summary'),
 				$name,
 			);

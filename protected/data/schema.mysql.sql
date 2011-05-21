@@ -1,26 +1,26 @@
-DROP TABLE IF EXISTS Term;
-DROP TABLE IF EXISTS UserTerm;
-DROP TABLE IF EXISTS ImportSessionTerm;
+DROP TABLE IF EXISTS Tag;
+DROP TABLE IF EXISTS UserTag;
+DROP TABLE IF EXISTS LogSessionTag;
 DROP TABLE IF EXISTS User;
 DROP TABLE IF EXISTS Section;
 DROP TABLE IF EXISTS UserSection;
-DROP TABLE IF EXISTS CompileSession;
-DROP TABLE IF EXISTS CompileSessionEntry;
-DROP TABLE IF EXISTS InvocationSession;
-DROP TABLE IF EXISTS InvocationSessionEntry;
-DROP TABLE IF EXISTS ImportSession;
-DROP TABLE IF EXISTS Import;
+DROP TABLE IF EXISTS CompileLog;
+DROP TABLE IF EXISTS CompileLogEntry;
+DROP TABLE IF EXISTS InvocationLog;
+DROP TABLE IF EXISTS InvocationLogEntry;
+DROP TABLE IF EXISTS LogSession;
+DROP TABLE IF EXISTS Log;
 DROP TABLE IF EXISTS EqCalculation;
 DROP TABLE IF EXISTS Confusion;
 DROP TABLE IF EXISTS ErrorClass;
 
-CREATE TABLE Term
+CREATE TABLE Tag
 (
 	id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
 	parentId INTEGER NOT NULL,
 	name TEXT,
-	CONSTRAINT FK_term_term FOREIGN KEY (parentId)
-		REFERENCES Term(id)
+	CONSTRAINT FK_tag_tag FOREIGN KEY (parentId)
+		REFERENCES Tag(id)
 );
 
 CREATE TABLE Section
@@ -30,12 +30,12 @@ CREATE TABLE Section
 	yearId INTEGER NOT NULL,
 	courseId INTEGER NOT NULL,
 	sectionId INTEGER NOT NULL,
-	CONSTRAINT FK_section_term1 FOREIGN KEY (yearId)
-		REFERENCES Term(id),
-	CONSTRAINT FK_section_term2 FOREIGN KEY (courseId)
-		REFERENCES Term(id),
-	CONSTRAINT FK_section_term3 FOREIGN KEY (sectionId)
-		REFERENCES Term(id)
+	CONSTRAINT FK_section_tag1 FOREIGN KEY (yearId)
+		REFERENCES Tag(id),
+	CONSTRAINT FK_section_tag2 FOREIGN KEY (courseId)
+		REFERENCES Tag(id),
+	CONSTRAINT FK_section_tag3 FOREIGN KEY (sectionId)
+		REFERENCES Tag(id)
 );
 
 CREATE TABLE UserSection
@@ -48,24 +48,24 @@ CREATE TABLE UserSection
 		REFERENCES User (id)
 );
 
-CREATE TABLE UserTerm
+CREATE TABLE UserTag
 (
 	userId INTEGER NOT NULL,
-	termId INTEGER NOT NULL,
-	CONSTRAINT FK_ut_term FOREIGN KEY (termId)
-		REFERENCES Term (id),
+	tagId INTEGER NOT NULL,
+	CONSTRAINT FK_ut_tag FOREIGN KEY (tagId)
+		REFERENCES Tag (id),
 	CONSTRAINT FK_ut_user FOREIGN KEY (userId)
 		REFERENCES User (id)
 );
 
-CREATE TABLE ImportSessionTerm
+CREATE TABLE LogSessionTag
 (
-	importSessionId INTEGER NOT NULL,
-	termId INTEGER NOT NULL,
-	CONSTRAINT FK_st_term FOREIGN KEY (termId)
-		REFERENCES Term (id),
-	CONSTRAINT FK_st_importSession FOREIGN KEY (importSessionId)
-		REFERENCES ImportSession (id)
+	logSessionId INTEGER NOT NULL,
+	tagId INTEGER NOT NULL,
+	CONSTRAINT FK_st_tag FOREIGN KEY (tagId)
+		REFERENCES Tag (id),
+	CONSTRAINT FK_st_logSession FOREIGN KEY (logSessionId)
+		REFERENCES LogSession (id)
 );
 
 CREATE TABLE User
@@ -78,7 +78,7 @@ CREATE TABLE User
 	roleId INTEGER NOT NULL
 );
 
-CREATE TABLE CompileSession
+CREATE TABLE CompileLog
 (
 	id INTEGER NOT NULL PRIMARY KEY,
 	deltaVersion TEXT,
@@ -92,18 +92,18 @@ CREATE TABLE CompileSession
 	hostName TEXT,
 	locationId TEXT,
 	projectId TEXT,
-	sessionId TEXT,
+	logId TEXT,
 	projectPath TEXT,
 	packagePath TEXT,
 	deltaName TEXT,
-	CONSTRAINT FK_compileSession_session FOREIGN KEY (id)
+	CONSTRAINT FK_compileLog_log FOREIGN KEY (id)
 		REFERENCES Session (id)
 );
 
-CREATE TABLE CompileSessionEntry
+CREATE TABLE CompileLogEntry
 (
 	id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
-	compileSessionId INTEGER,
+	logId INTEGER,
 	timestamp INTEGER,
 	deltaSequenceNumber INTEGER,
 	deltaStartTime INTEGER,
@@ -119,11 +119,11 @@ CREATE TABLE CompileSessionEntry
 	messageColumnNumber INTEGER,
 	compilesPerFile INTEGER,
 	totalCompiles INTEGER,
-	CONSTRAINT FK_compileSessionEntry_compileSession FOREIGN KEY (compileSessionId)
-		REFERENCES CompileSession (id)
+	CONSTRAINT FK_compileLogEntry_compileLog FOREIGN KEY (logId)
+		REFERENCES CompileLog (id)
 );
 
-CREATE TABLE InvocationSession
+CREATE TABLE InvocationLog
 (
 	id INTEGER NOT NULL PRIMARY KEY,
 	deltaVersion TEXT,
@@ -137,18 +137,18 @@ CREATE TABLE InvocationSession
 	hostName TEXT,
 	locationId TEXT,
 	projectId TEXT,
-	sessionId TEXT,
+	logId TEXT,
 	projectPath TEXT,
 	packagePath TEXT,
 	deltaName TEXT,
-	CONSTRAINT FK_invocationSession_session FOREIGN KEY (id)
+	CONSTRAINT FK_invocationLog_log FOREIGN KEY (id)
 		REFERENCES Session (id)
 );
 
-CREATE TABLE InvocationSessionEntry
+CREATE TABLE InvocationLogEntry
 (
 	id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
-	invocationSessionId INTEGER,
+	logId INTEGER,
 	timestamp INTEGER,
 	deltaSequenceNumber INTEGER,
 	deltaStartTime INTEGER,
@@ -161,11 +161,11 @@ CREATE TABLE InvocationSessionEntry
 	parameters TEXT,
 	result TEXT,
 	invocationStatus TEXT,
-	CONSTRAINT FK_invocationSessionEntry_invocationSession FOREIGN KEY (invocationSessionId)
-		REFERENCES InvocationSession (id)
+	CONSTRAINT FK_invocationLogEntry_invocationLog FOREIGN KEY (logId)
+		REFERENCES InvocationLog (id)
 );
 
-CREATE TABLE ImportSession
+CREATE TABLE LogSession
 (
 	id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
 	sectionId INTEGER,
@@ -176,51 +176,51 @@ CREATE TABLE ImportSession
 	remarks TEXT
 );
 
-CREATE TABLE Import
+CREATE TABLE Log
 (
 	id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
-	importSessionId INTEGER,
+	logSessionId INTEGER,
 	userId INTEGER,
 	date INTEGER,
- 	CONSTRAINT FK_user_session FOREIGN KEY (userId)
+ 	CONSTRAINT FK_user_log FOREIGN KEY (userId)
 		REFERENCES User (id),
-	CONSTRAINT FK_import_importSession FOREIGN KEY (importSessionId)
-		REFERENCES ImportSession (id)
+	CONSTRAINT FK_log_logSession FOREIGN KEY (logSessionId)
+		REFERENCES LogSession (id)
 );
 
 CREATE TABLE EqCalculation
 (
 	id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
-	compileSessionId INTEGER,
+	logId INTEGER,
 	eq REAL,
-	CONSTRAINT FK_eqCalculation_compileSession FOREIGN KEY (compileSessionId)
-		REFERENCES CompileSession (id)
+	CONSTRAINT FK_eqCalculation_compileLog FOREIGN KEY (logId)
+		REFERENCES CompileLog (id)
 );
 
 CREATE TABLE Confusion
 (
 	id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
-	compileSessionId INTEGER,
+	logId INTEGER,
 	confusion REAL,
 	clips INTEGER,
-	CONSTRAINT FK_confusion_compileSession FOREIGN KEY (compileSessionId)
-		REFERENCES CompileSession (id)
+	CONSTRAINT FK_confusion_compileLog FOREIGN KEY (logId)
+		REFERENCES CompileLog (id)
 );
 
 CREATE TABLE ErrorClass
 (
   id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
-  compileSessionEntryId INTEGER,
+  compileLogEntryId INTEGER,
   error TEXT,
-  CONSTRAINT FK_errorClass_compileSessionEntry FOREIGN KEY (compileSessionEntryId)
-    REFERENCES CompileSessionEntry (id)
+  CONSTRAINT FK_errorClass_compileLogEntry FOREIGN KEY (compileLogEntryId)
+    REFERENCES CompileLogEntry (id)
 );
 
-INSERT INTO Term VALUES (1, 0, "Root");
-INSERT INTO Term VALUES (2, 1, "Year");
-INSERT INTO Term VALUES (3, 1, "Course");
-INSERT INTO Term VALUES (4, 1, "Section");
-INSERT INTO Term VALUES (5, 1, "Lab");
-INSERT INTO Term VALUES (6, 1, "Other");
+INSERT INTO Tag VALUES (1, 0, "Root");
+INSERT INTO Tag VALUES (2, 1, "Year");
+INSERT INTO Tag VALUES (3, 1, "Course");
+INSERT INTO Tag VALUES (4, 1, "Section");
+INSERT INTO Tag VALUES (5, 1, "Lab");
+INSERT INTO Tag VALUES (6, 1, "Other");
 
 INSERT INTO User VALUES (NULL, 'admin', 'f97baaf2592507e4bc91f3a7c0a25c2f3d6a28ac', 'Administrator', '', 1);

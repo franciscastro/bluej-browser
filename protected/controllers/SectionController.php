@@ -50,14 +50,14 @@ class SectionController extends Controller {
 	 */
 	public function actionCreate() {
 		$model=new Section;
-		$terms = array();
+		$tags = array();
 
-		if(isset($_POST['term'])) {
-			$parents = array(Term::TERM_YEAR, Term::TERM_COURSE, Term::TERM_SECTION);
-			$termModels = array();
+		if(isset($_POST['tag'])) {
+			$parents = array(Tag::TERM_YEAR, Tag::TERM_COURSE, Tag::TERM_SECTION);
+			$tagModels = array();
 			foreach($parents as $parent) {
-				if(isset($_POST['term'][$parent]) && !empty($_POST['term'][$parent])) {
-					$termModels[$parent] = Term::model()->getTermByName($_POST['term'][$parent], $parent);
+				if(isset($_POST['tag'][$parent]) && !empty($_POST['tag'][$parent])) {
+					$tagModels[$parent] = Tag::model()->getTagByName($_POST['tag'][$parent], $parent);
 				}
 				else {
 					$model->addError('empty', '');
@@ -65,9 +65,9 @@ class SectionController extends Controller {
 			}
 
 			if(!$model->hasErrors()) {
-				$yearModel = $termModels[Term::TERM_YEAR];
-				$courseModel = $termModels[Term::TERM_COURSE];
-				$sectionModel = $termModels[Term::TERM_SECTION];
+				$yearModel = $tagModels[Tag::TERM_YEAR];
+				$courseModel = $tagModels[Tag::TERM_COURSE];
+				$sectionModel = $tagModels[Tag::TERM_SECTION];
 				$model->yearId = $yearModel->id;
 				$model->courseId = $courseModel->id;
 				$model->sectionId = $sectionModel->id;
@@ -82,7 +82,7 @@ class SectionController extends Controller {
 				}
 				$model->newTeachers = $newTeachers;
 			}
-			$terms = $_POST['term'];
+			$tags = $_POST['tag'];
 
 
 			if($model->save())
@@ -91,7 +91,7 @@ class SectionController extends Controller {
 
 		$this->render('create',array(
 			'model'=>$model,
-			'terms'=>$terms,
+			'tags'=>$tags,
 		));
 	}
 
@@ -118,7 +118,7 @@ class SectionController extends Controller {
 
 		$this->render('update',array(
 			'model'=>$model,
-			'terms'=>array(),
+			'tags'=>array(),
 		));
 	}
 

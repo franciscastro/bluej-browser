@@ -3,8 +3,8 @@
 class EqCalculationTest extends CDbTestCase {
 	
 	public $fixtures = array(
-		'compiles' => ':CompileSession',
-		'entries' => ':CompileSessionEntry',
+		'compiles' => ':CompileLog',
+		'entries' => ':CompileLogEntry',
 	);
 	
 	public function testCalculate() {
@@ -13,11 +13,11 @@ class EqCalculationTest extends CDbTestCase {
 		$command = $connection->createCommand('SELECT * FROM `F227_1_CompileData`');
 		$row = $command->queryRow();
 		$reader = $command->query();
-		CompileSession::model()->doImport(2, $row, $reader);
+		CompileLog::model()->doLog(2, $row, $reader);
 		
-		$compileSessionId = 2;
+		$logId = 2;
 		$eqModel = new EqCalculation;
-		$eqModel->compileSessionId = $compileSessionId;
+		$eqModel->logId = $logId;
 		$eqModel->calculate();
 		$this->assertTrue(abs($eqModel->eq - 0.57971014492754) < 0.00000000000001);
 	}

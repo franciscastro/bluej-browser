@@ -1,7 +1,7 @@
 <?php
 
 /**
- * A mixin that causes imports to automatically have their confusion rate calculated.
+ * A mixin that causes logs to automatically have their confusion rate calculated.
  *
  * @author Thomas Dy <thatsmydoing@gmail.com>
  * @copyright Copyright &copy; 2010-2011 Ateneo de Manila University
@@ -15,15 +15,15 @@ class CalculateConfusion extends CActiveRecordBehavior {
 
 	public function events() {
 		return array_merge(parent::events(), array(
-			'onAfterImport'=>'afterImport',
+			'onAfterLog'=>'afterLog',
 		));
 	}
 
-	public function afterImport($event) {
-		$model = Confusion::model()->findByAttributes(array('compileSessionId'=>$this->owner->id));
+	public function afterLog($event) {
+		$model = Confusion::model()->findByAttributes(array('logId'=>$this->owner->id));
 		if($model == null) {
 			$model = new Confusion;
-			$model->compileSessionId = $this->owner->id;
+			$model->logId = $this->owner->id;
 			$model->save();
 		}
 		$model->calculate();

@@ -9,11 +9,11 @@
  *
  * The followings are the available columns in table 'Confusion':
  * @property integer $id
- * @property integer $compileSessionId
+ * @property integer $logId
  * @property integer $confusion
  *
  * The followings are the available model relations:
- * @property CompileSession $compileSession
+ * @property CompileLog $compileLog
  */
 class Confusion extends CActiveRecord {
 	/**
@@ -38,10 +38,10 @@ class Confusion extends CActiveRecord {
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('compileSessionId, confusion', 'numerical' ),
+			array('logId, confusion', 'numerical' ),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, compileSessionId, confusion', 'safe', 'on'=>'search'),
+			array('id, logId, confusion', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -52,7 +52,7 @@ class Confusion extends CActiveRecord {
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'compileSession' => array(self::BELONGS_TO, 'CompileSession', 'compileSessionId'),
+			'compileLog' => array(self::BELONGS_TO, 'CompileLog', 'logId'),
 		);
 	}
 
@@ -62,7 +62,7 @@ class Confusion extends CActiveRecord {
 	public function attributeLabels() {
 		return array(
 			'id' => 'ID',
-			'compileSessionId' => 'Compile Session',
+			'logId' => 'Compile Session',
 			'confusion' => 'Is Confused',
 		);
 	}
@@ -78,7 +78,7 @@ class Confusion extends CActiveRecord {
 		$criteria=new CDbCriteria;
 
 		$criteria->compare('id',$this->id);
-		$criteria->compare('compileSessionId',$this->compileSessionId);
+		$criteria->compare('logId',$this->logId);
 		$criteria->compare('confusion',$this->confusion);
 
 		return new CActiveDataProvider(get_class($this), array(
@@ -90,9 +90,9 @@ class Confusion extends CActiveRecord {
 		$criteria = new CDbCriteria;
 		$criteria->select = 'fileName';
 		$criteria->group = 'fileName';
-		$criteria->condition = 'compileSessionId=:id';
-		$command = Yii::app()->db->getCommandBuilder()->createFindCommand('CompileSessionEntry', $criteria);
-		$fileNames = $command->queryColumn(array('id'=>$this->compileSessionId));
+		$criteria->condition = 'logId=:id';
+		$command = Yii::app()->db->getCommandBuilder()->createFindCommand('CompileLogEntry', $criteria);
+		$fileNames = $command->queryColumn(array('id'=>$this->logId));
 
 		$lastId = 0;
 		$totalClips = 0.0;
@@ -101,7 +101,7 @@ class Confusion extends CActiveRecord {
 		foreach($fileNames as $fileName) {
 			$hasMore = true;
 			while($hasMore) {
-				$entries = CompileSessionEntry::model()->findAll('compileSessionId=:id AND id>:lastId ORDER BY deltaSequenceNumber LIMIT 8', array('id'=>$this->compileSessionId, 'lastId'=>$lastId));
+				$entries = CompileLogEntry::model()->findAll('logId=:id AND id>:lastId ORDER BY deltaSequenceNumber LIMIT 8', array('id'=>$this->logId, 'lastId'=>$lastId));
 				$count = count($entries);
 				if($count < 8) {
 				// bad clip

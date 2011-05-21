@@ -1,20 +1,20 @@
 <?php
 if(isset($_GET['id'])) {
 	$this->breadcrumbs=array(
-		'Logs' => array('importSession/index'),
-		'Log Session #' . $_GET['id'] => array('importSession/view', 'id'=>$_GET['id']),
+		'Logs' => array('logSession/index'),
+		'Log Session #' . $_GET['id'] => array('logSession/view', 'id'=>$_GET['id']),
 		'Summary'
 	);
 }
 else if(isset($_GET['tags'])){
 	$this->breadcrumbs=array(
-		'Logs' => array('importSession/index', 'tags'=>$_GET['tags']),
+		'Logs' => array('logSession/index', 'tags'=>$_GET['tags']),
 		'General Summary'
 	);
 }
 else {
 	$this->breadcrumbs=array(
-		'Logs' => array('importSession/index'),
+		'Logs' => array('logSession/index'),
 		'General Summary'
 	);
 }

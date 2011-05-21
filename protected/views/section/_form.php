@@ -8,13 +8,13 @@
 	<?php echo $form->errorSummary($model); ?>
 
 <?php
-function createInput($view, $label, $termType, $terms) {
+function createInput($view, $label, $tagType, $tags) {
 	?>
 	<div class="row">
-		<?php echo CHtml::label($label, 'term['.$termType.']'); ?>
+		<?php echo CHtml::label($label, 'tag['.$tagType.']'); ?>
 		<?php $view->widget('zii.widgets.jui.CJuiAutoComplete', array(
-			'name'=>'term['.$termType.']',
-			'sourceUrl'=>array('term/search', 'parent'=>$termType),
+			'name'=>'tag['.$tagType.']',
+			'sourceUrl'=>array('tag/search', 'parent'=>$tagType),
 			'options'=>array('minLength'=>0,)
 		));
 		?>
@@ -23,11 +23,11 @@ function createInput($view, $label, $termType, $terms) {
 }
 ?>
 	<?php if($model->isNewRecord): ?>
-		<?php createInput($this, 'Year', Term::TERM_YEAR, $terms); ?>
+		<?php createInput($this, 'Year', Tag::TERM_YEAR, $tags); ?>
 
-		<?php createInput($this, 'Course', Term::TERM_COURSE, $terms); ?>
+		<?php createInput($this, 'Course', Tag::TERM_COURSE, $tags); ?>
 
-		<?php createInput($this, 'Section', Term::TERM_SECTION, $terms); ?>
+		<?php createInput($this, 'Section', Tag::TERM_SECTION, $tags); ?>
 	<?php endif; ?>
 
 	<div class="row">

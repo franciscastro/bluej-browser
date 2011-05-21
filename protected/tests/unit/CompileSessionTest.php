@@ -1,10 +1,10 @@
 <?php
 
-class CompileSessionTest extends CDbTestCase {
+class CompileLogTest extends CDbTestCase {
 	
 	public $fixtures = array(
-		'compiles' => 'CompileSession',
-		'entries' => 'CompileSessionEntry',
+		'compiles' => 'CompileLog',
+		'entries' => 'CompileLogEntry',
 	);
 	
 	public $testRow = array(
@@ -39,37 +39,37 @@ class CompileSessionTest extends CDbTestCase {
 		'TOTAL_COMPILES' => 19,
 	);
 	
-	public function testDoImport() {
+	public function testDoLog() {
 		$connection = new CDbConnection('sqlite:assets/test-compile.db');
 		$connection->active = true;
 		$command = $connection->createCommand('SELECT * FROM `F227_1_CompileData`');
 		$row = $command->queryRow();
 		$reader = $command->query();
-		CompileSession::model()->doImport(2, $row, $reader);
+		CompileLog::model()->doLog(2, $row, $reader);
 		
-		$session = CompileSession::model()->findByPk(2);
-		$this->assertTrue($session instanceof CompileSession);
-		$this->assertEquals($session->deltaVersion, $row['DELTA_VERSION']);
-		$this->assertEquals($session->extensionVersion, $row['BJ_EXT_VERSION']);
-		$this->assertEquals($session->systemUser, $row['SYSUSER']);
-		$this->assertEquals($session->home, $row['HOME']);
-		$this->assertEquals($session->osName, $row['OSNAME']);
-		$this->assertEquals($session->osVersion, $row['OSVER']);
-		$this->assertEquals($session->osArch, $row['OSARCH']);
-		$this->assertEquals($session->ipAddress, $row['IPADDR']);
-		$this->assertEquals($session->hostName, $row['HOSTNAME']);
-		$this->assertEquals($session->locationId, $row['LOCATION_ID']);
-		$this->assertEquals($session->projectId, $row['PROJECT_ID']);
-		$this->assertEquals($session->sessionId, $row['SESSION_ID']);
-		$this->assertEquals($session->projectPath, $row['PROJECT_PATH']);
-		$this->assertEquals($session->packagePath, $row['PACKAGE_PATH']);
-		$this->assertEquals($session->deltaName, $row['DELTA_NAME']);
+		$log = CompileLog::model()->findByPk(2);
+		$this->assertTrue($log instanceof CompileLog);
+		$this->assertEquals($log->deltaVersion, $row['DELTA_VERSION']);
+		$this->assertEquals($log->extensionVersion, $row['BJ_EXT_VERSION']);
+		$this->assertEquals($log->systemUser, $row['SYSUSER']);
+		$this->assertEquals($log->home, $row['HOME']);
+		$this->assertEquals($log->osName, $row['OSNAME']);
+		$this->assertEquals($log->osVersion, $row['OSVER']);
+		$this->assertEquals($log->osArch, $row['OSARCH']);
+		$this->assertEquals($log->ipAddress, $row['IPADDR']);
+		$this->assertEquals($log->hostName, $row['HOSTNAME']);
+		$this->assertEquals($log->locationId, $row['LOCATION_ID']);
+		$this->assertEquals($log->projectId, $row['PROJECT_ID']);
+		$this->assertEquals($log->logId, $row['SESSION_ID']);
+		$this->assertEquals($log->projectPath, $row['PROJECT_PATH']);
+		$this->assertEquals($log->packagePath, $row['PACKAGE_PATH']);
+		$this->assertEquals($log->deltaName, $row['DELTA_NAME']);
 		
 		$reader = $command->query();
-		for($i = 0; $i < count($session->entries); $i++) {
-			$entry = $session->entries[$i];
+		for($i = 0; $i < count($log->entries); $i++) {
+			$entry = $log->entries[$i];
 			$row = $reader->read();
-			$this->assertEquals($entry->compileSessionId, $session->id);
+			$this->assertEquals($entry->logId, $log->id);
 			$this->assertEquals($entry->timestamp, $row['TIMESTAMP']);
 			$this->assertEquals($entry->deltaSequenceNumber, $row['DELTA_SEQ_NUMBER']);
 			$this->assertEquals($entry->deltaStartTime, $row['DELTA_START_TIME']);
@@ -87,18 +87,18 @@ class CompileSessionTest extends CDbTestCase {
 		}
 	}
 	
-	public function testLiveImport1() {
-		$session = new CompileSession;
-		$session->id = 1;
-		$session->save();
+	public function testLiveLog1() {
+		$log = new CompileLog;
+		$log->id = 1;
+		$log->save();
 		
 		$row = $this->testRow;
-		CompileSession::model()->liveImport(1, $row);
+		CompileLog::model()->liveLog(1, $row);
 		
-		$session = CompileSession::model()->findByPk(1);
-		$this->assertEquals(count($session->entries), 1);
-		$entry = $session->entries[count($session->entries)-1];
-		$this->assertEquals($entry->compileSessionId, $session->id);
+		$log = CompileLog::model()->findByPk(1);
+		$this->assertEquals(count($log->entries), 1);
+		$entry = $log->entries[count($log->entries)-1];
+		$this->assertEquals($entry->logId, $log->id);
 		$this->assertEquals($entry->timestamp, $row['TIMESTAMP']);
 		$this->assertEquals($entry->deltaSequenceNumber, $row['DELTA_SEQ_NUMBER']);
 		$this->assertEquals($entry->deltaStartTime, $row['DELTA_START_TIME']);
@@ -115,32 +115,32 @@ class CompileSessionTest extends CDbTestCase {
 		$this->assertEquals($entry->totalCompiles, $row['TOTAL_COMPILES']);
 	}
 	
-	public function testLiveImport2() {
+	public function testLiveLog2() {
 		$row = $this->testRow;
-		CompileSession::model()->liveImport(3, $row);
+		CompileLog::model()->liveLog(3, $row);
 		
-		$session = CompileSession::model()->findByPk(3);
-		$this->assertTrue($session instanceof CompileSession);
-		$this->assertEquals($session->deltaVersion, $row['DELTA_VERSION']);
-		$this->assertEquals($session->extensionVersion, $row['BJ_EXT_VERSION']);
-		$this->assertEquals($session->systemUser, $row['SYSUSER']);
-		$this->assertEquals($session->home, $row['HOME']);
-		$this->assertEquals($session->osName, $row['OSNAME']);
-		$this->assertEquals($session->osVersion, $row['OSVER']);
-		$this->assertEquals($session->osArch, $row['OSARCH']);
-		$this->assertEquals($session->ipAddress, $row['IPADDR']);
-		$this->assertEquals($session->hostName, $row['HOSTNAME']);
-		$this->assertEquals($session->locationId, $row['LOCATION_ID']);
-		$this->assertEquals($session->projectId, $row['PROJECT_ID']);
-		$this->assertEquals($session->sessionId, $row['SESSION_ID']);
-		$this->assertEquals($session->projectPath, $row['PROJECT_PATH']);
-		$this->assertEquals($session->packagePath, $row['PACKAGE_PATH']);
-		$this->assertEquals($session->deltaName, $row['DELTA_NAME']);
+		$log = CompileLog::model()->findByPk(3);
+		$this->assertTrue($log instanceof CompileLog);
+		$this->assertEquals($log->deltaVersion, $row['DELTA_VERSION']);
+		$this->assertEquals($log->extensionVersion, $row['BJ_EXT_VERSION']);
+		$this->assertEquals($log->systemUser, $row['SYSUSER']);
+		$this->assertEquals($log->home, $row['HOME']);
+		$this->assertEquals($log->osName, $row['OSNAME']);
+		$this->assertEquals($log->osVersion, $row['OSVER']);
+		$this->assertEquals($log->osArch, $row['OSARCH']);
+		$this->assertEquals($log->ipAddress, $row['IPADDR']);
+		$this->assertEquals($log->hostName, $row['HOSTNAME']);
+		$this->assertEquals($log->locationId, $row['LOCATION_ID']);
+		$this->assertEquals($log->projectId, $row['PROJECT_ID']);
+		$this->assertEquals($log->logId, $row['SESSION_ID']);
+		$this->assertEquals($log->projectPath, $row['PROJECT_PATH']);
+		$this->assertEquals($log->packagePath, $row['PACKAGE_PATH']);
+		$this->assertEquals($log->deltaName, $row['DELTA_NAME']);
 		
-		$session = CompileSession::model()->findByPk(3);
-		$this->assertTrue(count($session->entries) > 0);
-		$entry = $session->entries[count($session->entries)-1];
-		$this->assertEquals($entry->compileSessionId, $session->id);
+		$log = CompileLog::model()->findByPk(3);
+		$this->assertTrue(count($log->entries) > 0);
+		$entry = $log->entries[count($log->entries)-1];
+		$this->assertEquals($entry->logId, $log->id);
 		$this->assertEquals($entry->timestamp, $row['TIMESTAMP']);
 		$this->assertEquals($entry->deltaSequenceNumber, $row['DELTA_SEQ_NUMBER']);
 		$this->assertEquals($entry->deltaStartTime, $row['DELTA_START_TIME']);

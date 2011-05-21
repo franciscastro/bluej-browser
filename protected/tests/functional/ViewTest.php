@@ -55,7 +55,7 @@
 			$this->assertTextPresent("       }");
 		}
 		
-		public function testViewCompileSession()
+		public function testViewCompileLog()
 		{
 			$this->open('');
 			$this->click("link=Login");

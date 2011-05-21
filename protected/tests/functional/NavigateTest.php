@@ -10,10 +10,10 @@
 			$this->assertTextPresent("Please fill out the following form with your login credentials:");
 		}
 		
-		public function testUnloggedNavigateImportLogs()
+		public function testUnloggedNavigateLogLogs()
 		{
 			$this->open('');
-			$this->click("link=Import Logs");
+			$this->click("link=Log Logs");
 			$this->waitForPageToLoad("30000");
 			$this->assertTextPresent("Please fill out the following form with your login credentials:");
 		}

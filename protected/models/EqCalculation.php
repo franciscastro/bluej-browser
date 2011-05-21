@@ -9,10 +9,10 @@
  *
  * The followings are the available columns in table 'EqCalculation':
  * @property integer $id
- * @property integer $compileSessionId
+ * @property integer $logId
  * @property double $eq
  *
- * Stores the EQ of a compilation session.
+ * Stores the EQ of a compilation log.
  */
 class EqCalculation extends CActiveRecord {
 	/**
@@ -37,11 +37,11 @@ class EqCalculation extends CActiveRecord {
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('compileSessionId', 'numerical', 'integerOnly'=>true),
+			array('logId', 'numerical', 'integerOnly'=>true),
 			array('eq', 'numerical'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, compileSessionId, eq', 'safe', 'on'=>'search'),
+			array('id, logId, eq', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -52,7 +52,7 @@ class EqCalculation extends CActiveRecord {
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'compileSession' => array(self::BELONGS_TO, 'CompileSession', 'compileSessionId'),
+			'compileLog' => array(self::BELONGS_TO, 'CompileLog', 'logId'),
 		);
 	}
 
@@ -62,7 +62,7 @@ class EqCalculation extends CActiveRecord {
 	public function attributeLabels() {
 		return array(
 			'id' => 'ID',
-			'compileSessionId' => 'Compile Session',
+			'logId' => 'Compile Session',
 			'eq' => 'Eq',
 		);
 	}
@@ -79,7 +79,7 @@ class EqCalculation extends CActiveRecord {
 
 		$criteria->compare('id',$this->id);
 
-		$criteria->compare('compileSessionId',$this->compileSessionId);
+		$criteria->compare('logId',$this->logId);
 
 		$criteria->compare('eq',$this->eq);
 
@@ -89,10 +89,10 @@ class EqCalculation extends CActiveRecord {
 	}
 
 	/**
-	 * Calculates EQ of a compilation session.
+	 * Calculates EQ of a compilation log.
 	 */
 	public function calculate() {
-		$entries = CompileSessionEntry::model()->findAll('compileSessionId=:id ORDER BY fileName, timestamp', array('id'=>$this->compileSessionId));
+		$entries = CompileLogEntry::model()->findAll('logId=:id ORDER BY fileName, timestamp', array('id'=>$this->logId));
 		$numRows = count($entries);
 		if($numRows < 2) {
 			$this->eq = -1;
@@ -108,7 +108,7 @@ class EqCalculation extends CActiveRecord {
 		$eqBreakDown[3] = 0;
 		for($i = 1; $i < $numRows; $i++) {
 			$nextEntry = $entries[$i];
-			$nextEntrydiff = CompileSession::diff($nextEntry->fileContents, $prevEntry->fileContents);
+			$nextEntrydiff = CompileLog::diff($nextEntry->fileContents, $prevEntry->fileContents);
 			if($nextEntry->fileName == $prevEntry->fileName) {
 				$count++;
 				if($nextEntry->messageLineNumber != -1 && $prevEntry->messageLineNumber != -1) {

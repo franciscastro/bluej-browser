@@ -4,7 +4,7 @@ $this->renderPartial('pages/_navigation');
 ?>
 <h1>Tags</h1>
 <p>
-To organize the log sessions, there is a tagging mechanism.
+To organize the log logs, there is a tagging mechanism.
 One or more tags are assigned to a log. These can then be used
 to filter logs via the search in the <b>Logs</b> page. It is
 also possible to search with multiple tags. In this case, a
@@ -28,9 +28,9 @@ interface. Teachers may only view logs which are tagged with
 their section, and tag new logs with only their section.
 </p>
 <p>
-They also serve to identify students. When a live session
+They also serve to identify students. When a live log
 is ongoing, only the computer name is received from the lab
 computers. As many students may share computers in a single lab,
-the class option in the log session serves to identify students
+the class option in the log log serves to identify students
 in addition to the computer number.
 </p>

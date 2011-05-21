@@ -74,7 +74,7 @@ class User extends CActiveRecord {
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'sessions' => array(self::HAS_MANY, 'Import', 'userId'),
+			'logs' => array(self::HAS_MANY, 'Log', 'userId'),
 			'sections' => array(self::MANY_MANY, 'Section', 'UserSection(userId, sectionId)'),
 		);
 	}
@@ -125,15 +125,15 @@ class User extends CActiveRecord {
 		$criteria = new CDbCriteria;
 		$criteria->select = 'COUNT(*) AS count';
 		$criteria->condition = 'userId = '.$this->id;
-		$command = Yii::app()->db->getCommandBuilder()->createFindCommand('Import', $criteria);
-		$statistics['sessionCount'] = $command->queryScalar();
+		$command = Yii::app()->db->getCommandBuilder()->createFindCommand('Log', $criteria);
+		$statistics['logCount'] = $command->queryScalar();
 
-		$criteria->join = 'JOIN Import ON Import.id = compileSessionId';
-		$command = Yii::app()->db->getCommandBuilder()->createFindCommand('CompileSessionEntry', $criteria);
+		$criteria->join = 'JOIN Log ON Log.id = logId';
+		$command = Yii::app()->db->getCommandBuilder()->createFindCommand('CompileLogEntry', $criteria);
 		$statistics['compileCount'] = $command->queryScalar();
 
 		$criteria->condition .= ' AND messageType="ERROR"';
-		$command = Yii::app()->db->getCommandBuilder()->createFindCommand('CompileSessionEntry', $criteria);
+		$command = Yii::app()->db->getCommandBuilder()->createFindCommand('CompileLogEntry', $criteria);
 		$statistics['errorCount'] = $command->queryScalar();
 
 		$criteria->select = 'AVG(eq)';

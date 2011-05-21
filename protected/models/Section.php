@@ -15,12 +15,12 @@
  * @property integer $sectionId
  *
  * The followings are the available model relations:
- * @property Term $section
- * @property Term $course
- * @property Term $year
+ * @property Tag $section
+ * @property Tag $course
+ * @property Tag $year
  *
- * A section represents a year, course, and section term grouped
- * together. It is primarily used for restricting which terms a
+ * A section represents a year, course, and section tag grouped
+ * together. It is primarily used for restricting which tags a
  * teacher can access.
  */
 class Section extends CActiveRecord {
@@ -64,9 +64,9 @@ class Section extends CActiveRecord {
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'section' => array(self::BELONGS_TO, 'Term', 'sectionId'),
-			'course' => array(self::BELONGS_TO, 'Term', 'courseId'),
-			'year' => array(self::BELONGS_TO, 'Term', 'yearId'),
+			'section' => array(self::BELONGS_TO, 'Tag', 'sectionId'),
+			'course' => array(self::BELONGS_TO, 'Tag', 'courseId'),
+			'year' => array(self::BELONGS_TO, 'Tag', 'yearId'),
 			'teachers' => array(self::MANY_MANY, 'User', 'UserSection(sectionId, userId)', 'condition'=>'roleId='.User::ROLE_TEACHER),
 			'students' => array(self::MANY_MANY, 'User', 'UserSection(sectionId, userId)', 'condition'=>'roleId='.User::ROLE_STUDENT),
 		);
@@ -143,22 +143,22 @@ class Section extends CActiveRecord {
 	}
 
 	/**
-	 * Replaces Term's getViewData
-	 * @param array the list of previously selected terms
+	 * Replaces Tag's getViewData
+	 * @param array the list of previously selected tags
 	 * @return view data to be used for Section's input form
 	 */
-	public function getViewData($terms=array()) {
-		$viewData = Term::model()->getViewData($terms);
-		if(!array_key_exists(Term::TERM_YEAR, $viewData) ||
-			 !array_key_exists(Term::TERM_COURSE, $viewData) ||
-			 !array_key_exists(Term::TERM_SECTION, $viewData)) {
+	public function getViewData($tags=array()) {
+		$viewData = Tag::model()->getViewData($tags);
+		if(!array_key_exists(Tag::TERM_YEAR, $viewData) ||
+			 !array_key_exists(Tag::TERM_COURSE, $viewData) ||
+			 !array_key_exists(Tag::TERM_SECTION, $viewData)) {
 			$viewData['section'] = '';
 		}
 		else {
 			$section = $this->findByAttributes(array(
-				'yearId'=>$viewData[Term::TERM_YEAR],
-				'courseId'=>$viewData[Term::TERM_COURSE],
-				'sectionId'=>$viewData[Term::TERM_SECTION],
+				'yearId'=>$viewData[Tag::TERM_YEAR],
+				'courseId'=>$viewData[Tag::TERM_COURSE],
+				'sectionId'=>$viewData[Tag::TERM_SECTION],
 			));
 			if($section == null) {
 				$viewData['section'] = '';
@@ -171,17 +171,17 @@ class Section extends CActiveRecord {
 	}
 
 	/**
-	 * Replaces Term's getNewTerms
-	 * @return the list of terms from the input form
+	 * Replaces Tag's getNewTags
+	 * @return the list of tags from the input form
 	 */
-	public function getNewTerms() {
-		$newTerms = Term::model()->getNewTerms();
-		$section = $this->findByPk($_POST['term']['section']);
+	public function getNewTags() {
+		$newTags = Tag::model()->getNewTags();
+		$section = $this->findByPk($_POST['tag']['section']);
 		if($section != null) {
-			$newTerms[] = $section->year;
-			$newTerms[] = $section->course;
-			$newTerms[] = $section->section;
+			$newTags[] = $section->year;
+			$newTags[] = $section->course;
+			$newTags[] = $section->section;
 		}
-		return $newTerms;
+		return $newTags;
 	}
 }
