@@ -22,6 +22,7 @@ class SiteController extends Controller {
 			// They can be accessed via: index.php?r=site/page&view=FileName
 			'page'=>array(
 				'class'=>'CViewAction',
+				'layout'=>'column2',
 			),
 		);
 	}
@@ -34,12 +35,6 @@ class SiteController extends Controller {
 		// renders the view file 'protected/views/site/index.php'
 		// using the default layout 'protected/views/layouts/main.php'
 		$this->redirect(array('importSession/index'));
-	}
-
-	public function actionHelp() {
-		// renders the view file 'protected/views/site/index.php'
-		// using the default layout 'protected/views/layouts/main.php'
-		$this->render('help');
 	}
 
 	/**

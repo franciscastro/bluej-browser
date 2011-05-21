@@ -3,7 +3,7 @@ body
 	margin: 0;
 	padding: 0;
 	color: #555;
-	font: normal 10pt Arial,Helvetica,sans-serif;
+	font: normal 14px Arial,Helvetica,sans-serif;
 	background: #EFEFEF;
 }
 
@@ -268,4 +268,8 @@ div.ui-widget {
 
 div.ui-accordion div.ui-accordion-content {
   padding: 0;
+}
+
+.operations li li a {
+  padding-left: 20px;
 }

@@ -9,24 +9,7 @@ $this->menu=array(
 );
 
 $this->contextHelp = <<<CNH
-<p>
-There are 4 kinds of users:
-</p>
-<p>
-<em>Administrators</em> have full access to the application.
-They may also create new users as needed.
-</p>
-<p>
-<em>Researchers</em> are allowed to view and collect logs.
-</p>
-<p>
-<em>Teachers</em> may create and view logs of their own sections.
-</p>
-<p>
-<em>Students</em> may view their own data. These are also
-automatically generated while logs are being collected but
-no username or password is assigned to them.
-</p>
+Note: while it is possible to delete users via the interface, it is not advised because it may break relations in the database. A better option would be to just remove the user's username which would disallow them from logging in.
 CNH;
 
 Yii::app()->clientScript->registerScript('search', "

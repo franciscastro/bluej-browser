@@ -14,7 +14,7 @@ $this->contextHelp = <<<CNH
 <p>
 The search finds all records which have all tags that you specify.
 You can use this to, for example, see a list of all logs from CS21a
-lab A regardless of section.
+lab 1 regardless of section.
 </p>
 <p>
 Also note that exporting logs and generating reports will be limited
