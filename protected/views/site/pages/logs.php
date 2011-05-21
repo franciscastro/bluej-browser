@@ -5,10 +5,10 @@ $this->renderPartial('pages/_navigation');
 
 <h1>Logs</h1>
 <p>
-A log log usually corresponds to 1 lab log.
+A log session usually corresponds to 1 lab session.
 It contains all the logs collected from all students
 in a particular class period. There are 2 ways to make
-log logs: uploading log files, collecting logs live.
+log sessions: uploading log files, collecting logs live.
 </p>
 <h4>Uploading log files</h4>
 <p>
@@ -34,9 +34,9 @@ that instance, we only need to start two live logs
 with one whose filter is F227, and the others as F228.
 </p>
 <p>
-It is also logant to note that whichever log log
+It is also important to note that whichever log session
 created first takes precedence if ever there is a conflict.
-If you first create a log log without a filter (and thus collects
+If you first create a log session without a filter (and thus collects
 all logs) and then another with a filter, only the first
 one will ever collect logs if both run at the same time even if
 the log would pass the filter of the second one.
@@ -51,5 +51,5 @@ Logs may also be exported as collections of CSV files.
 This is also done from the Logs page which exports all
 current logs. Individual logs may also be exported by
 clicking the save icon in its row in the table, or via
-the navigation menu when viewing an individual log log.
+the navigation menu when viewing an individual log session.
 </p>

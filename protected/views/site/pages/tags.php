@@ -4,7 +4,7 @@ $this->renderPartial('pages/_navigation');
 ?>
 <h1>Tags</h1>
 <p>
-To organize the log logs, there is a tagging mechanism.
+To organize the log sessions, there is a tagging mechanism.
 One or more tags are assigned to a log. These can then be used
 to filter logs via the search in the <b>Logs</b> page. It is
 also possible to search with multiple tags. In this case, a
@@ -17,7 +17,10 @@ that have the tags specified will be exported or be included
 in the report.
 </p>
 <p>
-Tags may also be merged if necessary by the administrator.
+Tags may also be merged if necessary by the administrator. Please
+take note that you should not ever merge tags that belong
+to a single Class as this will cause errors when starting sessions
+using that Class.
 </p>
 <h4>Classes</h4>
 <p>
