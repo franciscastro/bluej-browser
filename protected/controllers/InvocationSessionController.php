@@ -52,8 +52,13 @@ class InvocationSessionController extends Controller {
 	 * Displays a particular model.
 	 */
 	public function actionView() {
+		$model = $this->loadModel();
+		$entry = new InvocationSessionEntry('search');
+		$entry->unsetAttributes();
+		$entry->invocationSessionId = $model->id;
 		$this->render('view',array(
-			'model'=>$this->loadModel(),
+			'model'=>$model,
+			'dataProvider'=>$entry->search(),
 		));
 	}
 

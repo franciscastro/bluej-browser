@@ -17,20 +17,33 @@ $this->breadcrumbs=array(
 			'type'=>'raw',
 			'value'=>CHtml::link($model->import->user->name, array('user/view', 'id'=>$model->import->userId)),
 		),
-		'deltaVersion',
-		'extensionVersion',
-		'systemUser',
-		'home',
-		'osName',
-		'osVersion',
-		'osArch',
-		'ipAddress',
-		'hostName',
-		'locationId',
-		'projectId',
-		'sessionId',
-		'projectPath',
-		'packagePath',
-		'deltaName',
+		'import.date:date'
 	),
 )); ?>
+<?php
+$this->widget('zii.widgets.jui.CJuiAccordion', array(
+		'panels'=>array(
+				'More Details'=>$this->renderPartial('../compileSession/_moreInformation', array('model'=>$model), true),
+		),
+		// additional javascript options for the accordion plugin
+		'options'=>array(
+				'animated'=>'bounceslide',
+				'collapsible'=>'true',
+				'active'=>'false',
+		),
+));
+?>
+<?php $this->widget('zii.widgets.grid.CGridView', array(
+	'id'=>'compile-session-entry-grid',
+	'dataProvider'=>$dataProvider,
+	'columns'=>array(
+		'deltaSequenceNumber:raw:Id',
+		'className',
+		'objectName',
+		'methodName',
+		'parameters',
+		'result',
+		'timestamp:time:Time',
+	),
+));
+?>
