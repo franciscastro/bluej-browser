@@ -35,7 +35,7 @@ $this->widget('zii.widgets.CDetailView', array(
 		'eq:raw:Average EQ',
 		'confusion' => array(
 			'label' => 'Average Confusion Rate',
-			'value' => sprintf("%.2f%% (Average clips: %d)", $data["confusion"] * 100, $data['clipCount']),
+			'value' => sprintf("%.2f%% (Average clips: %.4f)", $data["confusion"] * 100, $data['clipCount']),
 		),
 	),
 )); ?>
@@ -43,9 +43,14 @@ $this->widget('zii.widgets.CDetailView', array(
 <h2>Compile Logs</h2>
 <?php $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'import-grid',
-	'dataProvider'=>$import->search(),
+	'dataProvider'=>$dataProvider,
 	'columns'=>array(
 		'id',
+		array(
+			'name' => 'Tags',
+			'type' => 'raw',
+			'value' => 'Term::displayTerms($data->importSession->terms)',
+		),
 		array(
 			'class'=>'CButtonColumn',
 			'template'=>'{compile} {invocation} {delete}',
