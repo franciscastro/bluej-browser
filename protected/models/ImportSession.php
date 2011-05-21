@@ -126,28 +126,38 @@ class ImportSession extends CActiveRecord {
 	}
 
 	public function fileImport($file) {
-		$connection = new CDbConnection('sqlite:'.$file);
-		$connection->active = true;
+		$extension = pathinfo($file, PATHINFO_EXTENSION);
+		if($extension == 'csv') {
+			$fileName = basename($file);
+			$pc = strripos($fileName, '_');
+			$sessionType = substr($fileName, $pc+1);
+			$computer = substr($fileName, 0, $pc);
 
-		$command = $connection->createCommand('SELECT * FROM sqlite_master WHERE type=\'table\'');
-		$temp = $command->queryRow();
-		$tableName = $temp['name'];
-		$command = $connection->createCommand('SELECT * FROM `' . $tableName . '`');
+			$reader = new CSVReader($file);
+			$row = $reader->current();
+			$reader->rewind();
+		}
+		else if($extension == 'sqlite') {
+			$connection = new CDbConnection('sqlite:'.$file);
+			$connection->active = true;
 
-		$pc = strripos($tableName, '_');
-		$sessionType = substr($tableName, $pc+1);
+			$command = $connection->createCommand('SELECT * FROM sqlite_master WHERE type=\'table\'');
+			$temp = $command->queryRow();
+			$tableName = $temp['name'];
+			$command = $connection->createCommand('SELECT * FROM `' . $tableName . '`');
+
+			$pc = strripos($tableName, '_');
+			$sessionType = substr($tableName, $pc+1);
+
+			$computer = substr($tableName, 0, $pc);
+
+			$row = $command->queryRow();
+			$reader = $command->query();
+		}
 		$sessionType = ImportSession::parseSessionType($sessionType);
 		if($sessionType === false) {
-			$this->type = 'error';
-			$this->save();
 			return;
 		}
-
-		$computer = substr($tableName, 0, $pc);
-
-		$row = $command->queryRow();
-		$reader = $command->query();
-
 		$import = $this->getAssociatedImport($computer, $row['TIMESTAMP']);
 		$sessionType::model()->doImport($import->id, $row, $reader);
 	}
@@ -231,10 +241,10 @@ class ImportSession extends CActiveRecord {
 	}
 
 	public static function parseSessionType($sessionType) {
-		if(stripos('compiledata', $sessionType) !== false) {
+		if(stripos($sessionType, 'compiledata') !== false) {
 			return 'CompileSession';
 		}
-		else if(stripos('invocationdata', $sessionType) !== false) {
+		else if(stripos($sessionType, 'invocationdata') !== false) {
 			return 'InvocationSession';
 		}
 		return false;

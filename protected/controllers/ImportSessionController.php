@@ -93,7 +93,7 @@ class ImportSessionController extends Controller {
 				$tempDir->createDir();
 				set_time_limit(0);
 				if(Yii::app()->zip->extractZip($sourceFile, $sourcePath)) {
-					$files = CFileHelper::findFiles($sourcePath, array('fileTypes'=>array('sqlite'), 'exclude'=>array('.htaccess')));
+					$files = CFileHelper::findFiles($sourcePath, array('fileTypes'=>array('sqlite','csv'), 'exclude'=>array('.htaccess')));
 					$transaction = Import::model()->dbConnection->beginTransaction();
 					$prevDir = '';
 					foreach($files as $file) {
@@ -375,13 +375,13 @@ class ImportSessionController extends Controller {
 		foreach($importModels as $importModel) {
 			$sessionModel = $importModel->invocationSession;
 			if($sessionModel != null) {
-				$fp = fopen($importModel->user->name . '-InvocationData-' . $importModel->id . '.csv', 'w');
+				$fp = fopen($importModel->user->name . '_InvocationData-' . $importModel->id . '.csv', 'w');
 				$sessionModel->doExport($fp);
 				fclose($fp);
 			}
 			$sessionModel = $importModel->compileSession;
 			if($sessionModel != null) {
-				$fp = fopen($importModel->user->name . '-CompileData-' . $importModel->id . '.csv', 'w');
+				$fp = fopen($importModel->user->name . '_CompileData-' . $importModel->id . '.csv', 'w');
 				$sessionModel->doExport($fp);
 				fclose($fp);
 			}
