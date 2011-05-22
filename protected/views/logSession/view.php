@@ -63,25 +63,13 @@ $this->menu=array(
 		'user.computer',
 		array(
 			'class'=>'CButtonColumn',
-			'template'=>'{compile} {invocation} {delete}',
+			'template'=>'{view} {delete}',
 			'buttons'=>array(
 				'view'=>array(
 					'url'=>'Yii::app()->controller->createUrl("log/view", array("id"=>$data->id))',
 				),
 				'delete'=>array(
 					'url'=>'Yii::app()->controller->createUrl("log/delete", array("id"=>$data->id))',
-				),
-				'compile'=>array(
-					'label'=>'Compilation Log',
-					'url'=>'Yii::app()->controller->createUrl("compileLog/view", array("id"=>$data->id))',
-					'visible'=>'$data->compileLog != null',
-					'imageUrl'=>Yii::app()->baseURL . '/images/page_white_cup.png',
-				),
-				'invocation'=>array(
-					'label'=>'Invocation Log',
-					'url'=>'Yii::app()->controller->createUrl("invocationLog/view", array("id"=>$data->id))',
-					'visible'=>'$data->invocationLog != null',
-					'imageUrl'=>Yii::app()->baseURL . '/images/page_white_gear.png',
 				),
 			),
 		),

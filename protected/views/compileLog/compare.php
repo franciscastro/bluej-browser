@@ -1,6 +1,11 @@
 <?php
-$this->breadcrumbs=Yii::app()->user->getState('compileLog_breadcrumbs');
-$this->breadcrumbs[] = 'Entry #'.$model->deltaSequenceNumber . ' vs Entry #' . $model2->deltaSequenceNumber;
+$logSessionId = $model->log->log->logSessionId;
+$this->breadcrumbs=array(
+	'Logs'=>array('logSession/index'),
+	'Log Session #'.$logSessionId=>array('logSession/view', 'id'=>$logSessionId),
+	'Log #'.$model->logId=>array('log/view', 'id'=>$model->logId),
+	'Compile Log Entry #'.$model->deltaSequenceNumber,
+);
 Yii::app()->getClientScript()->registerCssFile(Yii::app()->baseUrl . '/css/compare.css');
 ?>
 

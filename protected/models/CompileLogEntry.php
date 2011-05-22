@@ -73,7 +73,7 @@ class CompileLogEntry extends CActiveRecord {
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'compileLog' => array(self::BELONGS_TO, 'CompileLog', 'logId'),
+			'log' => array(self::BELONGS_TO, 'CompileLog', 'logId'),
 		);
 	}
 

@@ -29,7 +29,7 @@
  * handles the log and export logic for compilation logs. Also,
  * it holds many instances of CompileLogEntry.
  */
-class CompileLog extends CActiveRecord {
+class CompileLog extends AbstractLog {
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return CompileLog the static model class
@@ -106,7 +106,7 @@ class CompileLog extends CActiveRecord {
 	 * A conversion table between parameter names and table columns in sqlite files.
 	 * @return array the conversion table
 	 */
-	private function externalLabels() {
+	protected function externalLabels() {
 		return array(
 			'id' => 'ID',
 			'deltaVersion' => 'DELTA_VERSION',
@@ -193,35 +193,12 @@ class CompileLog extends CActiveRecord {
 	}
 
 	/**
-	 * An event raised after loging
-	 */
-	public function onAfterLog($event) {
-		$this->raiseEvent('onAfterLog', $event);
-	}
-
-	protected function afterLog() {
-		if($this->hasEventHandler('onAfterLog')) {
-			$this->onAfterLog(new CEvent($this));
-		}
-	}
-
-	/**
-	 * Run before deleting. Cascades deletions.
-	 */
-	protected function beforeDelete() {
-		foreach($this->entries as $entry) {
-			$entry->delete();
-		}
-		return parent::beforeDelete();
-	}
-
-	/**
 	 * Creates a new log
 	 * @param integer id of the log
 	 * @param array log information from a row
 	 * @return InvocationLog the new log
 	 */
-	private function createSession($logId, $row) {
+	protected function createSession($logId, $row) {
 		$log = new CompileLog;
 		$log->id = $logId;
 		$log->deltaVersion = $row['DELTA_VERSION'];
@@ -248,7 +225,7 @@ class CompileLog extends CActiveRecord {
 	 * Inserts a row into the log
 	 * @param array the row to be inserted
 	 */
-	private function insertEntry($row) {
+	protected function insertEntry($row) {
 		$newData = new CompileLogEntry;
 		$newData->logId = $this->id;
 		$newData->timestamp = isset($row['TIMESTAMP']) ? $row['TIMESTAMP'] : time();
@@ -269,133 +246,13 @@ class CompileLog extends CActiveRecord {
 		$newData->save();
 	}
 
-	/**
-	 * Creates a new log and logs data into it
-	 * @param integer id of the log
-	 * @param array row containing log information
-	 * @param CDbReader data source for the row data
-	 */
-	public function doLog($logId, $row, $reader) {
-		$log = $this->createSession($logId, $row);
-		foreach($reader as $row) {
-			$log->insertEntry($row);
-		}
-		$log->afterLog();
-	}
-
-	/**
-	 * Creates a new log if it does not already exist, and adds a
-	 * row to it. Used for live loging.
-	 * @param integer id of the log
-	 * @param array the row to be added
-	 */
-	public function liveLog($logId, $row) {
-		$log = $this->findByPk($logId);
-		if($log == null) {
-			$log = $this->createSession($logId, $row);
-		}
-		$log->insertEntry($row);
-		$log->afterLog();
-	}
-
-	public function moveEntry($entry, $to) {
-		$entry->logId = $to;
-		if($entry->save()) {
-			$this->afterLog();
-			$entry->refresh();
-			$entry->compileLog->afterLog();
-			return true;
-		}
-		return false;
-	}
-
-	public function deleteEntry($entry) {
-		$entry->logId = -$this->id;
-		if($entry->save()) {
-			$this->afterLog();
-			return true;
-		}
-		return false;
-	}
-
-	public function undeleteEntry($entry) {
-		$entry->logId = $this->id;
-		if($entry->save()) {
-			$this->afterLog();
-			return true;
-		}
-		return false;
-	}
-
-	/**
-	 * Generates a CSV file containing the data for this log.
-	 * @param file the file pointer to write to
-	 */
-	public function doExport($fp) {
-		$extToInt = array_flip($this->externalLabels());
-		$extHeaders = array(
-			'id',
-			'revision',
-			'TIMESTAMP',
-			'DELTA_VERSION',
-			'BJ_EXT_VERSION',
-			'SYSUSER',
-			'HOME',
-			'OSNAME',
-			'OSVER',
-			'OSARCH',
-			'IPADDR',
-			'HOSTNAME',
-			'LOCATION_ID',
-			'PROJECT_ID',
-			'SESSION_ID',
-			'PROJECT_PATH',
-			'PACKAGE_PATH',
-			'DELTA_NAME',
-			'DELTA_SEQ_NUMBER',
-			'DELTA_START_TIME',
-			'DELTA_END_TIME',
-			'FILE_PATH',
-			'FILE_NAME',
-			'FILE_CONTENTS',
-			'FILE_ENCODING',
-			'COMPILE_SUCCESSFUL',
-			'MSG_TYPE',
-			'MSG_MESSAGE',
-			'MSG_LINE_NUMBER',
-			'MSG_COLUMN_NUMBER',
-			'COMPILES_PER_FILE',
-			'TOTAL_COMPILES'
+	protected function getEvent($entry) {
+		return array(
+			'title' => $entry->fileName.' - '.(($entry->messageText == '') ? 'no error' : $entry->messageText.':'.$entry->messageLineNumber),
+			'start' => date('D, d M Y H:i:s O', $entry->timestamp),
+			'description' => CHtml::link('View Source', array('compileLog/source', 'id'=>$entry->id)),
+			'icon' => Yii::app()->baseURL . ($entry->messageText == '' ? '/images/accept_green.png' : '/images/cancel_round.png'),
 		);
-		fputcsv($fp, $extHeaders);
-		$counter = 1;
-		foreach($this->entries as $entryModel) {
-			$toWrite = array();
-			foreach($extHeaders as $extHeader) {
-				if(array_key_exists($extHeader, $extToInt)) {
-					$intLabel = $extToInt[$extHeader];
-					if(array_key_exists($intLabel, $entryModel->attributes)) {
-						$toWrite[] = $entryModel->attributes[$intLabel];
-					}
-					else if (array_key_exists($intLabel, $this->attributes)) {
-						$toWrite[] = $this->attributes[$intLabel];
-					}
-					else {
-						$toWrite[] = '';
-					}
-				}
-				else if($extHeader == 'id') {
-					$toWrite[] = $counter++;
-				}
-				else if($extHeader == 'revision') {
-					$toWrite[] = 0;
-				}
-				else {
-					$toWrite[] = '';
-				}
-			}
-			fputcsv($fp, $toWrite);
-		}
 	}
 
 	/**

@@ -273,3 +273,9 @@ div.ui-accordion div.ui-accordion-content {
 .operations li li a {
   padding-left: 20px;
 }
+
+#timeline {
+  width:auto;
+  margin:32px auto 32px auto;
+  height:200px;
+}

@@ -36,7 +36,7 @@ class CompileLogController extends Controller {
 	public function accessRules() {
 		return array(
 			array('allow',  // allow all users to perform 'index' and 'view' actions
-				'actions'=>array('view','source','compare'),
+				'actions'=>array('source','compare'),
 				'roles'=>array('Teacher', 'Researcher'),
 			),
 			array('allow',  // allow all users to perform 'index' and 'view' actions
@@ -52,54 +52,25 @@ class CompileLogController extends Controller {
 		);
 	}
 
-	/**
-	 * Displays a particular model.
-	 */
-	public function actionView($id) {
-		$model = $this->loadModel($id);
-		$dataProvider = new CActiveDataProvider('CompileLogEntry', array(
-			'criteria'=> array(
-				'condition'=>'logId='.$id,
-				'order'=>'timestamp',
-			),
-			'pagination'=>false,
-		));
-
-		$criteria = new CDBCriteria($dataProvider->criteria);
-
-		$sort = new CSort('CompileLogEntry');
-		$sort->applyOrder($criteria);
-		$dataProvider->sort = $sort;
-
-		$logSessionId = $model->log->logSessionId;
-		$breadcrumbs=array(
-			'Logs'=>array('logSession/index'),
-			'Log Session #'.$logSessionId=>array('logSession/view', 'id'=>$logSessionId),
-			'Compile Log #'.$_GET['id']=>array('compileLog/view', 'id'=>$_GET['id']),
-		);
-
-		Yii::app()->user->setState('compileLog_breadcrumbs', $breadcrumbs);
-		Yii::app()->user->setState('compileLog_criteria', $criteria);
-		$this->render('view',array(
-			'model'=>$model,
-			'deleted'=>CompileLogEntry::model()->findAllByAttributes(array('logId'=>(-$id))),
-			'dataProvider'=>$dataProvider,
-		));
-	}
-
-	public function actionSource($id = 0) {
+	public function actionSource($id = 0, $logId = 0) {
 		if($id == 0) {
-			$criteria = Yii::app()->user->getState('compileLog_criteria');
-			$count = CompileLogEntry::model()->count($criteria);
-			$pages = new CPagination($count);
-
-			$pages->pageSize = 1;
-			$pages->applyLimit($criteria);
-			$model = CompileLogEntry::model()->find($criteria);
+			$dataProvider = new CActiveDataProvider('CompileLogEntry', array(
+				'criteria'=>array(
+					'condition'=>'logId='.$logId,
+				),
+				'pagination'=>array(
+					'pageSize'=>1,
+					'pageVar'=>'page',
+				),
+				'sort'=>array(
+					'sortVar'=>'sort',
+				),
+			));
+			$model = $dataProvider->data[0];
 
 			$this->render('source',array(
 				'model'=>$model,
-				'pages'=>$pages,
+				'pages'=>$dataProvider->pagination,
 			));
 		}
 		else {
@@ -110,18 +81,27 @@ class CompileLogController extends Controller {
 		}
 	}
 
-	public function actionCompare() {
-		$criteria = Yii::app()->user->getState('compileLog_criteria');
-		$count = CompileLogEntry::model()->count($criteria);
-		$pages = new CPagination($count-1);
+	public function actionCompare($logId) {
+		$dataProvider = new CActiveDataProvider('CompileLogEntry', array(
+			'criteria'=>array(
+				'condition'=>'logId='.$logId,
+			),
+			'pagination'=>array(
+				'pageSize'=>1,
+				'pageVar'=>'page',
+			),
+			'sort'=>array(
+				'sortVar'=>'sort',
+			),
+		));
+		$model = $dataProvider->data[0];
+		$pages = $dataProvider->pagination;
+		$pages->currentPage++;
+		$data = $dataProvider->getData(true);
+		$model2 = $data[0];
+		$pages->currentPage--;
+		$pages->itemCount--;
 
-		$pages->pageSize = 1;
-		$pages->applyLimit($criteria);
-		$criteria->limit = 2;
-		$models = CompileLogEntry::model()->findAll($criteria);
-
-		$model = $models[0];
-		$model2 = $models[1];
 		$diff = CompileLog::diff($model->fileContents, $model2->fileContents);
 		$this->render('compare',array(
 			'model'=>$model,
@@ -164,7 +144,7 @@ class CompileLogController extends Controller {
 					$this->redirect(array('view','id'=>$model->logId));
 				}
 			}
-			if($model->compileLog->moveEntry($model, $_POST['CompileLogEntry']['logId']))
+			if($model->log->moveEntry($model, $_POST['CompileLogEntry']['logId']))
 				$this->redirect(array('view','id'=>$model->logId));
 		}
 
@@ -180,7 +160,7 @@ class CompileLogController extends Controller {
 		if(Yii::app()->request->isPostRequest) {
 			// we only allow deletion via POST request
 			$model = $this->loadEntryModel($id);
-			$model->compileLog->deleteEntry($model);
+			$model->log->deleteEntry($model);
 
 			// if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
 			if(!isset($_GET['ajax']))

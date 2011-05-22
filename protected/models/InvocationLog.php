@@ -29,7 +29,7 @@
  * handles the log and export logic for invocation logs. Also,
  * it holds many instances of InvocationLogEntry.
  */
-class InvocationLog extends CActiveRecord {
+class InvocationLog extends AbstractLog {
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return InvocationLog the static model class
@@ -146,7 +146,7 @@ class InvocationLog extends CActiveRecord {
 	 * A conversion table between parameter names and table columns in sqlite files.
 	 * @return array the conversion table
 	 */
-	private function externalLabels() {
+	protected function externalLabels() {
 		return array(
 			'id' => 'ID',
 			'deltaVersion' => 'DELTA_VERSION',
@@ -195,7 +195,7 @@ class InvocationLog extends CActiveRecord {
 	 * @param array log information from a row
 	 * @return InvocationLog the new log
 	 */
-	private function createSession($logId, $row) {
+	protected function createSession($logId, $row) {
 		$log = new InvocationLog;
 		$log->id = $logId;
 		$log->deltaVersion = $row['DELTA_VERSION'];
@@ -222,7 +222,7 @@ class InvocationLog extends CActiveRecord {
 	 * Inserts a row into the log
 	 * @param array the row to be inserted
 	 */
-	public function insertEntry($row) {
+	protected function insertEntry($row) {
 		$newData = new InvocationLogEntry;
 		$newData->logId = $this->id;
 		$newData->timestamp = isset($row['TIMESTAMP']) ? $row['TIMESTAMP'] : time();
@@ -240,98 +240,12 @@ class InvocationLog extends CActiveRecord {
 		$newData->save();
 	}
 
-	/**
-	 * Creates a new log and logs data into it
-	 * @param integer id of the log
-	 * @param array row containing log information
-	 * @param CDbReader data source for the row data
-	 */
-	public function doLog($logId, $row, $reader) {
-		$log = $this->createSession($logId, $row);
-		foreach($reader as $row) {
-			$log->insertEntry($row);
-		}
-	}
-
-	/**
-	 * Creates a new log if it does not already exist, and adds a
-	 * row to it. Used for live loging.
-	 * @param integer id of the log
-	 * @param array the row to be added
-	 */
-	public function liveLog($logId, $row) {
-		$log = $this->findByPk($logId);
-		if($log == null) {
-			$log = $this->createSession($logId, $row);
-		}
-		$log->insertEntry($row);
-	}
-
-	/**
-	 * Generates a CSV file containing the data for this log.
-	 * @param file the file pointer to write to
-	 */
-	public function doExport($fp) {
-		$extToInt = array_flip($this->externalLabels());
-		$extHeaders = array(
-			'id',
-			'revision',
-			'TIMESTAMP',
-			'DELTA_VERSION',
-			'BJ_EXT_VERSION',
-			'SYSUSER',
-			'HOME',
-			'OSNAME',
-			'OSVER',
-			'OSARCH',
-			'IPADDR',
-			'HOSTNAME',
-			'LOCATION_ID',
-			'PROJECT_ID',
-			'SESSION_ID',
-			'PROJECT_PATH',
-			'PACKAGE_PATH',
-			'DELTA_NAME',
-			'DELTA_SEQ_NUMBER',
-			'DELTA_START_TIME',
-			'DELTA_END_TIME',
-			'PACKAGE',
-			'CLASS_NAME',
-			'OBJECT_NAME',
-			'METHOD_NAME',
-			'PARAMETER_TYPES',
-			'PARAMETERS',
-			'RESULT',
-			'INVOCATION_STATUS',
+	protected function getEvent($entry) {
+		return array(
+			'title' => $entry->className.'.'.$entry->methodName.'('.$entry->parameters.') -> '.(($entry->result == '') ? 'void' : $entry->result),
+			'description' => '',
+			'start' => date('D, d M Y H:i:s O', $entry->timestamp),
+			'icon' => Yii::app()->baseURL . '/images/arrow_right_blue_round.png',
 		);
-		fputcsv($fp, $extHeaders);
-		$counter = 1;
-		foreach($this->entries as $entryModel) {
-			$toWrite = array();
-			foreach($extHeaders as $extHeader) {
-				if(array_key_exists($extHeader, $extToInt)) {
-					$intLabel = $extToInt[$extHeader];
-					if(array_key_exists($intLabel, $entryModel->attributes)) {
-						$toWrite[] = $entryModel->attributes[$intLabel];
-					}
-					else if (array_key_exists($intLabel, $this->attributes)) {
-						$toWrite[] = $this->attributes[$intLabel];
-					}
-					else {
-						$toWrite[] = '';
-					}
-				}
-				else if($extHeader == 'id') {
-					$toWrite[] = $counter++;
-				}
-				else if($extHeader == 'revision') {
-					$toWrite[] = 0;
-				}
-				else {
-					$toWrite[] = '';
-				}
-			}
-			fputcsv($fp, $toWrite);
-		}
 	}
 }

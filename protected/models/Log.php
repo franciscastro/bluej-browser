@@ -105,4 +105,12 @@ class Log extends CActiveRecord {
 		if($this->invocationLog != null) $this->invocationLog->delete();
 		return parent::beforeDelete();
 	}
+
+	public function getTimeline() {
+		$timeline = array();
+		$timeline['events'] = array();
+		if($this->compileLog != null) $timeline['events'] = array_merge($timeline['events'], $this->compileLog->getEvents());
+		if($this->invocationLog != null) $timeline['events'] = array_merge($timeline['events'], $this->invocationLog->getEvents());
+		return $timeline;
+	}
 }

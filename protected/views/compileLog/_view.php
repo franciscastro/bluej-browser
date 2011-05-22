@@ -1,23 +1,6 @@
-<?php
-$logSessionId = $model->log->logSessionId;
-$this->breadcrumbs=array(
-	'Logs'=>array('logSession/index'),
-	'Log Session #'.$logSessionId=>array('logSession/view', 'id'=>$logSessionId),
-	'Compile Log #'.$_GET['id'],
-);
-?>
-
-<h1>Compile Log #<?php echo $model->id; ?></h1>
-
 <?php $this->widget('zii.widgets.CDetailView', array(
 	'data'=>$model,
 	'attributes'=>array(
-		array(
-			'label'=>'Name',
-			'type'=>'raw',
-			'value'=>CHtml::link($model->log->user->name, array('user/view', 'id'=>$model->log->userId)),
-		),
-		'log.date:date',
 		array(
 			'label'=>'EQ',
 			'type'=>'raw',
@@ -25,20 +8,32 @@ $this->breadcrumbs=array(
 				'logId'=>$model->id,
 			))) != null ? ($eqModel->eq >= 0) ? $eqModel->eq : 'n/a' : 'n/a',
 		),
+		array(
+			'label'=>'Confusion Rate',
+			'type'=>'raw',
+			'value'=>($confusionModel = Confusion::model()->findByAttributes(array(
+				'logId'=>$model->id,
+			))) != null ? ($confusionModel->clips >= 0) ? sprintf("%.2f (Clips: %d)", $confusionModel->confusion, $confusionModel->clips) : 'n/a' : 'n/a',
+		),
 	),
 ));
 ?>
 <?php
-$this->widget('zii.widgets.jui.CJuiAccordion', array(
-		'panels'=>array(
-				'More Details'=>$this->renderPartial('_moreInformation', array('model'=>$model), true),
-		),
-		// additional javascript options for the accordion plugin
-		'options'=>array(
-				'animated'=>'bounceslide',
-				'collapsible'=>'true',
-				'active'=>'false',
-		),
+$dataProvider =  new CActiveDataProvider('CompileLogEntry', array(
+	'criteria'=> array(
+		'condition'=>'logId='.$model->id,
+	),
+	'sort'=>array(
+		'sortVar'=>'sort',
+	),
+	'pagination'=>false,
+));
+$dataProvider->sort->defaultOrder = 'timestamp';
+$deleted =  new CActiveDataProvider('CompileLogEntry', array(
+	'criteria'=> array(
+		'condition'=>'logId=-'.$model->id,
+	),
+	'pagination'=>false,
 ));
 ?>
 <?php $this->widget('zii.widgets.grid.CGridView', array(
@@ -53,20 +48,20 @@ $this->widget('zii.widgets.jui.CJuiAccordion', array(
 			'class'=>'CButtonColumn',
 			'buttons'=>array(
 				'view'=>array(
-					'url'=>'Yii::app()->controller->createUrl("source",array("page"=>$row+1))',
+					'url'=>'Yii::app()->controller->createUrl("compileLog/source",array("page"=>$row+1, "logId"=>'.$model->id.', "sort"=>isset($_GET["sort"]) ? $_GET["sort"] : ""))',
 				),
 				'compare'=>array(
 					'label'=>'Compare with next',
-					'url'=>'Yii::app()->controller->createUrl("compare",array("page"=>$row+1))',
+					'url'=>'Yii::app()->controller->createUrl("compileLog/compare",array("page"=>$row+1, "logId"=>'.$model->id.', "sort"=>isset($_GET["sort"]) ? $_GET["sort"] : ""))',
 					'imageUrl'=>Yii::app()->baseURL . "/images/doc_convert.png",
 					'visible'=>'$row < ' . ($dataProvider->totalItemCount-1),
 				),
 				'update'=>array(
-					'url'=>'Yii::app()->controller->createUrl("updateEntry",array("id"=>$data->id))',
+					'url'=>'Yii::app()->controller->createUrl("compileLog/updateEntry",array("id"=>$data->id))',
 					'visible'=>'Yii::app()->user->hasRole(array("Administrator", "Researcher"))',
 				),
 				'delete'=>array(
-					'url'=>'Yii::app()->controller->createUrl("deleteEntry",array("id"=>$data->id))',
+					'url'=>'Yii::app()->controller->createUrl("compileLog/deleteEntry",array("id"=>$data->id))',
 					'visible'=>'Yii::app()->user->hasRole(array("Administrator", "Researcher"))',
 				),
 			),
@@ -76,12 +71,12 @@ $this->widget('zii.widgets.jui.CJuiAccordion', array(
 ));
 ?>
 
-<?php if(count($deleted) > 0): ?>
+<?php if($deleted->totalItemCount > 0): ?>
 <br>
 <h3>Deleted entries</h3>
 <?php $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'deleted-compile-log-entry-grid',
-	'dataProvider'=>new CArrayDataProvider($deleted),
+	'dataProvider'=>$deleted,
 	'columns'=>array(
 		'deltaSequenceNumber:raw:Id',
 		'fileName',
@@ -91,10 +86,10 @@ $this->widget('zii.widgets.jui.CJuiAccordion', array(
 			'class'=>'CButtonColumn',
 			'buttons'=>array(
 				'view'=>array(
-					'url'=>'Yii::app()->controller->createUrl("source",array("id"=>$data->id))',
+					'url'=>'Yii::app()->controller->createUrl("compileLog/source",array("id"=>$data->id))',
 				),
 				'update'=>array(
-					'url'=>'Yii::app()->controller->createUrl("updateEntry",array("id"=>$data->id))',
+					'url'=>'Yii::app()->controller->createUrl("compileLog/updateEntry",array("id"=>$data->id))',
 					'visible'=>'Yii::app()->user->hasRole(array("Administrator", "Researcher"))',
 				),
 			),
