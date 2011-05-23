@@ -14,6 +14,7 @@ class ReportController extends Controller {
 	const ERROR_CLASS = 3;
 	const TIME_DELTA = 4;
 	const CONFUSION = 5;
+	const HISTOGRAM = 6;
 
 	public function filters() {
 		return array(
@@ -44,41 +45,71 @@ class ReportController extends Controller {
 
 	public function actionSummary() {
 		$command = $this->getCommand(self::ERROR_CLASS, array('limit' => 10));
-		$topErrorsData = $command->queryAll();
+		$topErrorsData = array();
+		foreach($command->queryAll() as $datum) {
+			$data = array();
+			$data[] = (int)$datum['count'];
+			$data[] = (empty($datum['messageText'])) ? 'no error' : $datum['messageText'];
+			$topErrorsData[] = $data;
+		}
 
 		$command = $this->getCommand(self::EQ, array('limit' => 10));
-		$topEqData = $command->queryAll();
+		$topEqData = array();
+		foreach($command->queryAll() as $datum) {
+			$data = array();
+			$data[] = (float)$datum['eq'];
+			$data[] = CHtml::link($datum['name'], isset($_GET['id']) ? array('compileLog/view', 'id'=>$datum['logId']) : array('user/view', 'id'=>$datum['userId']));
+			$topEqData[] = $data;
+		}
 
 		$command = $this->getCommand(self::CONFUSION, array('limit' => 10));
-		$topConfusedData = $command->queryAll();
+		$topConfusedData = array();
+		foreach($command->queryAll() as $datum) {
+			$data = array();
+			$data[] = (float)$datum['confusion'] ;
+			$data[] = CHtml::link($datum['name'], isset($_GET['id']) ? array('compileLog/view', 'id'=>$datum['logId']) : array('user/view', 'id'=>$datum['userId'])) . sprintf(' %d clip(s)', $datum['clips']);
+			$topConfusedData[] = $data;
+		}
 
 		$command = $this->getCommand(self::TIME_DELTA, array('limit' => 10));
-		$timeDeltaData = $command->queryAll();
-		foreach($timeDeltaData as $n=>$datum) {
-			if($n > 6) {
-				$timeDeltaData[6]['count'] += $datum['count'];
-				unset($timeDeltaData[$n]);
+		$timeDeltaData = array();
+		foreach($command->queryAll() as $n => $datum) {
+			if($n == 6) {
+				$timeDeltaData[] = array((int)$datum['count'], 'Beyond');
+			}
+			else if($n > 6) {
+				$timeDeltaData[6][0] += (int)$datum['count'];
 			}
 			else {
-				$timeDeltaData[$n]['from'] = ($datum['delta'] * 20);
-				$timeDeltaData[$n]['to'] = ($datum['delta'] * 20 + 20);
+				$data = array();
+				$data[] = (int)$datum['count'];
+				$data[] = sprintf("%d - %d", $datum['delta'] * 20, ($datum['delta']+1) * 20);
+				$timeDeltaData[] = $data;
 			}
+		}
+
+		$data = array();
+		$data['eq'] = array_reverse($topEqData);
+		$data['errors'] = array_reverse($topErrorsData);
+		$data['confusion'] = array_reverse($topConfusedData);
+		$data['timeDeltas'] = array_reverse($timeDeltaData);
+
+		if(isset($_GET['id'])) {
+			$command = $this->getCommand(self::HISTOGRAM);
+			$histogramData = array();
+			foreach($command->queryAll() as $datum) {
+				$histogramData[] = array(date('Y-m-d H:i:s', $datum['bucket']), (int)$datum['count']);
+			}
+			$data['histogram'] = $histogramData;
 		}
 
 		if(Yii::app()->request->isAjaxRequest) {
-			$this->renderPartial('_summary', array(
-				'topEqData'=>$topEqData,
-				'topErrorsData'=>$topErrorsData,
-				'timeDeltaData'=>$timeDeltaData,
-				'topConfusedData'=>$topConfusedData,
-			));
+			echo CJavaScript::jsonEncode($data);
 		}
 		else {
 			$this->render('summary', array(
-				'topEqData'=>$topEqData,
-				'topErrorsData'=>$topErrorsData,
-				'timeDeltaData'=>$timeDeltaData,
-				'topConfusedData'=>$topConfusedData,
+				'data' => $data,
+				'isSingle' => isset($_GET['id']),
 			));
 		}
 	}
@@ -327,6 +358,17 @@ class ReportController extends Controller {
 			$criteria->select = 'userId, logId, name, confusion, clips';
 			$criteria->join = 'JOIN Log ON Log.id = logId JOIN User ON userId = User.id';
 			$criteria->order = 'confusion DESC, clips DESC';
+		}
+		else if($reportType == self::HISTOGRAM) {
+			$table = 'CompileLogEntry';
+			if(Yii::app()->db->driverName == 'mysql') {
+				$criteria->select = 'timestamp DIV 60 * 60 AS bucket, COUNT(*) AS count';
+			}
+			else {
+				$criteria->select = 'timestamp / 60 * 60 AS bucket, COUNT(*) AS count';
+			}
+			$criteria->join = 'JOIN Log ON Log.id = logId';
+			$criteria->group = 'bucket';
 		}
 		if(array_key_exists('limit', $extraOptions)) {
 			$criteria->limit = $extraOptions['limit'];

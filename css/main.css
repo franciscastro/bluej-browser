@@ -279,3 +279,8 @@ div.ui-accordion div.ui-accordion-content {
   margin:32px auto 32px auto;
   height:200px;
 }
+
+.jqplot-yaxis-tick, .jqplot-xaxis.tick {
+    white-space: nowrap;
+
+} 
