@@ -113,6 +113,15 @@ class Tag extends CActiveRecord {
 	}
 
 	/**
+	 * Run before deleting a tag, cascades the deletions.
+	 */
+	protected function beforeDelete() {
+		LogSessionTag::model()->deleteAllByAttributes(array('tagId'=>$this->id));
+		UserTag::model()->deleteAllByAttributes(array('tagId'=>$this->id));
+		return parent::beforeDelete();
+	}
+
+	/**
 	 * Gets a tag with a certain id and certain type. If the tag's type
 	 * does not match with the one specified, null is returned
 	 * @param integer id of the tag

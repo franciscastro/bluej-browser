@@ -11,6 +11,7 @@ class CalculateEq extends CActiveRecordBehavior {
 
 	public function attach($owner) {
 		parent::attach($owner);
+		$this->owner->metaData->addRelation('eq', array(CActiveRecord::HAS_ONE, 'EqCalculation', 'logId'));
 	}
 
 	public function events() {
@@ -27,5 +28,9 @@ class CalculateEq extends CActiveRecordBehavior {
 			$eqCalculation->save();
 		}
 		$eqCalculation->calculate();
+	}
+
+	public function afterDelete($event) {
+		if($this->owner->eq != null) $this->owner->eq->delete();
 	}
 }

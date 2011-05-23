@@ -4,16 +4,12 @@
 		array(
 			'label'=>'EQ',
 			'type'=>'raw',
-			'value'=>($eqModel = EqCalculation::model()->findByAttributes(array(
-				'logId'=>$model->id,
-			))) != null ? ($eqModel->eq >= 0) ? $eqModel->eq : 'n/a' : 'n/a',
+			'value'=>($eqModel = $model->eq) != null ? ($eqModel->eq >= 0) ? $eqModel->eq : 'n/a' : 'n/a',
 		),
 		array(
 			'label'=>'Confusion Rate',
 			'type'=>'raw',
-			'value'=>($confusionModel = Confusion::model()->findByAttributes(array(
-				'logId'=>$model->id,
-			))) != null ? ($confusionModel->clips >= 0) ? sprintf("%.2f (Clips: %d)", $confusionModel->confusion, $confusionModel->clips) : 'n/a' : 'n/a',
+			'value'=>($confusionModel = $model->confusion) != null ? ($confusionModel->clips >= 0) ? sprintf("%.2f (Clips: %d)", $confusionModel->confusion, $confusionModel->clips) : 'n/a' : 'n/a',
 		),
 	),
 ));

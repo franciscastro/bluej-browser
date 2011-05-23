@@ -63,7 +63,7 @@ $('.search-form form').submit(function(){
 					'imageUrl'=>Yii::app()->baseURL . "/images/disk.png",
 				),
 			),
-			'template'=>'{view} {update} {export}',
+			'template'=>'{view} {update} {delete}',
 		),
 	),
 )); ?>

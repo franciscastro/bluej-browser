@@ -52,7 +52,7 @@ $this->menu=array(
 
 <?php $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'log-grid',
-	'dataProvider'=>$log->search(),
+	'dataProvider'=>$log->with('user')->search(),
 	'columns'=>array(
 		'id',
 		'user.name' => array(
@@ -60,7 +60,7 @@ $this->menu=array(
 			'type'=>'raw',
 			'value'=>'CHtml::link($data->user->name, array("user/view", "id"=>$data->user->id))',
 		),
-		'user.computer',
+		'user.computer:text:Computer',
 		array(
 			'class'=>'CButtonColumn',
 			'template'=>'{view} {delete}',

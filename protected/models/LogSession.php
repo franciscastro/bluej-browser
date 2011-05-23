@@ -125,6 +125,17 @@ class LogSession extends CActiveRecord {
 		$this->removeTags(array_udiff($oldTags, $this->newTags, array('Tag', 'compare')));
 	}
 
+	/**
+	 * Run before deleting a log, cascades the deletions.
+	 */
+	protected function beforeDelete() {
+		LogSessionTag::model()->deleteAllByAttributes(array('logSessionId'=>$this->id));
+		foreach($this->logs as $log) {
+			$log->delete();
+		}
+		return parent::beforeDelete();
+	}
+
 	public function fileLog($file) {
 		$extension = pathinfo($file, PATHINFO_EXTENSION);
 		if($extension == 'csv') {

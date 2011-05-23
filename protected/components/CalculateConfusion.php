@@ -11,6 +11,7 @@ class CalculateConfusion extends CActiveRecordBehavior {
 
 	public function attach($owner) {
 		parent::attach($owner);
+		$this->owner->metaData->addRelation('confusion', array(CActiveRecord::HAS_ONE, 'Confusion', 'logId'));
 	}
 
 	public function events() {
@@ -27,5 +28,9 @@ class CalculateConfusion extends CActiveRecordBehavior {
 			$model->save();
 		}
 		$model->calculate();
+	}
+
+	public function afterDelete($event) {
+		if($this->owner->confusion != null) $this->owner->confusion->delete();
 	}
 }
