@@ -53,17 +53,10 @@ $this->widget('zii.widgets.CDetailView', array(
 		),
 		array(
 			'class'=>'CButtonColumn',
-			'template'=>'{compile} {invocation} {delete}',
+			'template'=>'{view} {delete}',
 			'buttons'=>array(
-				'compile'=>array(
-					'url'=>'Yii::app()->controller->createUrl("compileLog/view", array("id"=>$data->id))',
-					'visible'=>'$data->compileLog != null',
-					'imageUrl'=>Yii::app()->baseURL . '/images/page_white_cup.png',
-				),
-				'invocation'=>array(
-					'url'=>'Yii::app()->controller->createUrl("invocationLog/view", array("id"=>$data->id))',
-					'visible'=>'$data->invocationLog != null',
-					'imageUrl'=>Yii::app()->baseURL . '/images/page_white_gear.png',
+				'view'=>array(
+					'url'=>'Yii::app()->controller->createUrl("log/view", array("id"=>$data->id))',
 				),
 			),
 		),
