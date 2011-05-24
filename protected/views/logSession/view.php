@@ -52,13 +52,14 @@ $this->menu=array(
 
 <?php $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'log-grid',
-	'dataProvider'=>$log->with('user')->search(),
+	'dataProvider'=>$dataProvider,
 	'columns'=>array(
 		'id',
-		'user.name' => array(
-			'name'=>'Student',
+		array(
+			'name'=>'username',
 			'type'=>'raw',
 			'value'=>'CHtml::link($data->user->name, array("user/view", "id"=>$data->user->id))',
+			'sortable'=>true,
 		),
 		'user.computer:text:Computer',
 		array(

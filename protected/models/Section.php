@@ -101,6 +101,9 @@ class Section extends CActiveRecord {
 
 		return new CActiveDataProvider(get_class($this), array(
 			'criteria'=>$criteria,
+			'sort'=>array(
+				'defaultOrder'=>'id DESC',
+			),
 		));
 	}
 

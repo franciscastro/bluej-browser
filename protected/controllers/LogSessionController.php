@@ -58,13 +58,38 @@ class LogSessionController extends Controller {
 	 */
 	public function actionView() {
 		$model = $this->loadModel();
-		$logModel=new Log('search');
-		$logModel->unsetAttributes();  // clear any default values
-		$logModel->logSessionId = $model->id;
+		$dataProvider=new CActiveDataProvider('Log', array(
+			'criteria'=>array(
+				'condition'=>'logSessionId='.$model->id,
+				'with'=>array('user'),
+			),
+			'sort'=>array(
+				'attributes'=>array(
+					'id'=>array(
+						'asc'=>'id',
+						'desc'=>'id DESC',
+					),
+					'username'=>array(
+						'asc'=>'user.name',
+						'desc'=>'user.name DESC',
+						'label'=>'Student'
+					),
+					'user.computer'=>array(
+						'asc'=>'user.computer',
+						'desc'=>'user.computer DESC',
+						'label'=>'Computer'
+					)
+				),
+				'defaultOrder'=>'user.name',
+			),
+			'pagination'=>array(
+				'pageSize'=>20,
+			),
+		));
 
 		$this->render('view',array(
 			'model'=>$model,
-			'log'=>$logModel,
+			'dataProvider'=>$dataProvider,
 		));
 	}
 

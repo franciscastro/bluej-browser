@@ -160,7 +160,8 @@ class SectionController extends Controller {
 		$model->unsetAttributes();  // clear any default values
 		if(isset($_GET['Section']))
 			$model->attributes=$_GET['Section'];
-
+		$dataProvider = $model->search();
+		$dataProvider->sort->defaultOrder = 'id DESC';
 		$this->render('admin',array(
 			'model'=>$model,
 		));

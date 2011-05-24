@@ -43,7 +43,6 @@ $('.search-form form').submit(function(){
 <?php $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'log-log-grid',
 	'dataProvider'=>$model->search(),
-	//'filter'=>$model,
 	'columns'=>array(
 		'id',
 		array(
