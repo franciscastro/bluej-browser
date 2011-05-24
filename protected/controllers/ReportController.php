@@ -36,45 +36,46 @@ class ReportController extends Controller {
 	public function actionSummary() {
 		$command = $this->getCommand(self::ERROR_CLASS, array('limit' => 10));
 		$topErrorsData = array();
+		$topErrorsData['x'] = array();
+		$topErrorsData['y'] = array();
 		foreach($command->queryAll() as $datum) {
-			$data = array();
-			$data[] = (int)$datum['count'];
-			$data[] = (empty($datum['messageText'])) ? 'no error' : $datum['messageText'];
-			$topErrorsData[] = $data;
+			$topErrorsData['y'][] = (int)$datum['count'];
+			$topErrorsData['x'][] = (empty($datum['messageText'])) ? 'no error' : $datum['messageText'];
 		}
 
 		$command = $this->getCommand(self::EQ, array('limit' => 10));
 		$topEqData = array();
+		$topEqData['x'] = array();
+		$topEqData['y'] = array();
 		foreach($command->queryAll() as $datum) {
-			$data = array();
-			$data[] = (float)$datum['eq'];
-			$data[] = CHtml::link($datum['name'], isset($_GET['id']) ? array('compileLog/view', 'id'=>$datum['logId']) : array('user/view', 'id'=>$datum['userId']));
-			$topEqData[] = $data;
+			$topEqData['y'][] = (float)$datum['eq'];
+			$topEqData['x'][] = CHtml::link($datum['name'], isset($_GET['id']) ? array('compileLog/view', 'id'=>$datum['logId']) : array('user/view', 'id'=>$datum['userId']));
 		}
 
 		$command = $this->getCommand(self::CONFUSION, array('limit' => 10));
 		$topConfusedData = array();
+		$topConfusedData['x'] = array();
+		$topConfusedData['y'] = array();
 		foreach($command->queryAll() as $datum) {
-			$data = array();
-			$data[] = (float)$datum['confusion'] ;
-			$data[] = CHtml::link($datum['name'], isset($_GET['id']) ? array('compileLog/view', 'id'=>$datum['logId']) : array('user/view', 'id'=>$datum['userId'])) . sprintf(' %d clip(s)', $datum['clips']);
-			$topConfusedData[] = $data;
+			$topConfusedData['y'][] = (float)$datum['confusion'] ;
+			$topConfusedData['x'][] = CHtml::link($datum['name'], isset($_GET['id']) ? array('compileLog/view', 'id'=>$datum['logId']) : array('user/view', 'id'=>$datum['userId'])) . sprintf(' %d clip(s)', $datum['clips']);
 		}
 
 		$command = $this->getCommand(self::TIME_DELTA, array('limit' => 10));
 		$timeDeltaData = array();
+		$timeDeltaData['x'] = array();
+		$timeDeltaData['y'] = array();
 		foreach($command->queryAll() as $n => $datum) {
 			if($n == 6) {
-				$timeDeltaData[] = array((int)$datum['count'], 'Beyond');
+				$timeDeltaData['y'][] = (int)$datum['count'];
+				$timeDeltaData['x'][] = 'Beyond';
 			}
 			else if($n > 6) {
-				$timeDeltaData[6][0] += (int)$datum['count'];
+				$timeDeltaData['y'][6] += (int)$datum['count'];
 			}
 			else {
-				$data = array();
-				$data[] = (int)$datum['count'];
-				$data[] = sprintf("%d - %d", $datum['delta'] * 20, ($datum['delta']+1) * 20);
-				$timeDeltaData[] = $data;
+				$timeDeltaData['y'][] = (int)$datum['count'];
+				$timeDeltaData['x'][] = sprintf("%d - %d", $datum['delta'] * 20, ($datum['delta']+1) * 20);
 			}
 		}
 
@@ -88,7 +89,7 @@ class ReportController extends Controller {
 			$command = $this->getCommand(self::HISTOGRAM);
 			$histogramData = array();
 			foreach($command->queryAll() as $datum) {
-				$histogramData[] = array(date('Y-m-d H:i:s', $datum['bucket']), (int)$datum['count']);
+				$histogramData[] = array($datum['bucket'] * 1000, (int)$datum['count']);
 			}
 			$data['histogram'] = $histogramData;
 		}

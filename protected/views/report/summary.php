@@ -32,80 +32,148 @@ function make_link($name, $route) {
 
 $ajax = CHtml::ajax(array(
 	'dataType'=>'json',
-	'success'=>'plotStuff',
+	'success'=>'replotStuff',
 ));
 
 $cs = Yii::app()->clientScript;
-$cs->registerScriptFile('js/jqplot/jquery.jqplot.min.js');
-$cs->registerCSSFile('js/jqplot/jquery.jqplot.min.css');
-$cs->registerScriptFile('js/jqplot/plugins/jqplot.barRenderer.min.js');
-$cs->registerScriptFile('js/jqplot/plugins/jqplot.categoryAxisRenderer.min.js');
-$cs->registerScriptFile('js/jqplot/plugins/jqplot.dateAxisRenderer.min.js');
-$cs->registerScriptFile('js/jqplot/plugins/jqplot.pointLabels.min.js');
+$cs->registerScriptFile(Yii::app()->assetManager->publish('protected/vendors/highcharts/js/highcharts.js'));
 $cs->registerScript('plotStuffHead', "
-function plot(divId, data) {
-	if(divId == 'eqChart' || divId == 'confusionChart') {
-		xaxis = {min: 0, max: 1.2}
-		pointLabels = { show: true, location: 'e', edgeTolerance: 0, formatString: '%.3f' }
+Highcharts.setOptions({
+	global: {
+		useUTC: false
 	}
-	else {
-		xaxis = {padMin: 0}
-		pointLabels = { show: true, location: 'e', edgeTolerance: 0 }
-	}
-	$('#'+divId).empty();
-	jqplot = $.jqplot(divId,  [data], {
-		seriesDefaults:{
-			renderer:$.jqplot.BarRenderer,
-			pointLabels: pointLabels,
-			shadowAngle: 135,
-			rendererOptions:{
-				barDirection: 'horizontal',
-				barMargin: 3
-			}
-		},
-		axes: {
-			xaxis: xaxis,
-			yaxis: {
-				renderer: $.jqplot.CategoryAxisRenderer
-			},
-		}
-	});
-}
-
-function plotHistogram(data) {
-	if(typeof(data) == 'undefined') return;
-	$('#histogramChart').empty();
-	$.jqplot('histogramChart', [data], {
-		axes: {
-			xaxis: {
-				renderer: $.jqplot.DateAxisRenderer,
-				tickOptions: {
-					formatString: '%T'
-				}
-			},
-			yaxis: {
-				padMin: 0
-			},
-		}
-	});
-}
+});
+var charts = Array();
 
 function plotStuff(data, status, xhr) {
-	plot('errorChart', data.errors);
-	plot('eqChart', data.eq);
-	plot('timeDeltaChart', data.timeDeltas);
-	plot('confusionChart', data.confusion);
-	plotHistogram(data.histogram);
-	$('.jqplot-yaxis-tick').css('z-index', 1);
+	plotChart('errorChart', 'Count', data.errors);
+	plotChart('eqChart', 'EQ', data.eq);
+	plotChart('timeDeltaChart', 'Frequency', data.timeDeltas);
+	plotChart('confusionChart', 'Confusion Rate', data.confusion);
+	if(typeof(data.histogram) != 'undefined') plotHistogram('histogramChart', data.histogram);
+}
+
+function replotStuff(data, status, xhr) {
+	replotChart('errorChart', data.errors);
+	replotChart('eqChart', data.eq);
+	replotChart('timeDeltaChart', data.timeDeltas);
+	replotChart('confusionChart', data.confusion);
+	replotHistogram('histogramChart', data.histogram);
+	setTimeout('autorefresh()', 5000);
+}
+
+function plotChart(divId, name, data) {
+	var options = {
+		chart: {
+			renderTo: divId,
+			defaultSeriesType: 'bar',
+			inverted: true,
+		},
+		title: {
+			text: null
+		},
+		xAxis: {
+			categories: data.x,
+			labels: {
+				align: 'right',
+				style: {
+					fontSize: '10px',
+					lineHeight: '10px',
+					width: '200px'
+				}
+			},
+		},
+		yAxis: {
+			maxPadding: 0.1,
+			min: 0,
+			title: {
+				text: null
+			}
+		},
+		legend: {
+			enabled: false
+		},
+		credits: {
+			enabled: false
+		},
+		plotOptions: {
+			column: {
+				borderWidth:0.5,
+				borderColor: 'black',
+				pointWidth:40
+			},
+		},
+		series: [{
+			name: name,
+			data: data.y,
+			dataLabels: {
+				enabled: true,
+				color: '#000000',
+				align: 'left'
+			}
+		}]
+	}
+	if(divId == 'eqChart' || divId == 'confusionChart') {
+		options.series[0].dataLabels.formatter = function() {
+			return Highcharts.numberFormat(this.y, 5);
+		}
+	}
+	charts[divId] = new Highcharts.Chart(options);
+}
+
+function plotHistogram(divId, data) {
+	charts[divId] = new Highcharts.Chart({
+		chart: {
+			renderTo: divId,
+		},
+		title: {
+			text: null
+		},
+		xAxis: {
+			type: 'datetime',
+		},
+		yAxis: {
+			maxPadding: 0.1,
+			min: 0,
+			title: {
+				text: null
+			}
+		},
+		legend: {
+			enabled: false
+		},
+		credits: {
+			enabled: false
+		},
+		plotOptions: {
+			column: {
+				borderWidth:0.5,
+				borderColor: 'black',
+				pointWidth:40
+			},
+		},
+		series: [{
+			name: 'Compile Frequency',
+			data: data
+		}]
+	});
+}
+
+function replotHistogram(divId, data) {
+	charts[divId].series[0].setData(data);
+}
+
+function replotChart(divId, data) {
+	charts[divId].xAxis[0].setCategories(data.x, false);
+	charts[divId].series[0].setData(data.y);
 }
 
 function autorefresh() {
 	$ajax
-	setTimeout('autorefresh()', 1000);
 }
 ", CClientScript::POS_HEAD);
 $cs->registerScript('plotStuffInitial', 'plotStuff('.CJavaScript::jsonEncode($data).', null, null)');
-if($isSingle) $cs->registerScript('plotStuff', 'autorefresh()');
+if($isSingle) $cs->registerScript('plotStuff', 'setTimeout("autorefresh()", 5000);');
 ?>
 
 
@@ -118,27 +186,27 @@ if($isSingle) $cs->registerScript('plotStuff', 'autorefresh()');
 				<?php echo make_link('by class', 'errorClass'); ?> |
 				<?php echo make_link('details', 'error'); ?>
 			) </h2>
-			<div id="errorChart" style="height:300px;width:400px; "></div>
+			<div id="errorChart" style="height:300px;width:420px; "></div>
 		</td>
 		<td>
 			<h2>EQ ( <?php echo make_link('details', 'eq'); ?> )</h2>
-			<div id="eqChart" style="height:300px;width:400px; "></div>
+			<div id="eqChart" style="height:300px;width:420px; "></div>
 		</td>
 	</tr>
 	<tr>
 		<td>
 			<h2>Time between Compiles ( <?php echo make_link('details', 'timeDelta'); ?> )</h2>
-			<div id="timeDeltaChart" style="height:300px;width:400px; "></div>
+			<div id="timeDeltaChart" style="height:300px;width:420px; "></div>
 		</td>
 		<td>
 			<h2>Confusion Rate ( <?php echo make_link('details', 'confusion'); ?> )</h2>
-			<div id="confusionChart" style="height:300px;width:400px; "></div>
+			<div id="confusionChart" style="height:300px;width:420px; "></div>
 		</td>
 	</tr>
 	<?php if($isSingle): ?>
 	<tr><td colspan=2>
 	<h2>Compile Frequency Timeline</h2>
-	<div id="histogramChart"></div>
+	<div id="histogramChart" style="height:300px;"></div>
 	</td></tr>
 	<?php endif; ?>
 </table>
