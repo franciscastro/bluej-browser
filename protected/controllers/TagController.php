@@ -110,6 +110,9 @@ class TagController extends Controller {
 		));
 	}
 
+	/**
+	 * Merges 2 tags. Potentially dangerous when merging tags used by Sections.
+	 */
 	public function actionMerge() {
 		if(isset($_POST['tags'])) {
 			$tags = preg_split('/\s*,\s*/', $_POST['tags']);

@@ -12,8 +12,8 @@
  * @property integer $parentId
  * @property string $name
  *
- * A tag. Zero or more tags can be assigned to an LogSession or
- * Session. These can then be searched by one or more tags.
+ * A tag. Zero or more tags can be assigned to an LogSession.
+ * These can then be searched by one or more tags.
  */
 class Tag extends CActiveRecord {
 	const TERM_YEAR = 2;

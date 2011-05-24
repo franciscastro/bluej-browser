@@ -59,6 +59,11 @@ class CompileLog extends AbstractLog {
 		);
 	}
 
+	/**
+	 * This attaches the EQ and Confusion calculations to the model so they
+	 * get calculated when imports are done. See the CalculateEq and
+	 * CalculateConfusion classes in components/
+	 */
 	public function behaviors() {
 		return array(
 			'eq' => array('class'=>'application.components.CalculateEq'),
@@ -196,7 +201,7 @@ class CompileLog extends AbstractLog {
 	 * Creates a new log
 	 * @param integer id of the log
 	 * @param array log information from a row
-	 * @return InvocationLog the new log
+	 * @return CompileLog the new log
 	 */
 	protected function createSession($logId, $row) {
 		$log = new CompileLog;

@@ -7,6 +7,20 @@
  * @copyright Copyright &copy; 2010-2011 Ateneo de Manila University
  * @license http://www.opensource.org/licenses/mit-license.php
  *
+ * This class implements a generic file import and live input process
+ * as well as a generic exporting process.
+ *
+ * Subclasses would then need to override:
+ *  - createSession($logId, $row);
+ *  - insertEntry($row);
+ *  - externalLabels();
+ *  - getEvent($entry);
+ *
+ * This also implements afterLog events which are called after a
+ * successful file import or live entry. This is generally used
+ * by the EQ and Confusion calculations.
+ *
+ * (Un)deleting and moving of entries is also implemented.
  */
 abstract class AbstractLog extends CActiveRecord {
 	/**
@@ -44,11 +58,34 @@ abstract class AbstractLog extends CActiveRecord {
 		return parent::beforeDelete();
 	}
 
+	/**
+	 * This should return an array which maps internal labels to external
+	 * labels. Internal labels refer to the variable names/column names of
+	 * the model, while the external labels are those used when importing
+	 * or exporting logs.
+	 */
 	protected abstract function externalLabels();
 
+	/**
+	 * This should create an instance of the class that extends AbstractLog.
+	 * Usually important metadata is repeated across all rows of a log that
+	 * is being imported. Usually it is here where that static metadata is
+	 * stored which is why $row is passed which contains the first row of
+	 * data being processed.
+	 */
 	protected abstract function createSession($logId, $row);
 
+	/**
+	 * This should simply inserts an entry.
+	 */
 	protected abstract function insertEntry($row);
+
+	/**
+	 * This method is used for generating the timeline in the log view.
+	 * This should return an array with at least the keys 'title',
+	 * 'description', and 'start'.
+	 */
+	protected abstract function getEvent($entry);
 
 	public function getEvents() {
 		$events = array();
@@ -57,8 +94,6 @@ abstract class AbstractLog extends CActiveRecord {
 		}
 		return $events;
 	}
-
-	protected abstract function getEvent($entry);
 
 	/**
 	 * Creates a new log and logs data into it

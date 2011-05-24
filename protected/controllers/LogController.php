@@ -1,7 +1,8 @@
 <?php
 
 /**
- * Receives live log requests from the BlueJ plugin.
+ * Handles viewing of logs. This also receives live log requests
+ * from the BlueJ plugin.
  *
  * @author Thomas Dy <thatsmydoing@gmail.com>
  * @copyright Copyright &copy; 2010-2011 Ateneo de Manila University
@@ -60,6 +61,7 @@ class LogController extends Controller {
 
 	/**
 	 * Displays a particular model.
+	 * @param integer the ID of the model to be displayed
 	 */
 	public function actionView($id) {
 		$model = $this->loadModel($id);
@@ -71,21 +73,41 @@ class LogController extends Controller {
 
 	/**
 	 * Deletes a particular model.
-	 * If deletion is successful, the browser will be redirected to the 'index' page.
+	 * If deletion is successful, the browser will be redirected to the LogSession page.
+	 * @param integer the ID of the model to be deleted
 	 */
 	public function actionDelete($id) {
 		if(Yii::app()->request->isPostRequest) {
 			// we only allow deletion via POST request
-			$this->loadModel($id)->delete();
+			$model = $this->loadModel($id);
+			$parent = $model->logSessionId;
+			$model->delete();
 
 			// if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
 			if(!isset($_GET['ajax']))
-				$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
+				$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('logSession/admin', 'id'=>$parent));
 		}
 		else
 			throw new CHttpException(400,'Invalid request. Please do not repeat this request again.');
 	}
 
+	/**
+	 * Returns the data model based on the primary key given in the GET variable.
+	 * If the data model is not found, an HTTP exception will be raised.
+	 * @param integer the ID of the model to be loaded
+	 */
+	public function loadModel($id)
+	{
+		$model=Log::model()->findByPk((int)$id);
+		if($model===null)
+			throw new CHttpException(404,'The requested page does not exist.');
+		return $model;
+	}
+
+	/**
+	 * Receives a log sent via the BlueJ extension or optionally any other
+	 * source that uses XML-RPC
+	 */
 	public function actionXmlrpc() {
 		global $xmlrpcString, $xmlrpcArray, $xmlrpcStruct;
 
@@ -105,6 +127,10 @@ class LogController extends Controller {
 		}
 	}
 
+	/**
+	 * This handles the insert operation called via XML-RPC that the BlueJ
+	 * extension does
+	 */
 	public static function insert($tableName, $columnNames, $columnTypes, $data) {
 		global $xmlrpcerruser, $err;
 
@@ -114,18 +140,5 @@ class LogController extends Controller {
 
 		LogSession::model()->liveInsert($userName, $logType, $data);
 		return true;
-	}
-
-	/**
-	 * Returns the data model based on the primary key given in the GET variable.
-	 * If the data model is not found, an HTTP exception will be raised.
-	 * @param integer the ID of the model to be loaded
-	 */
-	public function loadModel($id)
-	{
-		$model=Log::model()->findByPk((int)$id);
-		if($model===null)
-			throw new CHttpException(404,'The requested page does not exist.');
-		return $model;
 	}
 }

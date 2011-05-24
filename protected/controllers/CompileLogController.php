@@ -52,6 +52,12 @@ class CompileLogController extends Controller {
 		);
 	}
 
+	/**
+	 * Displays the source code of a log entry. Optionally, this also
+	 * uses the paging and sorting preferences of the grid view.
+	 * @param integer $id the ID of the log entry to display
+	 * @param integer $logId the ID of the log that contains the entries
+	 */
 	public function actionSource($id = 0, $logId = 0) {
 		if($id == 0) {
 			$dataProvider = new CActiveDataProvider('CompileLogEntry', array(
@@ -81,6 +87,11 @@ class CompileLogController extends Controller {
 		}
 	}
 
+	/**
+	 * Compares 2 log entries. This uses the paging and sorting
+	 * preferences of the grid view.
+	 * @param integer $logId the ID of the log that contains the entries
+	 */
 	public function actionCompare($logId) {
 		$dataProvider = new CActiveDataProvider('CompileLogEntry', array(
 			'criteria'=>array(
@@ -127,15 +138,13 @@ class CompileLogController extends Controller {
 
 	/**
 	 * Updates a particular model.
-	 * If update is successful, the browser will be redirected to the 'view' page.
+	 * If update is successful, the browser will be redirected to the new log
+	 * page.
 	 * @param integer $id the ID of the model to be updated
 	 */
 	public function actionUpdateEntry($id)
 	{
 		$model=$this->loadEntryModel($id);
-
-		// Uncomment the following line if AJAX validation is needed
-		// $this->performAjaxValidation($model);
 
 		if(isset($_POST['CompileLogEntry']['logId']))
 		{
@@ -155,6 +164,7 @@ class CompileLogController extends Controller {
 
 	/**
 	 * Deletes a compile log entry.
+	 * @param integer $id the ID of the entry to be deleted
 	 */
 	public function actionDeleteEntry($id) {
 		if(Yii::app()->request->isPostRequest) {
@@ -182,5 +192,4 @@ class CompileLogController extends Controller {
 			throw new CHttpException(404,'The requested page does not exist.');
 		return $model;
 	}
-
 }

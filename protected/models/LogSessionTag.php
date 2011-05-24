@@ -11,7 +11,7 @@
  * @property integer $logSessionId
  * @property integer $tagId
  *
- * Links an log log with a tag.
+ * Links a log session with a tag.
  */
 class LogSessionTag extends CActiveRecord {
 	/**

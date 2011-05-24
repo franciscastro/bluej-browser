@@ -33,16 +33,6 @@ class ReportController extends Controller {
 		);
 	}
 
-	public function actionIndex() {
-		if(isset($_GET['tags'])) {
-			$this->redirect(array('summary', 'tags'=>$_GET['tags']), true);
-		}
-		$models = Tag::model()->findAll('parentId > 1');
-		$this->render('index', array(
-			'models' => $models,
-		));
-	}
-
 	public function actionSummary() {
 		$command = $this->getCommand(self::ERROR_CLASS, array('limit' => 10));
 		$topErrorsData = array();
@@ -313,7 +303,13 @@ class ReportController extends Controller {
 
 	}
 
-	function getCommand($reportType, $extraOptions = array()) {
+	/**
+	 * This generates all the SQL statements used for the reports.
+	 * $reportType is specified by the constants named at the start,
+	 * while $extraOptions are used for specifying limits or intervals
+	 * in the case of Time Deltas.
+	 */
+	private function getCommand($reportType, $extraOptions = array()) {
 		$logSessionIds = $this->getLogSessionIds();
 		$criteria = new CDbCriteria;
 		if($logSessionIds !== false) $criteria->condition = 'logSessionId IN ('.implode(',', $logSessionIds).')';
@@ -383,6 +379,11 @@ class ReportController extends Controller {
 		}
 	}
 
+	/**
+	 * This finds the relevant log sessions to extract data from for the
+	 * reports. It also caches the results to potentially decrease query
+	 * time.
+	 */
 	function getLogSessionIds() {
 		if(isset($_GET['id'])) {
 			return array($_GET['id']);
@@ -419,6 +420,9 @@ class ReportController extends Controller {
 		}
 	}
 
+	/**
+	 * This makes the breadcrumbs for the details pages.
+	 */
 	function makeDetailBreadcrumbs($name) {
 		if(isset($_GET['id'])) {
 			$this->breadcrumbs=array(

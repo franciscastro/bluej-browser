@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Handles creation of log logs, whether live or not.
+ * Handles creation and viewing of logs, whether live or not.
  *
  * @author Thomas Dy <thatsmydoing@gmail.com>
  * @copyright Copyright &copy; 2010-2011 Ateneo de Manila University
@@ -56,8 +56,8 @@ class LogSessionController extends Controller {
 	/**
 	 * Displays a particular model.
 	 */
-	public function actionView() {
-		$model = $this->loadModel();
+	public function actionView($id) {
+		$model = $this->loadModel($id);
 		$dataProvider=new CActiveDataProvider('Log', array(
 			'criteria'=>array(
 				'condition'=>'logSessionId='.$model->id,
@@ -134,7 +134,7 @@ class LogSessionController extends Controller {
 							$tagNames = str_ireplace(DIRECTORY_SEPARATOR, ',', $tagNames);
 
 							$_POST['tag'][Tag::TERM_OTHER] = $tagNames;
-							$model->newTags = $this->getTagModel()->getNewTags();
+							$model->newTags = Section::model()->getNewTags();
 							if(isset($_POST['tag']['section'])) {
 								$model->sectionId = $_POST['tag']['section'];
 							}
@@ -159,7 +159,7 @@ class LogSessionController extends Controller {
 
 		$this->render('create',array(
 			'model'=>$model,
-			'tags'=>$this->getTagModel()->getViewData(),
+			'tags'=>Section::model()->getViewData(),
 		));
 	}
 
@@ -168,7 +168,7 @@ class LogSessionController extends Controller {
 		$tags = array();
 
 		if(isset($_POST['LogSession'])) {
-			$tags = $this->getTagModel()->getNewTags();
+			$tags = Section::model()->getNewTags();
 			$model->attributes=$_POST['LogSession'];
 			$model->source = 'live';
 			$model->start = time();
@@ -189,12 +189,12 @@ class LogSessionController extends Controller {
 
 		$this->render('createLive',array(
 			'model'=>$model,
-			'tags'=>$this->getTagModel()->getViewData($tags),
+			'tags'=>Section::model()->getViewData($tags),
 		));
 	}
 
-	public function actionStopLive() {
-		$model=$this->loadModel();
+	public function actionStopLive($id) {
+		$model=$this->loadModel($id);
 
 		if(Yii::app()->request->isPostRequest) {
 			$model->newTags = $model->tags;
@@ -213,12 +213,12 @@ class LogSessionController extends Controller {
 	 * Updates a particular model.
 	 * If update is successful, the browser will be redirected to the 'view' page.
 	 */
-	public function actionUpdate() {
-		$model=$this->loadModel();
+	public function actionUpdate($id) {
+		$model=$this->loadModel($id);
 
 		if(isset($_POST['LogSession'])) {
 			$model->attributes=$_POST['LogSession'];
-			$model->newTags = $this->getTagModel()->getNewTags();
+			$model->newTags = Section::model()->getNewTags();
 			if(isset($_POST['tag']['section'])) {
 				$model->sectionId = $_POST['tag']['section'];
 			}
@@ -228,7 +228,7 @@ class LogSessionController extends Controller {
 
 		$this->render('update',array(
 			'model'=>$model,
-			'tags'=>$this->getTagModel()->getViewData($model->tags),
+			'tags'=>Section::model()->getViewData($model->tags),
 		));
 	}
 
@@ -236,10 +236,10 @@ class LogSessionController extends Controller {
 	 * Deletes a particular model.
 	 * If deletion is successful, the browser will be redirected to the 'index' page.
 	 */
-	public function actionDelete() {
+	public function actionDelete($id) {
 		if(Yii::app()->request->isPostRequest) {
 			// we only allow deletion via POST request
-			$this->loadModel()->delete();
+			$this->loadModel($id)->delete();
 
 			// if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
 			if(!isset($_GET['ajax']))
@@ -341,15 +341,14 @@ class LogSessionController extends Controller {
 	/**
 	 * Returns the data model based on the primary key given in the GET variable.
 	 * If the data model is not found, an HTTP exception will be raised.
+	 * @param integer the ID of the model to be loaded
 	 */
-	public function loadModel() {
-		if($this->_model===null) {
-			if(isset($_GET['id']))
-				$this->_model=LogSession::model()->findbyPk($_GET['id']);
-			if($this->_model===null)
-				throw new CHttpException(404,'The requested page does not exist.');
-		}
-		return $this->_model;
+	public function loadModel($id)
+	{
+		$model=LogSession::model()->findByPk((int)$id);
+		if($model===null)
+			throw new CHttpException(404,'The requested page does not exist.');
+		return $model;
 	}
 
 	/**
@@ -363,13 +362,13 @@ class LogSessionController extends Controller {
 		}
 	}
 
-	public function getTagModel() {
-		//if(Yii::app()->user->hasRole(array('Teacher'))) {
-			return CActiveRecord::model('Section');
-		//}
-		//return CActiveRecord::model('Tag');
-	}
-
+	/**
+	 * This determines the name of the exported folder and zip file.
+	 * If the model was originally imported from a file, it will use
+	 * the name of the file that was uploaded. Otherwise, it gets
+	 * the Year-Course-Section and uses that.
+	 * @param CModel the model to be exported
+	 */
 	private function getExportName($model = null) {
 		if($model == null) {
 			$model = $this->loadModel();
@@ -393,6 +392,13 @@ class LogSessionController extends Controller {
 		return $exportName;
 	}
 
+	/**
+	 * This makes a directory and exports the logs as CSVs into the
+	 * directory. Exports are cached so exporting multiple times
+	 * should not take a long while.
+	 * @param string the name of the directory
+	 * @param CModel the model to export
+	 */
 	private function makeExportDir($exportName, $model) {
 		$exportDir = Yii::app()->file->set(Yii::app()->params['exportRoot'] . '/' . $exportName . '/');
 		if($exportDir->getIsDir()) {

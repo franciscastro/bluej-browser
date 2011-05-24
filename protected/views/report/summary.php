@@ -101,7 +101,7 @@ function plotStuff(data, status, xhr) {
 
 function autorefresh() {
 	$ajax
-	setTimeout('autorefresh()', 10000);
+	setTimeout('autorefresh()', 1000);
 }
 ", CClientScript::POS_HEAD);
 $cs->registerScript('plotStuffInitial', 'plotStuff('.CJavaScript::jsonEncode($data).', null, null)');

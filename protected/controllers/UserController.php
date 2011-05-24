@@ -48,8 +48,8 @@ class UserController extends Controller {
 		);
 	}
 
-	public function actionView() {
-		$model=$this->loadModel();
+	public function actionView($id) {
+		$model=$this->loadModel($id);
 		$logSearch = new Log('search');
 		$logSearch->userId = $model->id;
 
@@ -86,8 +86,8 @@ class UserController extends Controller {
 	 * Updates a particular model.
 	 * If update is successful, the browser will be redirected to the 'view' page.
 	 */
-	public function actionUpdate() {
-		$model=$this->loadModel();
+	public function actionUpdate($id) {
+		$model=$this->loadModel($id);
 		$model->password = '';
 
 		$this->performAjaxValidation($model);
@@ -158,15 +158,14 @@ class UserController extends Controller {
 	/**
 	 * Returns the data model based on the primary key given in the GET variable.
 	 * If the data model is not found, an HTTP exception will be raised.
+	 * @param integer the ID of the model to be loaded
 	 */
-	public function loadModel() {
-		if($this->_model===null) {
-			if(isset($_GET['id']))
-				$this->_model=User::model()->findbyPk($_GET['id']);
-			if($this->_model===null)
-				throw new CHttpException(404,'The requested page does not exist.');
-		}
-		return $this->_model;
+	public function loadModel($id)
+	{
+		$model=User::model()->findByPk((int)$id);
+		if($model===null)
+			throw new CHttpException(404,'The requested page does not exist.');
+		return $model;
 	}
 
 	/**

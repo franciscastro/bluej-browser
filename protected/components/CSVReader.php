@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This is a CSV reader
+ * This is a CSV reader used for importing
  *
  * @author Thomas Dy <thatsmydoing@gmail.com>
  * @copyright Copyright &copy; 2010-2011 Ateneo de Manila University
