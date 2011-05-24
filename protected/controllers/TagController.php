@@ -155,17 +155,17 @@ class TagController extends Controller {
 		));
 	}
 
-	public function actionSearch() {
+	public function actionSearch($term, $parent = null) {
 		if(Yii::app()->getRequest()->getIsAjaxRequest()) {
-			if(!isset($_GET['parent'])) {
+			if($parent == null) {
 				$tags = Tag::model()->findAll('name LIKE :name AND parentId > 1', array(
-					':name' => $_GET['tag'].'%',
+					':name' => $term.'%',
 				));
 			}
 			else {
 				$tags = Tag::model()->findAll('name LIKE :name AND parentId = :parent', array(
-					':name' => $_GET['tag'].'%',
-					':parent' => $_GET['parent'],
+					':name' => $term.'%',
+					':parent' => $parent,
 				));
 			}
 			$tagNames = array();

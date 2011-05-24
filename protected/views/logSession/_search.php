@@ -15,7 +15,7 @@ $this->widget('zii.widgets.jui.CJuiAutoComplete', array(
 		'value'=>isset($_GET['tags']) ? $_GET['tags'] : '',
 		'source'=>'js:function(request, response) {
 				$.getJSON("'.CHtml::normalizeUrl(array('tag/search')).'", {
-					tag: extractLast(request.term)
+					term: extractLast(request.term)
 				}, response);
 			}',
 		// additional javascript options for the autocomplete plugin
