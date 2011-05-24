@@ -320,9 +320,10 @@ class ReportController extends Controller {
 		$table = '';
 		if($reportType == self::EQ) {
 			$table = 'EqCalculation';
-			$criteria->select = 'userId, logId, name, eq';
+			$criteria->select = 'userId, logId, name, AVG(eq) as eq';
 			$criteria->join = 'JOIN Log ON Log.id = logId JOIN User ON userId = User.id';
 			$criteria->order = 'eq DESC';
+			$criteria->group = 'name';
 		}
 		else if($reportType == self::ERROR) {
 			$table = 'CompileLogEntry';
@@ -355,9 +356,10 @@ class ReportController extends Controller {
 		}
 		else if($reportType == self::CONFUSION) {
 			$table = 'Confusion';
-			$criteria->select = 'userId, logId, name, confusion, clips';
+			$criteria->select = 'userId, logId, name, AVG(confusion) AS confusion, AVG(clips) AS clips';
 			$criteria->join = 'JOIN Log ON Log.id = logId JOIN User ON userId = User.id';
 			$criteria->order = 'confusion DESC, clips DESC';
+			$criteria->group = 'name';
 		}
 		else if($reportType == self::HISTOGRAM) {
 			$table = 'CompileLogEntry';
@@ -382,10 +384,10 @@ class ReportController extends Controller {
 	}
 
 	function getLogSessionIds() {
+		if(isset($_GET['id'])) {
+			return array($_GET['id']);
+		}
 		if(isset($_GET['tags']) && !empty($_GET['tags'])) {
-			if(isset($_GET['id'])) {
-				return array($_GET['id']);
-			}
 			$tagNames = array_unique(preg_split('/\s*,\s*/', $_GET['tags'], null, PREG_SPLIT_NO_EMPTY));
 			$_GET['tags'] = implode(',', $tagNames);
 

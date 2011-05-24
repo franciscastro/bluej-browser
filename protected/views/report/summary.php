@@ -42,7 +42,6 @@ $cs->registerScriptFile('js/jqplot/plugins/jqplot.barRenderer.min.js');
 $cs->registerScriptFile('js/jqplot/plugins/jqplot.categoryAxisRenderer.min.js');
 $cs->registerScriptFile('js/jqplot/plugins/jqplot.dateAxisRenderer.min.js');
 $cs->registerScriptFile('js/jqplot/plugins/jqplot.pointLabels.min.js');
-$cs->registerScript('plotStuff', 'autorefresh()');
 $cs->registerScript('plotStuffHead', "
 function plot(divId, data) {
 	if(divId == 'eqChart' || divId == 'confusionChart') {
@@ -74,6 +73,7 @@ function plot(divId, data) {
 }
 
 function plotHistogram(data) {
+	if(typeof(data) == 'undefined') return;
 	$('#histogramChart').empty();
 	$.jqplot('histogramChart', [data], {
 		axes: {
@@ -95,15 +95,17 @@ function plotStuff(data, status, xhr) {
 	plot('eqChart', data.eq);
 	plot('timeDeltaChart', data.timeDeltas);
 	plot('confusionChart', data.confusion);
-	if($isSingle) plotHistogram(data.histogram);
+	plotHistogram(data.histogram);
 	$('.jqplot-yaxis-tick').css('z-index', 1);
 }
 
 function autorefresh() {
 	$ajax
-	setTimeout('autorefresh()', 5000);
+	setTimeout('autorefresh()', 10000);
 }
 ", CClientScript::POS_HEAD);
+$cs->registerScript('plotStuffInitial', 'plotStuff('.CJavaScript::jsonEncode($data).', null, null)');
+if($isSingle) $cs->registerScript('plotStuff', 'autorefresh()');
 ?>
 
 
