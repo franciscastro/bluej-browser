@@ -104,6 +104,10 @@ class LogSessionController extends Controller {
 			$model->attributes=$_POST['LogSession'];
 			$file = CUploadedFile::getInstance($model, 'source');
 			if(!$file->getTempName() == '') {
+				$importDir = Yii::app()->file->set(Yii::app()->params['importRoot']);
+				if(!$importDir->getIsDir()) {
+					$importDir->createDir();
+				}
 				$sourceFile = Yii::app()->params['importRoot'] . $file->getName();
 			}
 			else {
