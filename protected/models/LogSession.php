@@ -173,7 +173,7 @@ class LogSession extends CActiveRecord {
 			return;
 		}
 		$log = $this->getAssociatedLog($computer, $row['TIMESTAMP']);
-		$logType::model()->doLog($log->id, $row, $reader);
+		CActiveRecord::model($logType)->doLog($log->id, $row, $reader);
 	}
 
 	/**
@@ -194,7 +194,7 @@ class LogSession extends CActiveRecord {
 		foreach($liveSessions as $liveSession) {
 			if($liveSession->path == null || stripos($computer, $liveSession->path) == 0) {
 				$log = $liveSession->getAssociatedLog($computer);
-				$logType::model()->liveLog($log->id, $data);
+				CActiveRecord::model($logType)->liveLog($log->id, $data);
 				return true;
 			}
 		}
