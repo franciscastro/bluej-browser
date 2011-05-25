@@ -32,7 +32,8 @@ $cs->registerScript('timeline', <<<QQQ
 				{pixelsPerInterval:  800,  unit: Timeline.DateTime.MINUTE},
 				{pixelsPerInterval:  400,  unit: Timeline.DateTime.MINUTE},
 				{pixelsPerInterval:  200,  unit: Timeline.DateTime.MINUTE},
-				{pixelsPerInterval:  100,  unit: Timeline.DateTime.MINUTE}
+				{pixelsPerInterval:  100,  unit: Timeline.DateTime.MINUTE},
+				{pixelsPerInterval:  50,  unit: Timeline.DateTime.MINUTE}
 			)
 		}),
 		Timeline.createBandInfo({
@@ -42,7 +43,7 @@ $cs->registerScript('timeline', <<<QQQ
 			overview:       true,
 			width:          "20%",
 			intervalUnit:   Timeline.DateTime.HOUR,
-			intervalPixels: 2000
+			intervalPixels: 700
 		})
 	];
 	bandInfos[1].syncWith = 0;
