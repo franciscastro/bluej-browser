@@ -37,3 +37,10 @@ may also move entries between logs if necessary, but this requires
 manually inputting the id number of the target log. Again, this
 forces a recalculation of EQ and Confusion rate.
 </p>
+
+<h1>Invocation Logs</h1>
+<p>
+Invocation logs refer to BlueJ's GUI for object instantiation
+and method calling. Every time a student makes an object or
+calls a method, these are logged.
+</p>

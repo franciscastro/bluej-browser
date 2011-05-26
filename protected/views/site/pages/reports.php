@@ -61,3 +61,9 @@ are displayed alongside the confusion rate.
 <p>
 The automated labeling is the work of Diane Marie Lee.
 </p>
+<h4>Compile Frequency</h4>
+<p>
+For individual log sessions, a compile frequency report is also
+displayed. This shows how many compilations were done per
+minute of the session.
+</p>
