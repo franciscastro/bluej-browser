@@ -7,10 +7,10 @@ $this->makeDetailBreadcrumbs('Error Report');
 <?php $this->widget('zii.widgets.grid.CGridView', array(
 		'dataProvider'=>$dataProvider,
 		'columns'=>array(
-			'messageText' => array(
-				'name' => 'Error',
+			array(
+				'name' => 'messageText',
 				'value' => '$data["messageText"] == "" ? "<no error>" : $data["messageText"]'
 			),
-			'count:raw:Count',
+			'count',
 		),
 )); ?>

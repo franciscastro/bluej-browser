@@ -29,7 +29,7 @@ $cs->registerScript('timeline', <<<QQQ
 			intervalPixels: 200,
 			zoomIndex:      2,
 			zoomSteps:      new Array(
-				{pixelsPerInterval:  800,  unit: Timeline.DateTime.MINUTE},
+				{pixelsPerInterval:  20,  unit: Timeline.DateTime.SECOND},
 				{pixelsPerInterval:  400,  unit: Timeline.DateTime.MINUTE},
 				{pixelsPerInterval:  200,  unit: Timeline.DateTime.MINUTE},
 				{pixelsPerInterval:  100,  unit: Timeline.DateTime.MINUTE},

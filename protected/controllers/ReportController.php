@@ -34,7 +34,7 @@ class ReportController extends Controller {
 	}
 
 	public function actionSummary() {
-		$command = $this->getCommand(self::ERROR_CLASS, array('limit' => 10));
+		$command = $this->getCommand(self::ERROR_CLASS, array('limit' => 10, 'order' => 'count DESC'));
 		$topErrorsData = array();
 		$topErrorsData['x'] = array();
 		$topErrorsData['y'] = array();
@@ -43,22 +43,22 @@ class ReportController extends Controller {
 			$topErrorsData['x'][] = (empty($datum['messageText'])) ? 'no error' : $datum['messageText'];
 		}
 
-		$command = $this->getCommand(self::EQ, array('limit' => 10));
+		$command = $this->getCommand(self::EQ, array('limit' => 10, 'order' => 'eq DESC'));
 		$topEqData = array();
 		$topEqData['x'] = array();
 		$topEqData['y'] = array();
 		foreach($command->queryAll() as $datum) {
 			$topEqData['y'][] = (float)$datum['eq'];
-			$topEqData['x'][] = CHtml::link($datum['name'], isset($_GET['id']) ? array('compileLog/view', 'id'=>$datum['logId']) : array('user/view', 'id'=>$datum['userId']));
+			$topEqData['x'][] = CHtml::link($datum['name'], (isset($_GET['id']) ? array('log/view', 'id'=>$datum['logId']) : array('user/view', 'id'=>$datum['userId'])), array('encode'=>false));
 		}
 
-		$command = $this->getCommand(self::CONFUSION, array('limit' => 10));
+		$command = $this->getCommand(self::CONFUSION, array('limit' => 10, 'order'=>'confusion DESC, clips DESC'));
 		$topConfusedData = array();
 		$topConfusedData['x'] = array();
 		$topConfusedData['y'] = array();
 		foreach($command->queryAll() as $datum) {
 			$topConfusedData['y'][] = (float)$datum['confusion'] ;
-			$topConfusedData['x'][] = CHtml::link($datum['name'], isset($_GET['id']) ? array('compileLog/view', 'id'=>$datum['logId']) : array('user/view', 'id'=>$datum['userId'])) . sprintf(' %d clip(s)', $datum['clips']);
+			$topConfusedData['x'][] = CHtml::link($datum['name'], (isset($_GET['id']) ? array('log/view', 'id'=>$datum['logId']) : array('user/view', 'id'=>$datum['userId'])), array('encode'=>false)) . sprintf(' %d clip(s)', $datum['clips']);
 		}
 
 		$command = $this->getCommand(self::TIME_DELTA, array('limit' => 10));
@@ -80,10 +80,10 @@ class ReportController extends Controller {
 		}
 
 		$data = array();
-		$data['eq'] = array_reverse($topEqData);
-		$data['errors'] = array_reverse($topErrorsData);
-		$data['confusion'] = array_reverse($topConfusedData);
-		$data['timeDeltas'] = array_reverse($timeDeltaData);
+		$data['eq'] = $topEqData;
+		$data['errors'] = $topErrorsData;
+		$data['confusion'] = $topConfusedData;
+		$data['timeDeltas'] = $timeDeltaData;
 
 		if(isset($_GET['id'])) {
 			$command = $this->getCommand(self::HISTOGRAM);
@@ -115,12 +115,12 @@ class ReportController extends Controller {
 					'name' => array(
 						'asc' => 'name',
 						'desc' => 'name DESC',
-						'Label' => 'Student',
+						'label' => 'Student',
 					),
 					'eq' => array(
 						'asc' => 'eq',
 						'desc' => 'eq DESC',
-						'Label' => 'EQ',
+						'label' => 'EQ',
 					),
 				),
 				'defaultOrder' => 'eq DESC',
@@ -164,17 +164,17 @@ class ReportController extends Controller {
 					'name' => array(
 						'asc' => 'name',
 						'desc' => 'name DESC',
-						'Label' => 'Student',
+						'label' => 'Student',
 					),
 					'confusion' => array(
 						'asc' => 'confusion',
 						'desc' => 'confusion DESC',
-						'Label' => 'Confusion Rate',
+						'label' => 'Confusion Rate',
 					),
 					'clips' => array(
 						'asc' => 'clips',
 						'desc' => 'clips DESC',
-						'Label' => 'Clips',
+						'label' => 'Clips',
 					),
 				),
 				'defaultOrder' => 'confusion DESC',
@@ -216,12 +216,12 @@ class ReportController extends Controller {
 					'messageText' => array(
 						'asc' => 'messageText',
 						'desc' => 'messageText DESC',
-						'Label' => 'Error',
+						'label' => 'Error',
 					),
 					'count' => array(
 						'asc' => 'COUNT(messageText)',
 						'desc' => 'COUNT(messageText) DESC',
-						'Label' => 'Count',
+						'label' => 'Count',
 					),
 					'*'
 				),
@@ -247,12 +247,12 @@ class ReportController extends Controller {
 					'messageText' => array(
 						'asc' => 'messageText',
 						'desc' => 'messageText DESC',
-						'Label' => 'Error',
+						'label' => 'Error',
 					),
 					'count' => array(
 						'asc' => 'COUNT(messageText)',
 						'desc' => 'COUNT(messageText) DESC',
-						'Label' => 'Count',
+						'label' => 'Count',
 					),
 					'*'
 				),
@@ -282,12 +282,12 @@ class ReportController extends Controller {
 					'delta' => array(
 						'asc' => 'delta',
 						'desc' => 'delta DESC',
-						'Label' => 'Range',
+						'label' => 'Range',
 					),
 					'count' => array(
 						'asc' => 'count',
 						'desc' => 'count DESC',
-						'Label' => 'Count',
+						'label' => 'Count',
 					),
 					'*'
 				),
@@ -300,6 +300,7 @@ class ReportController extends Controller {
 		$this->render('timeDelta', array(
 			'dataProvider'=>$dataProvider,
 			'interval'=>$interval,
+			'isSingle' => isset($_GET['id']),
 		));
 
 	}
@@ -319,7 +320,6 @@ class ReportController extends Controller {
 			$table = 'EqCalculation';
 			$criteria->select = 'userId, logId, name, AVG(eq) as eq';
 			$criteria->join = 'JOIN Log ON Log.id = logId JOIN User ON userId = User.id';
-			$criteria->order = 'eq DESC';
 			$criteria->group = 'name';
 		}
 		else if($reportType == self::ERROR) {
@@ -327,14 +327,12 @@ class ReportController extends Controller {
 			$criteria->select = 'messageText, COUNT(messageText) AS count';
 			$criteria->group = 'messageText';
 			$criteria->join = 'JOIN Log ON Log.id = logId';
-			$criteria->order = 'count DESC';
 		}
 		else if($reportType == self::ERROR_CLASS) {
 			$table = 'CompileLogEntry';
 			$criteria->select = 'error AS messageText, COUNT(*) AS count';
 			$criteria->group = 'error';
 			$criteria->join = 'JOIN Log ON Log.id = logId LEFT JOIN ErrorClass ON compileLogEntryId = t.id';
-			$criteria->order = 'count DESC';
 		}
 		else if($reportType == self::TIME_DELTA) {
 			$interval = array_key_exists('interval', $extraOptions) ? $extraOptions['interval'] : 20;
@@ -355,7 +353,6 @@ class ReportController extends Controller {
 			$table = 'Confusion';
 			$criteria->select = 'userId, logId, name, AVG(confusion) AS confusion, AVG(clips) AS clips';
 			$criteria->join = 'JOIN Log ON Log.id = logId JOIN User ON userId = User.id';
-			$criteria->order = 'confusion DESC, clips DESC';
 			$criteria->group = 'name';
 		}
 		else if($reportType == self::HISTOGRAM) {
@@ -368,6 +365,9 @@ class ReportController extends Controller {
 			}
 			$criteria->join = 'JOIN Log ON Log.id = logId';
 			$criteria->group = 'bucket';
+		}
+		if(array_key_exists('order', $extraOptions)) {
+			$criteria->order = $extraOptions['order'];
 		}
 		if(array_key_exists('limit', $extraOptions)) {
 			$criteria->limit = $extraOptions['limit'];
