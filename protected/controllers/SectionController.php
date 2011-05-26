@@ -50,6 +50,7 @@ class SectionController extends Controller {
 	 */
 	public function actionCreate() {
 		$model=new Section;
+		$model->active = 1;
 		$tags = array();
 
 		if(isset($_POST['tag'])) {
@@ -83,8 +84,6 @@ class SectionController extends Controller {
 				$model->newTeachers = $newTeachers;
 			}
 			$tags = $_POST['tag'];
-
-
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));
 		}

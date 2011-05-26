@@ -35,6 +35,12 @@ function createInput($view, $label, $tagType, $tags) {
 		<?php echo CHtml::checkBoxList('teacher', $this->modelArrayToAttributeArray($model->teachers, 'id'), CHtml::listData(User::model()->getUsers(User::ROLE_TEACHER), 'id', 'name'), array('labelOptions'=>array('class'=>'checkboxLabel'))); ?>
 	</div>
 
+	<div class="row">
+		<?php echo $form->labelEx($model,'active'); ?>
+		<?php echo $form->checkBox($model,'active'); ?>
+		<?php echo $form->error($model,'active'); ?>
+	</div>
+
 	<div class="row buttons">
 		<?php echo CHtml::submitButton($model->isNewRecord ? 'Create' : 'Save'); ?>
 	</div>

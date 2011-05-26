@@ -29,6 +29,7 @@ CREATE TABLE Section
 	yearId INTEGER NOT NULL,
 	courseId INTEGER NOT NULL,
 	sectionId INTEGER NOT NULL,
+	active BIT NOT NULL,
 	CONSTRAINT FK_section_tag1 FOREIGN KEY (yearId)
 		REFERENCES Tag(id),
 	CONSTRAINT FK_section_tag2 FOREIGN KEY (courseId)

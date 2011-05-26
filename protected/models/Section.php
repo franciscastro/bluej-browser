@@ -72,6 +72,14 @@ class Section extends CActiveRecord {
 		);
 	}
 
+	public function scopes() {
+		return array(
+			'active' => array(
+				'condition' => 'active=1',
+			),
+		);
+	}
+
 	/**
 	 * @return array customized attribute labels (name=>label)
 	 */

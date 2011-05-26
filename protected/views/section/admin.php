@@ -38,6 +38,10 @@ $('.search-form form').submit(function(){
 		'id',
 		'name',
 		array(
+			'name'=>'active',
+			'value'=>'$data->active ? "yes" : "no"',
+		),
+		array(
 			'class'=>'CButtonColumn',
 			'template'=>'{view} {update} {delete}',
 		),

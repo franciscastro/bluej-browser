@@ -3,7 +3,7 @@
 		<?php if(Yii::app()->user->hasRole(array('Teacher'))): ?>
 			<?php echo CHtml::dropDownList('tag[section]', $tags['section'], CHtml::listData(Yii::app()->user->getModel()->sections, 'id', 'name'), array('empty'=>'--')); ?>
 		<?php else: ?>
-			<?php echo CHtml::dropDownList('tag[section]', $tags['section'], CHtml::listData(Section::model()->findAll(), 'id', 'name'), array('empty'=>'--')); ?>
+			<?php echo CHtml::dropDownList('tag[section]', $tags['section'], CHtml::listData(Section::model()->active()->findAll(), 'id', 'name'), array('empty'=>'--')); ?>
 		<?php endif; ?>
 	</div>
 
