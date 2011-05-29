@@ -269,21 +269,20 @@ class LogSessionController extends Controller {
 		));
 	}
 
-	public function actionExport() {
+	public function actionExport($id) {
 		set_time_limit(0);
-		$model = $this->loadModel();
+		$model = $this->loadModel($id);
 		$exportName = $this->getExportName();
 		$exportZip = Yii::app()->file->set(Yii::app()->params['exportRoot'] . '/' . $exportName . '.zip');
 		if($exportZip->getIsFile()) {
 			if($model->start != null && ($model->end == null || $model->end > $exportZip->timeModified)) {
 				$exportZip->delete(true);
-				$exportZip->create();
 				$exportDir = $this->makeExportDir($exportName, $model);
 				Yii::app()->zip->makeZip($exportDir->getRealPath(), $exportZip->getRealPath());
 			}
 		}
 		else {
-			$exportZip->create();
+			//$exportZip->create();
 			$exportDir = $this->makeExportDir($exportName, $model);
 			Yii::app()->zip->makeZip($exportDir->getRealPath(), $exportZip->getRealPath());
 		}
@@ -336,7 +335,6 @@ class LogSessionController extends Controller {
 		if($exportZip->getIsFile()) {
 			$exportZip->delete(true);
 		}
-		$exportZip->create();
 		Yii::app()->zip->makeZip($exportDirs, $exportZip->getRealPath());
 
 		Yii::app()->getRequest()->sendFile(basename($exportZip->getBaseName()), file_get_contents($exportZip->getRealPath()));
@@ -375,7 +373,7 @@ class LogSessionController extends Controller {
 	 */
 	private function getExportName($model = null) {
 		if($model == null) {
-			$model = $this->loadModel();
+			$model = $this->loadModel($_GET['id']);
 		}
 
 		$exportName = $model->id;
@@ -390,6 +388,7 @@ class LogSessionController extends Controller {
 				if($tag->parentId == Tag::TERM_OTHER) continue;
 				$majorTags[$tag->parentId] = $tag->name;
 			}
+			$majorTags[] = date('Ymd', $model->start);
 			$majorTags[] = $model->id;
 			$exportName = implode($majorTags, '-');
 		}
@@ -417,16 +416,16 @@ class LogSessionController extends Controller {
 		chdir($exportDir->getRealPath());
 		$logModels = $model->logs;
 		foreach($logModels as $logModel) {
-			$logModel = $logModel->invocationLog;
-			if($logModel != null) {
-				$fp = fopen($logModel->user->name . '_InvocationData-' . $logModel->id . '.csv', 'w');
-				$logModel->doExport($fp);
+			$clogModel = $logModel->invocationLog;
+			if($clogModel != null) {
+				$fp = fopen($logModel->user->name . '_InvocationData-' . $clogModel->id . '.csv', 'w');
+				$clogModel->doExport($fp);
 				fclose($fp);
 			}
-			$logModel = $logModel->compileLog;
-			if($logModel != null) {
-				$fp = fopen($logModel->user->name . '_CompileData-' . $logModel->id . '.csv', 'w');
-				$logModel->doExport($fp);
+			$clogModel = $logModel->compileLog;
+			if($clogModel != null) {
+				$fp = fopen($logModel->user->name . '_CompileData-' . $clogModel->id . '.csv', 'w');
+				$clogModel->doExport($fp);
 				fclose($fp);
 			}
 		}
