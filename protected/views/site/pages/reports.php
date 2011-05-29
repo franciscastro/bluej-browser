@@ -19,7 +19,7 @@ insufficient data to calculate EQ in which case, N/A will
 be displayed.
 </p>
 <p>
-This measure is the work of Matt Jadud.
+This measure is the work of Matthew Jadud.
 </p>
 <h4>Errors</h4>
 <p>
@@ -54,7 +54,7 @@ as confused or not confused. The percentage of confused clips
 is then the confusion rate.
 </p>
 <p>
-It is logant to note that the confusion rate is heavily reliant
+It is important to note that the confusion rate is heavily reliant
 on the number of clips available for calculation. As such, they
 are displayed alongside the confusion rate.
 </p>
