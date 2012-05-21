@@ -17,9 +17,7 @@ CREATE TABLE Tag
 (
 	id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
 	parentId INTEGER NOT NULL,
-	name TEXT,
-	CONSTRAINT FK_tag_tag FOREIGN KEY (parentId)
-		REFERENCES Tag(id)
+	name TEXT
 );
 
 CREATE TABLE Section
@@ -38,26 +36,6 @@ CREATE TABLE Section
 		REFERENCES Tag(id)
 );
 
-CREATE TABLE UserSection
-(
-	userId INTEGER NOT NULL,
-	sectionId INTEGER NOT NULL,
-	CONSTRAINT FK_us_section FOREIGN KEY (sectionId)
-		REFERENCES Class (id),
-	CONSTRAINT FK_us_user FOREIGN KEY (userId)
-		REFERENCES User (id)
-);
-
-CREATE TABLE LogSessionTag
-(
-	logSessionId INTEGER NOT NULL,
-	tagId INTEGER NOT NULL,
-	CONSTRAINT FK_st_tag FOREIGN KEY (tagId)
-		REFERENCES Tag (id),
-	CONSTRAINT FK_st_logSession FOREIGN KEY (logSessionId)
-		REFERENCES LogSession (id)
-);
-
 CREATE TABLE User
 (
 	id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -66,6 +44,17 @@ CREATE TABLE User
 	name TEXT,
 	computer VARCHAR(128),
 	roleId INTEGER NOT NULL
+);
+
+CREATE TABLE LogSession
+(
+	id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
+	sectionId INTEGER,
+	source TEXT,
+	path TEXT,
+	start INTEGER,
+	end INTEGER,
+	remarks TEXT
 );
 
 CREATE TABLE CompileLog
@@ -87,7 +76,7 @@ CREATE TABLE CompileLog
 	packagePath TEXT,
 	deltaName TEXT,
 	CONSTRAINT FK_compileLog_log FOREIGN KEY (id)
-		REFERENCES Session (id)
+		REFERENCES LogSession (id)
 );
 
 CREATE TABLE CompileLogEntry
@@ -132,7 +121,7 @@ CREATE TABLE InvocationLog
 	packagePath TEXT,
 	deltaName TEXT,
 	CONSTRAINT FK_invocationLog_log FOREIGN KEY (id)
-		REFERENCES Session (id)
+		REFERENCES LogSession (id)
 );
 
 CREATE TABLE InvocationLogEntry
@@ -153,17 +142,6 @@ CREATE TABLE InvocationLogEntry
 	invocationStatus TEXT,
 	CONSTRAINT FK_invocationLogEntry_invocationLog FOREIGN KEY (logId)
 		REFERENCES InvocationLog (id)
-);
-
-CREATE TABLE LogSession
-(
-	id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
-	sectionId INTEGER,
-	source TEXT,
-	path TEXT,
-	start INTEGER,
-	end INTEGER,
-	remarks TEXT
 );
 
 CREATE TABLE Log
@@ -205,6 +183,27 @@ CREATE TABLE ErrorClass
   CONSTRAINT FK_errorClass_compileLogEntry FOREIGN KEY (compileLogEntryId)
     REFERENCES CompileLogEntry (id)
 );
+
+CREATE TABLE UserSection
+(
+	userId INTEGER NOT NULL,
+	sectionId INTEGER NOT NULL,
+	CONSTRAINT FK_us_section FOREIGN KEY (sectionId)
+		REFERENCES Section(id),
+	CONSTRAINT FK_us_user FOREIGN KEY (userId)
+		REFERENCES User(id)
+);
+
+CREATE TABLE LogSessionTag
+(
+	logSessionId INTEGER NOT NULL,
+	tagId INTEGER NOT NULL,
+	CONSTRAINT FK_st_tag FOREIGN KEY (tagId)
+		REFERENCES Tag (id),
+	CONSTRAINT FK_st_logSession FOREIGN KEY (logSessionId)
+		REFERENCES LogSession (id)
+);
+
 
 INSERT INTO Tag VALUES (1, 0, "Root");
 INSERT INTO Tag VALUES (2, 1, "Year");
