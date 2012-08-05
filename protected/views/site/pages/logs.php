@@ -20,7 +20,7 @@ from the Logs page via <b>Upload Log Files</b>.
 <p>
 You may opt to collect logs while a class is going on.
 This can be created from the logs page via
-<b>Start Live Session</b> in the navigation menu. The
+<b>Schedule Live Session</b> in the navigation menu. The
 server will then proceed to collect any logs sent to it
 while it is running. A log can then be stopped to
 stop further collection of logs.

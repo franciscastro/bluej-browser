@@ -19,6 +19,8 @@
  */
 class LogSession extends CActiveRecord {
 	public $newTags = array();
+	public $startTime = null;
+	public $endTime = null;
 
 	/**
 	 * Returns the static model of the specified AR class.
@@ -42,7 +44,10 @@ class LogSession extends CActiveRecord {
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('source, path, start, end, remarks', 'safe'),
+			array('source, start, end, path, remarks', 'safe'),
+			array('start', 'type', 'type' => 'datetime', 'datetimeFormat' => 'mm/dd/yyyy hh:mm', 'allowEmpty' => false),
+			array('end', 'type', 'type' => 'datetime', 'datetimeFormat' => 'mm/dd/yyyy hh:mm'),
+			array('end', 'compareDateRange'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
 			array('id, source, path, start, end, remarks', 'safe', 'on'=>'search'),
@@ -118,11 +123,37 @@ class LogSession extends CActiveRecord {
 		));
 	}
 
+	public function compareDateRange($attribute,$params) {
+		if(!empty($this->attributes['end'])) {
+			if(strtotime($this->attributes['end']) < strtotime($this->attributes['start'])) {
+				$this->addError($attribute,'The end date should be after the start date.');
+			}
+		}
+	}
+
+
+	protected function beforeSave() {
+		if($this->isLiveSession()) {
+			$start = CDateTimeParser::parse($this->start, 'mm/dd/yyyy hh:mm', array('second' => 0));
+			if($start !== false) $this->start = $start;
+			$end = CDateTimeParser::parse($this->end, 'mm/dd/yyyy hh:mm', array('second' => 0));
+			if($end !== false) $this->end = $end;
+		}
+		return parent::beforeSave();
+	}
+
+	protected function afterFind() {
+		$this->startTime = $this->start;
+		$this->endTime = $this->end;
+	}
+
 	/**
 	 * Run after saving. Updates the tags of the logSession.
 	 */
 	protected function afterSave() {
 		parent::afterSave();
+		$this->startTime = $this->start;
+		$this->endTime = $this->end;
 		$oldTags = $this->tags;
 		$this->addTags(array_udiff($this->newTags, $oldTags, array('Tag', 'compare')));
 		$this->removeTags(array_udiff($oldTags, $this->newTags, array('Tag', 'compare')));
@@ -189,7 +220,7 @@ class LogSession extends CActiveRecord {
 		if($logType === false) {
 			return false;
 		}
-		$liveSessions = LogSession::model()->findAll('start IS NOT NULL AND end IS NULL');
+		$liveSessions = LogSession::model()->findAll('start < :now AND (end IS NULL OR end > :now)', array('now' => time()));
 
 		foreach($liveSessions as $liveSession) {
 			if($liveSession->path == null || stripos($computer, $liveSession->path) == 0) {
@@ -288,6 +319,21 @@ class LogSession extends CActiveRecord {
 				'tagId'=>$tag->id,
 			));
 		}
+	}
+
+	public function isLiveSession() {
+		return $this->source == 'live';
+	}
+
+	public function hasStarted() {
+		if($this->startTime == null) return true;
+		return $this->startTime < time();
+	}
+
+	public function hasEnded() {
+		if($this->startTime == null) return true;
+		if($this->endTime == null) return false;
+		return $this->endTime < time();
 	}
 
 	/**

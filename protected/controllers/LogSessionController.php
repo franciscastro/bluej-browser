@@ -175,7 +175,6 @@ class LogSessionController extends Controller {
 			$tags = Section::model()->getNewTags();
 			$model->attributes=$_POST['LogSession'];
 			$model->source = 'live';
-			$model->start = time();
 			$model->newTags = $tags;
 			if(isset($_POST['tag']['section'])) {
 				$model->sectionId = $_POST['tag']['section'];
@@ -199,15 +198,15 @@ class LogSessionController extends Controller {
 
 	public function actionStopLive($id) {
 		$model=$this->loadModel($id);
+		if($model->start != null) $model->start = date('m/d/Y H:i', $model->start);
 
 		if(Yii::app()->request->isPostRequest) {
 			$model->newTags = $model->tags;
-			$model->end = time();
+			$model->end = date('m/d/Y H:i');
 			if($model->save()) {
 				if(!isset($_GET['ajax']))
 					$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('view','id'=>$model->id));
 			}
-
 		}
 		else
 			throw new CHttpException(400,'Invalid request. Please do not repeat this request again.');
@@ -219,6 +218,8 @@ class LogSessionController extends Controller {
 	 */
 	public function actionUpdate($id) {
 		$model=$this->loadModel($id);
+		if($model->start != null) $model->start = date('m/d/Y H:i', $model->start);
+		if($model->end != null) $model->end = date('m/d/Y H:i', $model->end);
 
 		if(isset($_POST['LogSession'])) {
 			$model->attributes=$_POST['LogSession'];

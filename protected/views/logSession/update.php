@@ -13,4 +13,4 @@ $this->menu=array(
 
 <h1>Update Log #<?php echo $model->id; ?></h1>
 
-<?php echo $this->renderPartial('_form', array('model'=>$model, 'tags'=>$tags)); ?>
+<?php echo $this->renderPartial('_formLive', array('model'=>$model, 'tags'=>$tags)); ?>
