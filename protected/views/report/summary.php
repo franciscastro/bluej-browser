@@ -37,10 +37,11 @@ $ajax = CHtml::ajax(array(
 
 $cs = Yii::app()->clientScript;
 $cs->registerScriptFile(Yii::app()->assetManager->publish('protected/vendors/highcharts/js/highcharts.js'));
-$cs->registerScript('plotStuffHead', "
+$cs->registerScript('plotStuffHead', <<<EOF
 Highcharts.setOptions({
 	global: {
-		useUTC: false
+		useUTC: false,
+		enableMouseTracking: false,
 	}
 });
 var charts = Array();
@@ -96,6 +97,9 @@ function plotChart(divId, name, data) {
 		credits: {
 			enabled: false
 		},
+		tooltip: {
+			enabled: false
+		},
 		plotOptions: {
 			column: {
 				borderWidth:0.5,
@@ -116,6 +120,9 @@ function plotChart(divId, name, data) {
 	if(divId == 'eqChart' || divId == 'confusionChart') {
 		options.series[0].dataLabels.formatter = function() {
 			return Highcharts.numberFormat(this.y, 5);
+		}
+		options.xAxis.labels.formatter = function() {
+			return '<a href="'+this.value.url+'">'+this.value.name+'</a>';
 		}
 	}
 	charts[divId] = new Highcharts.Chart(options);
@@ -171,7 +178,8 @@ function replotChart(divId, data) {
 function autorefresh() {
 	$ajax
 }
-", CClientScript::POS_HEAD);
+EOF
+, CClientScript::POS_HEAD);
 $cs->registerScript('plotStuffInitial', 'plotStuff('.CJavaScript::jsonEncode($data).', null, null)');
 if($isSingle) $cs->registerScript('plotStuff', 'setTimeout("autorefresh()", 5000);');
 ?>

@@ -48,8 +48,16 @@ class ReportController extends Controller {
 		$topEqData['x'] = array();
 		$topEqData['y'] = array();
 		foreach($command->queryAll() as $datum) {
+			$labelData = array();
+			$labelData['name'] = $datum['name'];
+			if(isset($_GET['id'])) {
+				$labelData['url'] = $this->createUrl('log/view', array('id' => $datum['logId']));
+			}
+			else {
+				$labelData['url'] = $this->createUrl('user/view', array('id' => $datum['userId']));
+			}
 			$topEqData['y'][] = (float)$datum['eq'];
-			$topEqData['x'][] = CHtml::link($datum['name'], (isset($_GET['id']) ? array('log/view', 'id'=>$datum['logId']) : array('user/view', 'id'=>$datum['userId'])), array('encode'=>false));
+			$topEqData['x'][] = $labelData;
 		}
 
 		$command = $this->getCommand(self::CONFUSION, array('limit' => 10, 'order'=>'confusion DESC, clips DESC'));
@@ -57,8 +65,16 @@ class ReportController extends Controller {
 		$topConfusedData['x'] = array();
 		$topConfusedData['y'] = array();
 		foreach($command->queryAll() as $datum) {
-			$topConfusedData['y'][] = (float)$datum['confusion'] ;
-			$topConfusedData['x'][] = CHtml::link($datum['name'], (isset($_GET['id']) ? array('log/view', 'id'=>$datum['logId']) : array('user/view', 'id'=>$datum['userId'])), array('encode'=>false)) . sprintf(' %d clip(s)', $datum['clips']);
+			$labelData = array();
+			$labelData['name'] = $datum['name'] . sprintf(' %d clip(s)', $datum['clips']);
+			if(isset($_GET['id'])) {
+				$labelData['url'] = $this->createUrl('log/view', array('id' => $datum['logId']));
+			}
+			else {
+				$labelData['url'] = $this->createUrl('user/view', array('id' => $datum['userId']));
+			}
+			$topConfusedData['y'][] = (float)$datum['confusion'];
+			$topConfusedData['x'][] = $labelData;
 		}
 
 		$command = $this->getCommand(self::TIME_DELTA, array('limit' => 10));
