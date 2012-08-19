@@ -215,7 +215,7 @@ class LogSession extends CActiveRecord {
 	 * @param array row of data to be added
 	 * @return boolean whether there was an active log that accepted the insert
 	 */
-	public function liveInsert($computer, $logType, $data) {
+	public function liveInsert($location, $logType, $data) {
 		$logType = self::parseSessionType($logType);
 		if($logType === false) {
 			return false;
@@ -223,8 +223,8 @@ class LogSession extends CActiveRecord {
 		$liveSessions = LogSession::model()->findAll('source = "live" AND start < :now AND (end IS NULL OR end > :now)', array('now' => time()));
 
 		foreach($liveSessions as $liveSession) {
-			if($liveSession->path == null || stripos($computer, $liveSession->path) == 0) {
-				$log = $liveSession->getAssociatedLog($computer);
+			if($liveSession->path == null || stripos($location, $liveSession->path) == 0) {
+				$log = $liveSession->getAssociatedLog($data['HOSTNAME']);
 				CActiveRecord::model($logType)->liveLog($log->id, $data);
 				return true;
 			}
