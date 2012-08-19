@@ -220,7 +220,7 @@ class LogSession extends CActiveRecord {
 		if($logType === false) {
 			return false;
 		}
-		$liveSessions = LogSession::model()->findAll('start < :now AND (end IS NULL OR end > :now)', array('now' => time()));
+		$liveSessions = LogSession::model()->findAll('source = "live" AND start < :now AND (end IS NULL OR end > :now)', array('now' => time()));
 
 		foreach($liveSessions as $liveSession) {
 			if($liveSession->path == null || stripos($computer, $liveSession->path) == 0) {
